@@ -83,7 +83,7 @@ main{padding:18px 20px 40px;min-width:0}
 .chain .step small{font-size:11px;color:var(--mute);max-width:130px;line-height:1.25}
 .pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 16px}
 .pick div{display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid var(--line2);padding:6px 2px;font-size:13px}
-.fwpick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.fwpick{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
 .fwpick div{border:1px solid #cdd5f6;background:var(--fw-bg);border-radius:9px;padding:10px 12px;font-size:12.8px;cursor:pointer}
 .fwpick div b{display:block;color:var(--fw);font-size:14px}
 
@@ -512,6 +512,54 @@ fwTool({id:"8d", icon:"8D", name:"8D", intro:"Let's work through the Eight Disci
     d6:"All benches fitted by week 48. J3 failures: 23/week before, 1 in weeks 47–50 (unrelated cause). Wiggle test caught all 5 seeded boards in validation.",
     d7:["PFMEA: added 'board flex at connector mating', detection = wiggle test","Line-transfer checklist rev B (applies to all lines)","Fixture requirement added to J5 mating on sister PCBA","Lesson shared at engineering forum"],
     d8:"Customer accepted the 8D on 2 Dec. Team recognized at the monthly quality review."}
+});
+
+/* ---------- BS EN 62740 (IEC 62740) ---------- */
+fwTool({id:"bs62740", icon:"BS", name:"BS EN 62740 RCA", intro:"Let's run a root cause analysis following the BS EN 62740 (IEC 62740) process.",
+  short:"The international standard RCA process: Initiation, Establishing facts, Analysis, Validation, Presentation of results.",
+  phases:[{k:"1",n:"Initiation",d:"Decide the RCA is warranted; set scope, depth and team."},{k:"2",n:"Establishing facts",d:"Gather evidence and build the sequence of events."},{k:"3",n:"Analysis",d:"Choose a technique; identify causal factors and root causes."},{k:"4",n:"Validation",d:"Prove the identified causes explain the event."},{k:"5",n:"Presentation of results",d:"Report findings and recommendations; hand actions over."}],
+  guide:{what:"BS EN 62740:2015 is the UK adoption of IEC 62740, the international standard for root cause analysis. It defines the steps an RCA process should include and describes RCA techniques with their strengths and limitations. It covers events that have already occurred (a 'focus event'), most often failures and incidents.",
+    when:["Serious field failures, safety incidents or audit findings that need a defensible, documented investigation.","When you need to show the investigation followed a recognised standard.","As the investigation half of a CAPA, 8D or FRACAS record."],
+    steps:["<b>Initiation:</b> decide whether the event warrants an RCA; define scope and depth; appoint the team.","<b>Establishing facts:</b> collect physical evidence, data, records and interviews; build the timeline.","<b>Analysis:</b> select a suitable technique and work from the event back to causal factors and root causes.","<b>Validation:</b> confirm the causes are supported by evidence and actually explain the event.","<b>Presentation of results:</b> report findings and recommendations to whoever decides on actions."],
+    tips:["The standard stops at recommendations: implementing and verifying actions belongs to your CAPA / 8D process.","Validation is a separate stage: prove the cause before anyone acts on it.","It is explicitly not about assigning blame or liability.","It includes guidance on analysing human performance; Window analysis fits there."]},
+  related:["fta","fishbone","fivewhy","window"],
+  sampleNote:"The J3 field return investigated to the BS EN 62740 process; actions handed to the 8D.",
+  steps:[
+    {id:"i_event",phase:"1",label:"Focus event",q:"What is the focus event (what happened, where, when)?",type:"textarea"},
+    {id:"i_why",phase:"1",label:"Why an RCA",q:"Why does this event warrant an RCA?",type:"textarea",help:"e.g. safety, customer impact, cost, recurrence, regulatory or contractual requirement."},
+    {id:"i_scope",phase:"1",label:"Scope and depth",q:"What is the scope and depth of the analysis, and any constraints?",type:"textarea"},
+    {id:"i_team",phase:"1",label:"Team",q:"Who is on the analysis team, and who is the sponsor?",type:"table",cols:[{k:"n",l:"Name",w:120},{k:"r",l:"Role in RCA",w:160}]},
+    {id:"f_evid",phase:"2",label:"Evidence gathered",q:"What evidence was gathered?",type:"table",tools:["checksheet","flowchart"],help:"Physical parts, data and records, people (interviews), position or condition.",
+      cols:[{k:"e",l:"Evidence",w:200},{k:"t",l:"Type",type:"select",opts:["","Physical","Data / record","People / interview","Position / condition"]},{k:"s",l:"Source / ref.",w:120}]},
+    {id:"f_time",phase:"2",label:"Sequence of events",q:"Build the sequence of events leading to the focus event.",type:"table",tools:["controlchart","stratification"],
+      cols:[{k:"w",l:"When",w:90},{k:"e",l:"Event / condition",w:240},{k:"s",l:"Evidence",w:110}]},
+    {id:"a_tech",phase:"3",label:"Technique",q:"Which analysis technique fits this event?",type:"choice",opts:[["why","5-Why / why-because chain"],["fish","Fishbone (Ishikawa)"],["fta","Fault tree analysis"],["ecf","Events and causal-factor charting"],["barrier","Barrier analysis"],["change","Change analysis (what was different?)"],["other","Other / combination"]],
+      optHelp:{why:"One clear causal chain",fish:"Many possible causes to explore",fta:"Combined causes, AND/OR logic",ecf:"Complex sequence of events",barrier:"Which defences failed",change:"Worked before, fails now"},tools:["fivewhy","fishbone","fta"]},
+    {id:"a_cf",phase:"3",label:"Causal factors",q:"What causal factors contributed to the event?",type:"list"},
+    {id:"a_root",phase:"3",label:"Root causes",q:"What are the root causes?",type:"textarea",tools:["fivewhy","fta"]},
+    {id:"a_hum",phase:"3",label:"Human performance",q:"Were human-performance factors involved? Describe them without blame.",type:"textarea",optional:1,tools:["window"]},
+    {id:"v_how",phase:"4",label:"How validated",q:"How were the causes validated against the evidence?",type:"textarea",tools:["scatter","stratification"],help:"e.g. reproduction, test, comparison with a known-good, data analysis."},
+    {id:"v_ok",phase:"4",label:"Validation result",q:"Do the validated causes fully explain the focus event?",type:"choice",opts:[["yes","Yes, fully explained"],["partly","Partly: some uncertainty remains"],["no","No: return to Establishing facts / Analysis"]]},
+    {id:"p_sum",phase:"5",label:"Findings",q:"Summarise the findings for the report.",type:"textarea"},
+    {id:"p_rec",phase:"5",label:"Recommendations",q:"What do you recommend, and which cause does each address?",type:"table",tools:["forcefield"],
+      cols:[{k:"r",l:"Recommendation",w:220},{k:"c",l:"Addresses cause",w:150},{k:"t",l:"To (decision owner)",w:110}]},
+    {id:"p_hand",phase:"5",label:"Handed over to",q:"Where will the actions be implemented and tracked?",type:"text",ph:"e.g. 8D-2026-041 / CAPA-1187"}
+  ],
+  sample:{i_event:"Field return: intermittent loss of sensor data on a logging tool during a customer job (week 45). Traced to an intermittent open at J3 on the PCBA.",
+    i_why:"Customer impact and non-productive time; the same failure mode was the top in-house failure in week 44, so recurrence is likely.",
+    i_scope:"PCBA assembly and test at the Singapore line, weeks 40–46. Depth: to the systemic cause in the build and transfer processes. Excludes supplier connector design.",
+    i_team:[{n:"Soe",r:"Lead investigator (Engineering)"},{n:"—",r:"Quality / Reliability"},{n:"—",r:"PCB Technician (FA)"},{n:"—",r:"Sponsor: Operations manager"}],
+    f_evid:[{e:"Returned PCBA, J3 cross-section",t:"Physical",s:"FA-2026-118"},{e:"Final-test failure log weeks 40–46",t:"Data / record",s:"MES export"},{e:"Training records, line-transfer checklist",t:"Data / record",s:"HR / LMS"},{e:"Interviews with night-shift operators",t:"People / interview",s:"Notes 12 Nov"},{e:"Bench 2 had no back-support fixture",t:"Position / condition",s:"Photo, floor walk"}],
+    f_time:[{w:"Wk 43",e:"Operator D transferred from another line; no line-specific WI training",s:"Transfer record"},{w:"Wk 44 Wed",e:"J3 failures at final test jump from 1–2/day to 6–7/day",s:"Check sheet"},{w:"Wk 44",e:"Board built on bench 2 without fixture passes static final test",s:"Test log"},{w:"Wk 45",e:"Intermittent open in the field",s:"Field report"}],
+    a_tech:"why",
+    a_cf:["Board flexed during J3 mating","No fixture at night-shift bench 2","Operator not trained on WI step 14","Final test checks J3 statically"],
+    a_root:"Occurrence: the line-transfer process has no line-specific WI training step, and fixture use relies on memory. Escape: final test cannot detect intermittent J3 opens.",
+    a_hum:"The operator followed the method used on the previous line; the gap was in the transfer process, not individual effort. Window analysis: fixture use = C (communication), missing-tool reporting = B (practice).",
+    v_how:"Reproduced on 3 of 3 boards mated without the fixture (cracks after 200 thermal cycles), 0 of 3 with it. Strain 1,100 vs 250 µε. 21 of 23 failures traced to bench 2 / operator D.",
+    v_ok:"yes",
+    p_sum:"The field failure was caused by fatigue cracking at J3 from board flex during unsupported cable mating. This happened because the transfer process lacks WI training and fixture use is not mistake-proofed, and it escaped because final test checks J3 statically.",
+    p_rec:[{r:"Fixture with presence interlock at all cable benches",c:"Fixture use relies on memory",t:"Mfg Eng manager"},{r:"Add WI training and sign-off to line-transfer checklist",c:"No transfer training step",t:"Operations manager"},{r:"Add J3 wiggle continuity test at final test",c:"Static test misses intermittent opens",t:"Test Eng manager"}],
+    p_hand:"8D-2026-041"}
 });
 
 /* ===================== 7 QC TOOLS ===================== */
@@ -1375,14 +1423,15 @@ function viewHome(){
     ["eas","EAS","Expose · Analyze · Solve",[[1,1,"E · Expose the problem"],[2,1,"A · Analyze the problem"],[3,2,"S · Solve the problem (fix, verify, standardize)"]]],
     ["pdca","PDCA","Deming cycle",[[1,2,"P · Plan (problem, root cause, action plan)"],[3,1,"D · Do (implement or pilot)"],[4,1,"C · Check  ·  A · Act"]]],
     ["dmaic","DMAIC","Six Sigma",[[1,1,"D · Define  ·  M · Measure"],[2,1,"A · Analyze"],[3,1,"I · Improve"],[4,1,"C · Control"]]],
-    ["8d","8D","Eight disciplines",[[1,1,"D0–D3 · Prepare, team, describe, contain"],[2,1,"D4 · Root cause (occurrence & escape)"],[3,1,"D5–D6 · Choose, implement, validate fix"],[4,1,"D7–D8 · Prevent recurrence, close"]]]
+    ["8d","8D","Eight disciplines",[[1,1,"D0–D3 · Prepare, team, describe, contain"],[2,1,"D4 · Root cause (occurrence & escape)"],[3,1,"D5–D6 · Choose, implement, validate fix"],[4,1,"D7–D8 · Prevent recurrence, close"]]],
+    ["bs62740","BS EN 62740","RCA standard (IEC 62740)",[[1,1,"1 · Initiation  ·  2 · Establishing facts"],[2,1,"3 · Analysis  ·  4 · Validation"],[3,2,"5 · Presentation of results → actions handed to CAPA / 8D"]]]
   ];
   const TC=[["flowchart","checksheet","pareto","histogram","controlchart","stratification"],["fishbone","fivewhy","fta","window","scatter","stratification"],["forcefield","window"],["controlchart","pareto","checksheet","histogram"]];
   let ig=`<div class="ig"><div></div>${COLS.map((c,i)=>`<div class="ch c${i+1}">${i+1}. ${esc(c[0])}<small>${esc(c[1])}</small></div>`).join("")}`;
   FW.forEach(([id,n,sub,ph],r)=>{ ig+=`<div class="rl" data-open="${id}" style="grid-row:${r+2}"><div>${n}<small>${sub}</small></div></div>`;
     ph.forEach(([c,span,l])=>{ ig+=`<div class="ph" data-open="${id}" style="grid-row:${r+2};grid-column:${c+1} / span ${span}">${esc(l)}</div>`; }); });
-  ig+=`<div class="rl" style="grid-row:6;cursor:default"><div>Tools<small>used in each stage</small></div></div>`;
-  TC.forEach((list,i)=>{ ig+=`<div class="tcell" style="grid-row:6;grid-column:${i+2}">${list.map(x=>chipOf(x)).join("")}</div>`; });
+  ig+=`<div class="rl" style="grid-row:${FW.length+2};cursor:default"><div>Tools<small>used in each stage</small></div></div>`;
+  TC.forEach((list,i)=>{ ig+=`<div class="tcell" style="grid-row:${FW.length+2};grid-column:${i+2}">${list.map(x=>chipOf(x)).join("")}</div>`; });
   ig+=`</div><div class="legend">${Object.entries(CATS).map(([k,c])=>`<span><i style="background:${c.color}"></i>${esc(c.name)}</span>`).join("")}<span style="color:var(--mute)">Click any phase or tool to open it.</span></div>`;
 
   const cats=Object.entries(CATS).map(([k,c])=>`<div class="catc" style="border-color:${c.color};background:${c.bg}"><h3 style="color:${c.color}">${esc(c.name)}</h3><div class="q" style="color:${c.color}">“${esc(c.q)}”</div><p>${esc(c.desc)}</p><div class="chips">${TOOL_ORDER.filter(id=>TOOLS[id].cat===k).map(id=>chipOf(id)).join("")}</div></div>`).join("");
@@ -1392,7 +1441,7 @@ function viewHome(){
 
   const PICK=[["Where in the process is the defect created or missed?","flowchart"],["How often does each defect happen, and when?","checksheet"],["Which problem should we attack first?","pareto"],["Is the process centred and within spec?","histogram"],["Is the process stable, or did something change?","controlchart"],["Is the problem concentrated in one shift, machine or lot?","stratification"],["Are two variables related?","scatter"],["What could possibly be causing it?","fishbone"],["What is the chain from symptom to root cause?","fivewhy"],["Do several causes have to combine? Which combinations matter?","fta"],["Was the standard missing, not communicated, or not followed?","window"],["What will help or block the fix from being adopted?","forcefield"]];
   const pick=`<div class="pick">${PICK.map(([q,id])=>`<div><span>${esc(q)}</span>${chipOf(id)}</div>`).join("")}</div>`;
-  const FWP=[["pdca","PDCA","Small, quick improvements and repeated test cycles."],["eas","EAS","Everyday shop-floor problems; easy for any team to follow."],["8d","8D","Customer complaints, field failures and escapes that need containment and a formal report."],["dmaic","DMAIC","Chronic, data-heavy process problems where the cause is unclear."]];
+  const FWP=[["pdca","PDCA","Small, quick improvements and repeated test cycles."],["eas","EAS","Everyday shop-floor problems; easy for any team to follow."],["8d","8D","Customer complaints, field failures and escapes that need containment and a formal report."],["dmaic","DMAIC","Chronic, data-heavy process problems where the cause is unclear."],["bs62740","BS EN 62740","Serious incidents or audits that need a defensible investigation to a recognised standard; actions go to CAPA / 8D."]];
   const fwp=`<div class="fwpick">${FWP.map(([id,n,d])=>`<div data-open="${id}"><b>${n}</b>${esc(d)}</div>`).join("")}</div>`;
 
   $("#view").innerHTML=`
