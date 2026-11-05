@@ -224,6 +224,18 @@ svg text{font-family:var(--sans)}
 .hcred{display:flex;flex-wrap:wrap;gap:8px 18px;margin:-6px 0 16px;font-size:13px;color:var(--ink2)}
 .hcred span{background:#fff;border:1px solid var(--line);border-radius:16px;padding:4px 12px}
 @media print{.credit{position:fixed;bottom:0;left:0;right:0;margin:0;padding:3px 0 0;font-size:8pt;background:#fff}}
+.igm,.mob,.sidefile{display:none}
+.sidefile{gap:6px;margin:16px 10px 0;padding-top:12px;border-top:1px solid var(--line)}
+.igs{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
+.igs .ch{border-radius:0;padding:9px 12px;color:#fff;font-weight:700;font-size:14px}
+.igs .ch small{display:block;font-weight:400;opacity:.85;font-size:12px}
+.igs .ch.c1{background:#1e3a8a}.igs .ch.c2{background:#1d4ed8}.igs .ch.c3{background:#2563eb}.igs .ch.c4{background:#3b82f6}
+.igb{padding:8px 10px 10px}
+.igr{display:grid;grid-template-columns:86px 1fr;gap:8px;padding:6px 4px;border-bottom:1px solid var(--line2);font-size:13px;cursor:pointer}
+.igr b{color:var(--fw)}
+.igr span{color:#1d2b7a}
+.igt{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.igarr{text-align:center;color:#94a3b8;font-size:13px;line-height:1;padding:4px 0}
 /* framework report */
 .fwrep{display:grid;gap:10px}
 .fwp{border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -251,7 +263,11 @@ dialog#full .svscroll svg{min-width:0}
 @media (max-width:820px){
   .app{grid-template-columns:1fr} .side{position:fixed;left:0;top:54px;width:270px;z-index:25;transform:translateX(-100%);transition:transform .2s;box-shadow:4px 0 20px rgba(0,0,0,.12)}
   .side.open{transform:none} .menu{display:inline-block}
-  .ig{grid-template-columns:90px repeat(4,minmax(150px,1fr));overflow-x:auto} .igwrap{overflow-x:auto}
+  .igwrap,.dsk{display:none} .igm,.mob{display:block}
+  .tb{padding:5px 8px;font-size:12.5px} .brand small{display:none} .brand{font-size:13.5px;white-space:normal;line-height:1.15} .top{gap:6px;padding:8px 10px}
+  #bExport,#bImport{display:none} .sidefile{display:flex}
+  .panel{padding:14px 12px} .hero h1{font-size:21px}
+  .thead .acts{margin-left:0;width:100%} .thead .acts .btn{flex:1 1 auto}
   .cats,.pick,.fwpick{grid-template-columns:1fr} main{padding:14px 12px 30px}
   .inbox{margin-left:0}
 }
@@ -1549,7 +1565,16 @@ function viewHome(){
     ph.forEach(([c,span,l])=>{ ig+=`<div class="ph" data-open="${id}" style="grid-row:${r+2};grid-column:${c+1} / span ${span}">${esc(l)}</div>`; }); });
   ig+=`<div class="rl" style="grid-row:${FW.length+2};cursor:default"><div>Tools<small>used in each stage</small></div></div>`;
   TC.forEach((list,i)=>{ ig+=`<div class="tcell" style="grid-row:${FW.length+2};grid-column:${i+2}">${list.map(x=>chipOf(x)).join("")}</div>`; });
-  ig+=`</div><div class="legend">${Object.entries(CATS).map(([k,c])=>`<span><i style="background:${c.color}"></i>${esc(c.name)}</span>`).join("")}<span style="color:var(--mute)">Click any phase or tool to open it.</span></div>`;
+  ig+=`</div>`;
+  const legend=`<div class="legend">${Object.entries(CATS).map(([k,c])=>`<span><i style="background:${c.color}"></i>${esc(c.name)}</span>`).join("")}<span style="color:var(--mute)">Click any phase or tool to open it.</span></div>`;
+  let igm=`<div class="igm">`;
+  COLS.forEach((c,si)=>{ const col=si+1;
+    igm+=`<div class="igs"><div class="ch c${col}">${col}. ${esc(c[0])}<small>${esc(c[1])}</small></div><div class="igb">`;
+    FW.forEach(([id,n,sub,ph])=>{ const hit=ph.find(([cc,span])=>col>=cc&&col<cc+span); if(!hit) return;
+      const cont=col>hit[0]; igm+=`<div class="igr" data-open="${id}"><b>${esc(n)}</b><span>${cont?"↳ continued: ":""}${esc(hit[2])}</span></div>`; });
+    igm+=`<div class="igt">${TC[si].map(x=>chipOf(x)).join("")}</div></div></div>`;
+    if(si<COLS.length-1) igm+=`<div class="igarr">▼</div>`; });
+  igm+=`</div>`;
 
   const cats=Object.entries(CATS).map(([k,c])=>`<div class="catc" style="border-color:${c.color};background:${c.bg}"><h3 style="color:${c.color}">${esc(c.name)}</h3><div class="q" style="color:${c.color}">“${esc(c.q)}”</div><p>${esc(c.desc)}</p><div class="chips">${TOOL_ORDER.filter(id=>TOOLS[id].cat===k).map(id=>chipOf(id)).join("")}</div></div>`).join("");
 
@@ -1563,7 +1588,7 @@ function viewHome(){
 
   $("#view").innerHTML=`
   <div class="hero"><h1>Root Cause Analysis Toolkit</h1><p>Every problem-solving framework follows the same four stages. The <b>framework</b> gives you the roadmap; the <b>7 QC tools</b> expose the problem with data; the <b>root-cause methods</b> find why; and the <b>change tools</b> make the fix stick. Each tool asks you one question at a time and comes with a worked sample case: cracked J3 connector joints on a logging-tool PCBA.</p><div class="hcred"><span>Developed by <b>Soe Moe</b> · <a href="mailto:soe.moe@halliburton.com">soe.moe@halliburton.com</a></span><span>Course conductor: <b>Chang Keen Weng</b> (ACT, QC Tools)</span></div></div>
-  <div class="panel"><h2>How the frameworks and tools fit together</h2><p class="sub">Read across: each framework's phases line up with the same four stages. Read down: the tools that do the work in each stage.</p><div class="igwrap">${ig}</div></div>
+  <div class="panel"><h2>How the frameworks and tools fit together</h2><p class="sub"><span class="dsk">Read across: each framework's phases line up with the same four stages. Read down: the tools that do the work in each stage.</span><span class="mob">Every framework passes through the same four stages. Under each stage: what each framework calls it, and the tools that do the work.</span></p><div class="igwrap">${ig}</div>${igm}${legend}</div>
   <div class="panel"><h2>Four categories</h2><p class="sub">Categorize by the question the tool answers.</p><div class="cats">${cats}</div></div>
   <div class="panel"><h2>A typical investigation, linked end to end</h2><p class="sub">The sample case follows this chain. Open the tools in order to see how each output feeds the next.</p>${chain}</div>
   <div class="panel"><h2>Which framework?</h2><p class="sub">Choose one roadmap per problem.</p>${fwp}</div>
@@ -1579,6 +1604,7 @@ function renderSide(){
       const p=st&&st.started?stepsDone(t,st):null; const stx=!p?"":st.done?'<span class="st done">✓</span>':`<span class="st">${p.n}/${p.of}</span>`;
       s+=`<div class="ni${h==="tool/"+id?" on":""}" data-open="${id}"><span class="ic" style="background:${c.bg};color:${c.color}">${esc(t.icon)}</span>${esc(t.name)}${stx}</div>`; });
   });
+  s+=`<div class="sidefile"><button class="btn sm" onclick="document.getElementById('bExport').click()">Save all</button><button class="btn sm" onclick="document.getElementById('bImport').click()">Open file</button></div>`;
   $("#side").innerHTML=s;
 }
 function go(h){ location.hash = h ? "#/"+h : "#/"; }
