@@ -1,0 +1,1612 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RCA Toolkit</title>
+<style>
+:root{
+  --ink:#14213d; --ink2:#3e4a63; --mute:#6b7487; --line:#dce1e9; --line2:#eceff4;
+  --bg:#f3f5f8; --card:#fff; --acc:#2563eb; --acc-bg:#eaf1fe;
+  --ok:#15803d; --ok-bg:#e9f7ee; --bad:#c2410c; --bad-bg:#fdf0e8; --red:#dc2626;
+  --fw:#3046b8; --fw-bg:#eef1fd; --qc:#0f766e; --qc-bg:#e6f5f3; --rc:#b45309; --rc-bg:#fdf3e5; --sol:#7c3aed; --sol-bg:#f3edfe;
+  --sans:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif; --mono:"Cascadia Mono",Consolas,ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font:14px/1.5 var(--sans);color:var(--ink);background:var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--acc)}
+[hidden]{display:none!important}
+
+.top{position:sticky;top:0;z-index:30;background:var(--ink);color:#fff;display:flex;align-items:center;gap:12px;padding:8px 16px;min-height:54px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;cursor:pointer;white-space:nowrap}
+.brand .mk{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,#3b82f6,#0f766e);display:grid;place-items:center;font:700 12px var(--mono)}
+.brand small{display:block;font-weight:400;font-size:11px;opacity:.7}
+.sp{flex:1}
+.tb{background:transparent;border:1px solid rgba(255,255,255,.35);color:#fff;padding:6px 11px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.tb:hover{background:rgba(255,255,255,.12)}
+.menu{display:none}
+
+.app{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:calc(100vh - 54px)}
+.side{background:#fff;border-right:1px solid var(--line);padding:10px 8px 30px;position:sticky;top:54px;height:calc(100vh - 54px);overflow:auto}
+.nav-home{display:flex;gap:8px;align-items:center;padding:8px 10px;border-radius:7px;cursor:pointer;font-weight:600}
+.nav-home:hover,.ni:hover{background:var(--bg)}
+.nav-home.on,.ni.on{background:var(--acc-bg);color:#123c86}
+.ncat{margin:14px 10px 4px;font:700 10.5px var(--sans);letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.ncat i{width:9px;height:9px;border-radius:3px;display:inline-block}
+.ni{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:7px;cursor:pointer}
+.ni .ic{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;font-size:12px;font-weight:700;flex:none}
+.ni .st{margin-left:auto;font-size:10px;color:var(--mute)}
+.ni .st.done{color:var(--ok)}
+
+main{padding:18px 20px 40px;min-width:0}
+.wrap{max-width:1320px;margin:0 auto}
+
+/* ---------- home ---------- */
+.hero h1{margin:0 0 4px;font-size:24px}
+.hero p{margin:0 0 16px;color:var(--ink2);max-width:880px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:16px}
+.panel>h2{margin:0 0 4px;font-size:17px}
+.panel>.sub{margin:0 0 12px;color:var(--mute);font-size:13px}
+.ig{display:grid;grid-template-columns:120px repeat(4,minmax(0,1fr));gap:6px;align-items:stretch}
+.ig .ch{border-radius:8px;padding:10px;color:#fff;font-weight:700;font-size:13.5px;line-height:1.25;position:relative}
+.ig .ch small{display:block;font-weight:400;opacity:.85;font-size:11.5px;margin-top:2px}
+.ig .ch:after{content:"";position:absolute;right:-9px;top:50%;margin-top:-9px;border:9px solid transparent;border-left-color:inherit;border-right:0;z-index:2}
+.ig .ch.c1{background:#1e3a8a;border-color:#1e3a8a}.ig .ch.c2{background:#1d4ed8;border-color:#1d4ed8}.ig .ch.c3{background:#2563eb;border-color:#2563eb}.ig .ch.c4{background:#3b82f6;border-color:#3b82f6}
+.ig .ch.c4:after{display:none}
+.ig .rl{font-weight:700;font-size:12.5px;display:flex;align-items:center;padding:4px 6px;border-radius:7px;cursor:pointer}
+.ig .rl:hover{background:var(--fw-bg)}
+.ig .rl small{display:block;font-weight:400;color:var(--mute);font-size:11px}
+.ig .ph{background:var(--fw-bg);border:1px solid #cdd5f6;color:#1d2b7a;border-radius:7px;padding:7px 9px;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;align-items:center}
+.ig .ph:hover{border-color:var(--fw)}
+.ig .tcell{background:#fafbfd;border:1px dashed var(--line);border-radius:8px;padding:7px;display:flex;flex-wrap:wrap;gap:5px;align-content:flex-start}
+.chip{display:inline-flex;align-items:center;gap:5px;border:1px solid;border-radius:14px;padding:3px 9px;font-size:12px;font-weight:600;cursor:pointer;background:#fff;white-space:nowrap}
+.chip:hover{filter:brightness(.96);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.chip.fw{color:var(--fw);border-color:#c3ccf3;background:var(--fw-bg)}
+.chip.qc{color:var(--qc);border-color:#a9dcd5;background:var(--qc-bg)}
+.chip.rc{color:var(--rc);border-color:#f0cf9f;background:var(--rc-bg)}
+.chip.sol{color:var(--sol);border-color:#d6c3fb;background:var(--sol-bg)}
+.chip .n{font:700 10px var(--mono);opacity:.7}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:12.5px;color:var(--ink2)}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.cats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.catc{border-radius:10px;padding:12px 14px;border:1px solid;background:#fff}
+.catc h3{margin:0;font-size:15px}
+.catc .q{font-style:italic;font-size:13px;margin:2px 0 6px}
+.catc p{margin:0 0 8px;font-size:12.8px;color:var(--ink2)}
+.catc .chips{display:flex;flex-wrap:wrap;gap:5px}
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.chain .ar{color:var(--mute);font-weight:700}
+.chain .step{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
+.chain .step small{font-size:11px;color:var(--mute);max-width:130px;line-height:1.25}
+.pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 16px}
+.pick div{display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid var(--line2);padding:6px 2px;font-size:13px}
+.fwpick{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.fwpick div{border:1px solid #cdd5f6;background:var(--fw-bg);border-radius:9px;padding:10px 12px;font-size:12.8px;cursor:pointer}
+.fwpick div b{display:block;color:var(--fw);font-size:14px}
+
+/* ---------- tool view ---------- */
+.thead{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.thead .big{width:46px;height:46px;border-radius:11px;display:grid;place-items:center;font-size:20px;font-weight:800;flex:none}
+.thead h1{margin:0;font-size:22px;line-height:1.2}
+.thead .meta{color:var(--ink2);font-size:13.5px;margin-top:2px}
+.tag{display:inline-block;font:700 10.5px var(--sans);letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:10px;margin-right:6px;vertical-align:2px}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+.btn{border:1px solid #c3cad6;background:#fff;padding:7px 13px;border-radius:7px;cursor:pointer;font-weight:600;color:var(--ink)}
+.btn:hover{background:#f4f6f9}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.pri:hover{background:#1d4fc4}
+.btn.sm{padding:4px 10px;font-size:12.5px}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--mute)}
+.btn.ghost:hover{color:var(--ink);background:var(--bg)}
+.tgrid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px;align-items:start}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px}
+.guide{margin-bottom:14px}
+.guide summary{cursor:pointer;padding:11px 16px;font-weight:700;list-style:none;display:flex;align-items:center;gap:8px}
+.guide summary::-webkit-details-marker{display:none}
+.guide summary:before{content:"▸";color:var(--mute);transition:transform .15s}
+.guide[open] summary:before{transform:rotate(90deg)}
+.guide .gb{padding:0 16px 14px;font-size:13.3px;color:var(--ink2)}
+.guide .gb h4{margin:10px 0 4px;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--mute)}
+.guide ol,.guide ul{margin:0;padding-left:20px}
+.guide li{margin:2px 0}
+.guide .what{font-size:14px;color:var(--ink)}
+
+.chat{padding:14px 14px 6px}
+.chat h3{margin:0 0 10px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);display:flex;align-items:center;gap:8px}
+.chat h3 .prog{margin-left:auto;font:600 11.5px var(--sans);text-transform:none;letter-spacing:0}
+.msg{display:flex;gap:9px;margin-bottom:10px}
+.msg .av{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;font:700 11px var(--mono);color:#fff}
+.msg.bot .av{background:var(--ink)}
+.msg .bub{border-radius:4px 12px 12px 12px;padding:9px 12px;background:var(--bg);max-width:100%;min-width:0}
+.msg.bot .bub b.q{display:block}
+.msg .help{font-size:12.5px;color:var(--mute);margin-top:3px}
+.msg.user{justify-content:flex-end}
+.msg.user .bub{background:var(--acc-bg);border-radius:12px 4px 12px 12px;color:#102c62;position:relative;max-width:88%}
+.msg.user .edit{font-size:11.5px;color:var(--acc);cursor:pointer;margin-left:8px;font-weight:600;white-space:nowrap}
+.msg.user .bub ul{margin:0;padding-left:18px}
+.phase{display:inline-block;font:700 10.5px var(--mono);background:var(--fw);color:#fff;border-radius:4px;padding:1px 6px;margin-right:6px;vertical-align:1px}
+.sugg{margin-top:6px;display:flex;flex-wrap:wrap;gap:5px;align-items:center;font-size:12px;color:var(--mute)}
+.inbox{border:1.5px solid var(--acc);border-radius:10px;padding:10px;background:#fff;margin:2px 0 12px 37px}
+.inbox .inp,.inbox textarea,.inbox select{width:100%;border:1px solid #c6cdd8;border-radius:6px;padding:7px 9px;background:#fff}
+.inbox textarea{min-height:90px;resize:vertical}
+.inbox .inp:focus,.inbox textarea:focus,.inbox select:focus{outline:2px solid #a8c3f3;border-color:var(--acc)}
+.inbox .row{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.inbox .hint{font-size:11.5px;color:var(--mute);flex:1;min-width:140px}
+.choices{display:flex;flex-wrap:wrap;gap:6px}
+.choice{border:1.5px solid #c6cdd8;border-radius:8px;padding:7px 12px;background:#fff;cursor:pointer;font-weight:600;text-align:left}
+.choice:hover{border-color:var(--acc)}
+.choice.on{border-color:var(--acc);background:var(--acc-bg)}
+.choice small{display:block;font-weight:400;color:var(--mute);font-size:11.5px}
+.etbl{width:100%;border-collapse:collapse;font-size:13px}
+.etbl th{background:#f5f7fa;text-align:left;font-size:11.5px;color:var(--ink2);padding:5px 6px;border:1px solid var(--line2);white-space:nowrap}
+.etbl td{border:1px solid var(--line2);padding:2px}
+.etbl td input,.etbl td select{width:100%;border:1px solid transparent;border-radius:4px;padding:5px 6px;background:transparent;min-width:60px}
+.etbl td input:hover,.etbl td select:hover{border-color:#c6cdd8}
+.etbl td input:focus,.etbl td select:focus{outline:2px solid #a8c3f3;background:#fff}
+.etbl td.ro{padding:5px 8px;font-weight:600;background:#fafbfc}
+.etbl td.x{width:28px;text-align:center}
+.tscroll{overflow-x:auto}
+.xb{border:0;background:none;color:var(--mute);cursor:pointer;font-size:16px;line-height:1;padding:3px 6px}
+.xb:hover{color:var(--red)}
+.mt{width:100%;border-collapse:collapse;font-size:12.3px;margin-top:2px}
+.mt th,.mt td{border:1px solid #cfdcf3;padding:3px 6px;text-align:left;vertical-align:top}
+.mt th{background:#dce8fb;font-weight:600}
+.start{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 12px 37px}
+
+.rcol{position:sticky;top:70px}
+.out{padding:14px 16px 16px}
+.out h3{margin:0 0 10px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);display:flex;align-items:center;gap:8px}
+.empty{border:1.5px dashed var(--line);border-radius:10px;padding:40px 16px;text-align:center;color:var(--mute);font-size:13.5px}
+svg.chart{width:100%;height:auto;display:block}
+svg .grid line{stroke:#e8ebf0}
+svg .ax{stroke:#8b93a3;stroke-width:1}
+svg .tk{font-size:11px;fill:#5d6577}
+svg .al{font-size:11.5px;fill:#3e4a63;font-weight:600}
+svg text{font-family:var(--sans)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:8px;margin:10px 0}
+.kpi{border:1px solid var(--line);border-radius:8px;padding:7px 10px;background:#fafbfd}
+.kpi b{display:block;font-size:17px}
+.kpi span{font-size:11.5px;color:var(--mute)}
+.find{border-left:4px solid var(--acc);background:var(--acc-bg);padding:9px 12px;border-radius:0 8px 8px 0;margin-top:10px;font-size:13.3px;color:#14315f}
+.find.warn{border-color:var(--bad);background:var(--bad-bg);color:#6b2a06}
+.find.good{border-color:var(--ok);background:var(--ok-bg);color:#14532d}
+.find ul{margin:4px 0 0;padding-left:18px}
+.rt{width:100%;border-collapse:collapse;font-size:12.8px;margin-top:10px}
+.rt th,.rt td{border:1px solid var(--line2);padding:5px 8px;text-align:left;vertical-align:top}
+.rt th{background:#f5f7fa;font-size:11.5px;color:var(--ink2)}
+.rt td.n,.rt th.n{text-align:right;font-variant-numeric:tabular-nums}
+.rt tr.hi td{background:#fff8e6}
+.t5{text-decoration:line-through;letter-spacing:-1px;margin-right:4px}
+.tally{font-family:var(--mono);color:#334155;font-size:12px}
+.nextt{margin-top:12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px;color:var(--mute)}
+.svscroll{overflow-x:auto}
+.svscroll svg{min-width:var(--minw,0)}
+
+/* 5-why */
+.wchain{display:flex;flex-direction:column;align-items:stretch;gap:0}
+.wbox{border:1.5px solid var(--line);border-radius:9px;padding:8px 12px;background:#fff;position:relative}
+.wbox .lb{font:700 10.5px var(--mono);color:var(--mute);letter-spacing:.05em}
+.wbox.prob{border-color:#f3b4a0;background:#fff5f1}
+.wbox.root{border-color:#8fd0a8;background:var(--ok-bg)}
+.warr{text-align:center;color:var(--mute);font-size:12px;line-height:1.1;padding:3px 0}
+.warr b{display:block;font-size:15px}
+
+/* window grid */
+.wgrid{display:grid;grid-template-columns:110px repeat(3,minmax(0,1fr));gap:4px;font-size:12.5px}
+.wgrid .h{background:#f1f4f8;border-radius:6px;padding:6px 8px;font-weight:700;color:var(--ink2);font-size:12px}
+.wgrid .c{border-radius:7px;padding:7px 8px;min-height:78px;border:1.5px solid}
+.wgrid .c .L{font:800 15px var(--mono)}
+.wgrid .c .d{font-size:11px;opacity:.85}
+.wgrid .dot{display:inline-grid;place-items:center;min-width:20px;height:20px;border-radius:10px;background:#14213d;color:#fff;font:700 11px var(--mono);margin:3px 3px 0 0;padding:0 5px}
+.cA{background:#ecf8f0;border-color:#9fd8b2;color:#14532d}
+.cB{background:#fff6e5;border-color:#f3cf86;color:#6b4300}
+.cC{background:#eaf1fe;border-color:#a9c4f5;color:#173a7a}
+.cD{background:#fdeeee;border-color:#f3b0b0;color:#7a1414}
+.cell-badge{display:inline-block;font:800 12px var(--mono);border-radius:5px;padding:1px 7px;border:1.5px solid}
+
+.wtab{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px;table-layout:fixed}
+.wtab th{background:#eef1f5;color:#3e4a63;font-weight:600;padding:5px 6px;border:1px solid #c3cad5;text-align:center;line-height:1.25}
+.wtab td{border:1px solid #c3cad5;padding:6px 4px;vertical-align:top;height:78px;text-align:center}
+.wtab td .L{font:800 22px var(--sans);line-height:1.1;color:#1f2937}
+.wtab td .d{font-size:10.5px;color:#374151;opacity:.85;margin-bottom:2px}
+.wtab td.hit{box-shadow:inset 0 0 0 3px #dc2626}
+.wtab .vt{writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;padding:2px 0;white-space:nowrap}
+.wtab .corner{background:linear-gradient(to top right,#eef1f5 49.4%,#c3cad5 50%,#eef1f5 50.6%);text-align:left;font-weight:700}
+.kA{background:#bfe5c6;border-color:#7cc68b!important}.kB{background:#dde3da;border-color:#a9b5a4!important}.kC{background:#ddc9ee;border-color:#b69ad3!important}.kD{background:#f6c8a5;border-color:#e09a62!important}
+.cell-badge.kA,.cell-badge.kB,.cell-badge.kC,.cell-badge.kD{color:#1f2937}
+.mk{display:inline-block;margin:2px;padding:1px 7px;border-radius:9px;background:#14213d;color:#fff;font:700 10.5px var(--mono)}
+.mk.main{background:#dc2626}
+/* framework report */
+.fwrep{display:grid;gap:10px}
+.fwp{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.fwp .fh{display:flex;align-items:center;gap:8px;padding:7px 12px;background:var(--fw-bg);font-weight:700;color:#1d2b7a;font-size:13.5px}
+.fwp .fh .pc{margin-left:auto;font:600 11px var(--sans);color:var(--mute)}
+.fwp .fb{padding:6px 12px 10px;font-size:13px}
+.fwp .fb .qa{margin-top:6px}
+.fwp .fb .qa b{display:block;font-size:11.5px;color:var(--mute);font-weight:600}
+.fwp .fb .qa .v{white-space:pre-wrap}
+.fwp.empty-p .fh{background:#f4f5f8;color:var(--mute)}
+.pbar{display:flex;gap:3px;margin:4px 0 10px}
+.pbar span{flex:1;height:7px;border-radius:4px;background:#e3e7ee}
+.pbar span.on{background:var(--fw)}
+
+dialog#full{border:0;border-radius:12px;padding:0;width:min(1400px,96vw);max-height:94vh;box-shadow:0 20px 60px rgba(10,20,40,.35)}
+dialog#full::backdrop{background:rgba(15,25,45,.55)}
+dialog#full .fhd{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:2}
+dialog#full .svscroll svg{min-width:0}
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:8px;font-size:13.5px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:100}
+#toast.show{opacity:1}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.shake{animation:shake .25s 2}
+
+@media (max-width:1100px){ .tgrid{grid-template-columns:1fr} .rcol{position:static} .cats,.fwpick{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:820px){
+  .app{grid-template-columns:1fr} .side{position:fixed;left:0;top:54px;width:270px;z-index:25;transform:translateX(-100%);transition:transform .2s;box-shadow:4px 0 20px rgba(0,0,0,.12)}
+  .side.open{transform:none} .menu{display:inline-block}
+  .ig{grid-template-columns:90px repeat(4,minmax(150px,1fr));overflow-x:auto} .igwrap{overflow-x:auto}
+  .cats,.pick,.fwpick{grid-template-columns:1fr} main{padding:14px 12px 30px}
+  .inbox{margin-left:0}
+}
+@media print{
+  @page{size:A4;margin:12mm}
+  body{background:#fff;font-size:11pt}
+  .top,.side,.acts,.inbox,.start,.msg .edit,.sugg,.nextt,.tb,#toast,.btn{display:none!important}
+  .app{display:block} main{padding:0}
+  .tgrid{display:block} .rcol{position:static;margin-top:10px}
+  .card,.panel{border:0;box-shadow:none} .guide{display:block} .guide .gb{display:block}
+  .msg,.wbox,.fwp,svg,.rt tr,.catc{break-inside:avoid}
+  .chip{border-width:1px}
+  .ig .ch:after{display:none}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <button class="tb menu" id="bMenu" aria-label="Menu">☰</button>
+  <div class="brand" data-go="home"><div class="mk">RCA</div><div>Root Cause Analysis Toolkit<small>Frameworks · 7 QC tools · RCA methods</small></div></div>
+  <div class="sp"></div>
+  <button class="tb" id="bExport" title="Save all your entries to a file">Save all</button>
+  <button class="tb" id="bImport" title="Load entries from a file">Open</button>
+  <button class="tb" id="bPrint" title="Print or save as PDF">Print / PDF</button>
+</header>
+<div class="app">
+  <aside class="side" id="side"></aside>
+  <main><div class="wrap" id="view"></div></main>
+</div>
+<input type="file" id="fileIn" accept=".json,application/json" hidden>
+<div id="toast"></div>
+<dialog id="full"><div class="fhd"><b id="fullT"></b><button class="btn sm" data-act="closefull">Close</button></div><div id="fullB" class="out"></div></dialog>
+<script>
+"use strict";
+/* ===================== utilities ===================== */
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const clone = o => JSON.parse(JSON.stringify(o));
+const num = v => (v === "" || v === null || v === undefined) ? NaN : Number(String(v).trim());
+function parseNums(s){ if(Array.isArray(s)) return s.map(Number).filter(Number.isFinite);
+  return String(s||"").split(/[\s,;]+/).filter(x=>x!=="").map(Number).filter(Number.isFinite); }
+const sum = a => a.reduce((x,y)=>x+y,0);
+const mean = a => a.length ? sum(a)/a.length : NaN;
+function sd(a){ if(a.length<2) return NaN; const m=mean(a); return Math.sqrt(sum(a.map(x=>(x-m)**2))/(a.length-1)); }
+function fmtN(v){ if(!Number.isFinite(v)) return "–"; const a=Math.abs(v);
+  if(a>=1000) return v.toFixed(0); if(a>=100) return String(+v.toFixed(1)); if(a>=1) return String(+v.toFixed(2)); if(a===0) return "0"; return String(+v.toPrecision(3)); }
+const pct = (v,d=1) => Number.isFinite(v) ? (v*100).toFixed(d)+"%" : "–";
+function niceTicks(lo,hi,n=5){
+  if(!Number.isFinite(lo)||!Number.isFinite(hi)){ lo=0; hi=1; }
+  if(hi<=lo){ hi=lo+(Math.abs(lo)||1)*0.1; lo=lo-(Math.abs(lo)||1)*0.1; }
+  const st0=(hi-lo)/n, mag=10**Math.floor(Math.log10(st0)), r=st0/mag, step=(r<1.5?1:r<3?2:r<7?5:10)*mag;
+  const a=Math.floor(lo/step+1e-9)*step, b=Math.ceil(hi/step-1e-9)*step, t=[];
+  for(let v=a; v<=b+step*1e-6; v+=step) t.push(+v.toFixed(12));
+  return t.length>1 ? t : [a, a+step];
+}
+function wrap(s,n){ const w=String(s||"").split(/\s+/).filter(Boolean), out=[]; let l="";
+  w.forEach(x=>{ if((l+" "+x).trim().length>n && l){ out.push(l); l=x; } else l=(l+" "+x).trim(); });
+  if(l) out.push(l); return out.length?out:[""]; }
+function clip(lines,max){ if(lines.length<=max) return lines; const o=lines.slice(0,max); o[max-1]=o[max-1].replace(/.{0,2}$/,"")+"…"; return o; }
+const T = (x,y,s,a="") => `<text x="${x}" y="${y}" ${a}>${esc(s)}</text>`;
+const TL = (x,y,lines,lh,a="") => `<text x="${x}" y="${y}" ${a}>${lines.map((l,i)=>`<tspan x="${x}" dy="${i?lh:0}">${esc(l)}</tspan>`).join("")}</text>`;
+function rng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function normals(seed,n,m,s,dp){ const r=rng(seed), out=[]; while(out.length<n){ const u=Math.max(r(),1e-9), v=r(); out.push(+(m+s*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)).toFixed(dp)); } return out; }
+function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),2600); }
+const EMPTY = m => `<div class="empty">${m||"Your result builds here as you answer the questions."}</div>`;
+const rows = v => Array.isArray(v) ? v : [];
+const filled = r => Object.values(r||{}).some(x=>String(x??"").trim()!=="");
+const PAL = ["#2563eb","#f59e0b","#0f766e","#dc2626","#7c3aed","#0891b2","#65a30d","#db2777","#64748b","#ea580c"];
+
+/* ===================== registry ===================== */
+const CATS = {
+  fw: {name:"Problem-solving frameworks", short:"Framework", color:"var(--fw)", bg:"var(--fw-bg)",
+       q:"Which steps do we follow, in what order?",
+       desc:"Roadmaps that structure the whole investigation from problem to permanent fix. Pick one per problem; the tools below plug into its phases."},
+  qc: {name:"7 QC tools", short:"7 QC tool", color:"var(--qc)", bg:"var(--qc-bg)",
+       q:"What do the facts and data say?",
+       desc:"Ishikawa's basic tools for exposing the problem with data: where, how often, how big, and whether the process changed. Fishbone also starts the cause search."},
+  rc: {name:"Root-cause methods", short:"RCA method", color:"var(--rc)", bg:"var(--rc-bg)",
+       q:"Why did it really happen?",
+       desc:"Methods that drill from the symptom to the cause you can act on: a single chain (5-Why), combined causes (Fault tree), or people and standards (Window analysis)."},
+  sol: {name:"Solution & change tools", short:"Change tool", color:"var(--sol)", bg:"var(--sol-bg)",
+       q:"Will the fix be accepted and stick?",
+       desc:"Tools for deciding and implementing the countermeasure: weigh what pushes the change forward against what holds it back."}
+};
+const TOOLS = {}, TOOL_ORDER = [];
+function tool(t){ TOOLS[t.id]=t; TOOL_ORDER.push(t.id); }
+const chipOf = (id,extra="") => { const t=TOOLS[id]; return t ? `<span class="chip ${t.cat}" data-open="${id}" title="${esc(t.short)}">${esc(t.icon)} ${esc(t.name)}${extra}</span>` : ""; };
+
+/* ===================== chart frame ===================== */
+function plot(o){
+  const W=o.W||640, H=o.H||330, L=o.L??58, R=o.R??24, Tp=o.T??16, B=o.B??52, pw=W-L-R, ph=H-Tp-B;
+  const yt=o.yticks||niceTicks(o.ymin,o.ymax,5), y0=yt[0], y1=yt[yt.length-1];
+  const sy=v=>Tp+ph-(v-y0)/(y1-y0)*ph;
+  let sx, xt=null, bw=0;
+  if(o.cats){ bw=pw/Math.max(1,o.cats.length); sx=i=>L+bw*(i+.5); }
+  else { xt=o.xticks||niceTicks(o.xmin,o.xmax,6); const x0=o.xdom?o.xdom[0]:xt[0], x1=o.xdom?o.xdom[1]:xt[xt.length-1]; sx=v=>L+(v-x0)/(x1-x0)*pw; }
+  let g=`<g class="grid">`;
+  yt.forEach(v=>{ g+=`<line x1="${L}" x2="${L+pw}" y1="${sy(v)}" y2="${sy(v)}"/>`; });
+  g+=`</g>`;
+  yt.forEach(v=>{ g+=T(L-7,sy(v)+4,(o.yfmt||fmtN)(v),'text-anchor="end" class="tk"'); });
+  if(xt) xt.forEach(v=>{ g+=T(sx(v),Tp+ph+17,(o.xfmt||fmtN)(v),'text-anchor="middle" class="tk"'); });
+  if(o.cats) o.cats.forEach((c,i)=>{ g+=TL(sx(i),Tp+ph+16,clip(wrap(c,Math.max(5,Math.floor(bw/6.3))),2),12,'text-anchor="middle" class="tk"'); });
+  g+=`<line class="ax" x1="${L}" x2="${L+pw}" y1="${Tp+ph}" y2="${Tp+ph}"/><line class="ax" x1="${L}" x2="${L}" y1="${Tp}" y2="${Tp+ph}"/>`;
+  if(o.xlabel) g+=T(L+pw/2,H-5,o.xlabel,'text-anchor="middle" class="al"');
+  if(o.ylabel) g+=T(13,Tp+ph/2,o.ylabel,`text-anchor="middle" class="al" transform="rotate(-90 13 ${Tp+ph/2})"`);
+  return {W,H,L,R,T:Tp,B,pw,ph,sx,sy,bw,g,y0,y1,xt,open:`<svg viewBox="0 0 ${W} ${H}" class="chart" role="img" xmlns="http://www.w3.org/2000/svg">`};
+}
+const kpi = (v,l) => `<div class="kpi"><b>${v}</b><span>${esc(l)}</span></div>`;
+function miniTable(cols, data){ return `<table class="rt"><tr>${cols.map(c=>`<th${c.n?' class="n"':""}>${esc(c.l)}</th>`).join("")}</tr>${data.map(r=>`<tr${r._hi?' class="hi"':""}>${cols.map(c=>`<td${c.n?' class="n"':""}>${c.html?r[c.k]:esc(r[c.k])}</td>`).join("")}</tr>`).join("")}</table>`; }
+
+/* ===================== FRAMEWORKS ===================== */
+function fwReport(t,a){
+  const steps=vis(t,a), any=steps.some(s=>!isEmptyVal(s,a[s.id],a));
+  if(!any) return EMPTY("Your phase-by-phase report builds here as you answer.");
+  let bar=`<div class="pbar">`, body=`<div class="fwrep">`;
+  t.phases.forEach(p=>{
+    const ss=steps.filter(s=>s.phase===p.k), done=ss.filter(s=>!isEmptyVal(s,a[s.id],a));
+    bar+=`<span class="${done.length&&done.length===ss.filter(s=>!s.optional).length?"on":""}" title="${esc(p.k+" · "+p.n)}"></span>`;
+    const tools=[...new Set(ss.flatMap(s=>s.tools||[]))];
+    body+=`<div class="fwp${done.length?"":" empty-p"}"><div class="fh"><span class="phase">${esc(p.k)}</span>${esc(p.n)}<span class="pc">${done.length}/${ss.length}</span></div><div class="fb">`;
+    body+= done.length ? done.map(s=>`<div class="qa"><b>${esc(s.label||qText(s,a))}</b><div class="v">${fmtAns(s,a[s.id],a)}</div></div>`).join("") : `<div style="color:var(--mute);font-size:12.5px;margin-top:4px">${esc(p.d)}</div>`;
+    if(tools.length) body+=`<div class="sugg">Tools: ${tools.map(x=>chipOf(x)).join("")}</div>`;
+    body+=`</div></div>`;
+  });
+  return bar+`</div>`+body+`</div>`;
+}
+function fwTool(o){ tool(Object.assign({cat:"fw", resultLabel:"Phase report", render(a){ return fwReport(this,a); }}, o)); }
+const CM_COLS=[{k:"a",l:"Action",w:220},{k:"o",l:"Owner",w:90},{k:"d",l:"Due",w:70},{k:"s",l:"Status",type:"select",opts:["","Open","In progress","Done"]}];
+
+/* ---------- EAS ---------- */
+fwTool({id:"eas", icon:"E", name:"EAS", intro:"Let's work the problem with EAS: Expose, Analyze, Solve.",
+  short:"Expose the problem, Analyze the problem, Solve the problem: a simple three-stage roadmap for everyday problems.",
+  phases:[{k:"E",n:"Expose the problem",d:"Make the problem visible and measurable."},{k:"A",n:"Analyze the problem",d:"Find and verify the root cause."},{k:"S",n:"Solve the problem",d:"Fix it, prove the fix, and standardize."}],
+  guide:{what:"A three-stage problem-solving roadmap that is easy for any team to remember and follow.",
+    when:["Everyday shop-floor and process problems.","When the team is new to structured problem solving.","When a full 8D or DMAIC would be too heavy."],
+    steps:["<b>Expose:</b> describe the problem with facts and data; contain it if customers are at risk.","<b>Analyze:</b> list possible causes, then find and verify the root cause.","<b>Solve:</b> implement countermeasures, show they work, and standardize them."],
+    tips:["EAS has no named 'verify' step: build it into Solve, or the fix may not be proven.","Use the 7 QC tools in Expose, the root-cause methods in Analyze."]},
+  related:["checksheet","pareto","fivewhy","forcefield"],
+  sampleNote:"The J3 cracked-joint problem worked through EAS.",
+  steps:[
+    {id:"e_prob",phase:"E",label:"Problem",q:"Describe the problem: what, where, when, and how many.",type:"textarea",tools:["checksheet","pareto"]},
+    {id:"e_data",phase:"E",label:"Data",q:"What data shows how big the problem is and where it concentrates?",type:"textarea",tools:["pareto","stratification","controlchart"]},
+    {id:"e_impact",phase:"E",label:"Impact",q:"What is the impact (customer, cost, safety)?",type:"text",optional:1},
+    {id:"e_contain",phase:"E",label:"Containment",q:"What have you done to protect the customer during the investigation?",type:"textarea",optional:1},
+    {id:"a_causes",phase:"A",label:"Possible causes",q:"List the possible causes you considered.",type:"list",tools:["fishbone","flowchart"]},
+    {id:"a_root",phase:"A",label:"Root cause",q:"What is the verified root cause?",type:"textarea",tools:["fivewhy","window","fta"]},
+    {id:"a_verify",phase:"A",label:"Verification",q:"How did you verify it?",type:"textarea",tools:["scatter","stratification"]},
+    {id:"s_cm",phase:"S",label:"Countermeasures",q:"What countermeasures will you put in place?",type:"table",cols:CM_COLS,tools:["forcefield","window"]},
+    {id:"s_result",phase:"S",label:"Result",q:"What result shows the fix works?",type:"textarea",tools:["controlchart","pareto"]},
+    {id:"s_std",phase:"S",label:"Standardized",q:"What was standardized so the fix stays (WI, FMEA, control plan, training)?",type:"list"}
+  ],
+  sample:{e_prob:"J3 connector open / cracked solder joint is the top final-test failure: 23 of 47 failures in week 44 (49%), rising from Wednesday.",
+    e_data:"Check sheet and Pareto: J3 = 49% of failures. Stratification: 21 of 23 J3 failures from night-shift operator D (20% rate vs under 1% for others).",
+    e_impact:"Rework cost, schedule risk, and two field returns for intermittent J3 opens.",
+    e_contain:"100% J3 wiggle test on WIP and finished stock; 4 more suspects quarantined.",
+    a_causes:["No back-support fixture at night-shift bench 2","Operator not trained on WI step 14","Thin solder fillet","Final test misses intermittent opens"],
+    a_root:"Board flex during J3 mating without the support fixture. The operator was transferred without line-specific WI training, and fixture use relies on memory.",
+    a_verify:"Strain gauge: 1,100 µε without fixture vs 250 µε with. 3 boards mated without fixture cracked after 200 thermal cycles; 0 of 3 with fixture.",
+    s_cm:[{a:"Fixture at bench 2 + shadow board",o:"Mfg Eng",d:"Wk 46",s:"Done"},{a:"Training sign-off in line-transfer checklist",o:"Prod Supv",d:"Wk 47",s:"In progress"},{a:"Fixture interlock + WI photo",o:"Mfg Eng",d:"Wk 48",s:"Open"}],
+    s_result:"J3 failures fell from 23/week to 1 in weeks 47–50; idle-current control chart back in control.",
+    s_std:["WI step 14 rev D with photo","Line-transfer checklist rev B","PFMEA updated: flex at mating, detection by wiggle test"]}
+});
+
+/* ---------- PDCA ---------- */
+fwTool({id:"pdca", icon:"↻", name:"PDCA", intro:"Let's run a Plan–Do–Check–Act cycle.",
+  short:"Plan, Do, Check, Act: a short improvement cycle you repeat until the target is met.",
+  phases:[{k:"P",n:"Plan",d:"Understand the problem and cause; set a target and plan."},{k:"D",n:"Do",d:"Implement the plan, ideally as a small pilot."},{k:"C",n:"Check",d:"Compare the results with the target."},{k:"A",n:"Act",d:"Standardize what worked, or adjust and run another cycle."}],
+  guide:{what:"The Deming cycle. Each turn of the wheel tests one change on a small scale, learns from the result, and either standardizes it or tries again.",
+    when:["Small to medium improvements.","When you want to test an idea quickly before rolling it out.","As the continuous-improvement loop after a bigger project."],
+    steps:["<b>Plan:</b> define the problem, the target, the root cause and the actions.","<b>Do:</b> carry out the plan, preferably as a pilot.","<b>Check:</b> measure the result against the target.","<b>Act:</b> standardize if it worked; otherwise adjust and start the next cycle."],
+    tips:["Most teams under-invest in Plan. A good root cause there saves cycles later.","Check with data, not impressions."]},
+  related:["pareto","fishbone","controlchart"],
+  sampleNote:"A PDCA pilot of the J3 fixture interlock on night shift.",
+  steps:[
+    {id:"p_prob",phase:"P",label:"Problem / current state",q:"What is the problem and the current state?",type:"textarea",tools:["checksheet","pareto"]},
+    {id:"p_target",phase:"P",label:"Target",q:"What is the target, and by when?",type:"text"},
+    {id:"p_cause",phase:"P",label:"Root cause",q:"What is the root cause?",type:"textarea",tools:["fishbone","fivewhy"]},
+    {id:"p_plan",phase:"P",label:"Action plan",q:"What is the plan?",type:"table",cols:CM_COLS,tools:["forcefield"]},
+    {id:"d_done",phase:"D",label:"Implemented",q:"What was implemented or piloted, where and when?",type:"textarea"},
+    {id:"d_issues",phase:"D",label:"Issues during Do",q:"Any problems or deviations during implementation?",type:"textarea",optional:1},
+    {id:"c_result",phase:"C",label:"Results vs target",q:"What are the results compared with the target?",type:"textarea",tools:["controlchart","pareto","histogram"]},
+    {id:"c_met",phase:"C",label:"Target met?",q:"Was the target met?",type:"choice",opts:[["yes","Yes"],["partly","Partly"],["no","No"]]},
+    {id:"a_act",phase:"A",label:"Decision",q:"What do you do next?",type:"choice",opts:[["std","Standardize and roll out"],["adjust","Adjust and run another cycle"],["stop","Abandon this change"]]},
+    {id:"a_std",phase:"A",label:"Standardized / next cycle",q:a=>a.a_act==="adjust"?"What will you change in the next cycle?":"What will be standardized, and where else does it apply?",type:"list"}
+  ],
+  sample:{p_prob:"J3 cracked joints: 23 per week at final test, concentrated on night shift where fixture use is inconsistent.",
+    p_target:"Fewer than 2 J3 failures per week by week 48",
+    p_cause:"Fixture use depends on memory; bench 2 had no fixture and the transferred operator wasn't trained.",
+    p_plan:[{a:"Pilot quick-clamp fixture with presence interlock on night-shift bench 2",o:"Mfg Eng",d:"Wk 46",s:"Done"},{a:"Brief night shift with FA crack photos",o:"Prod Supv",d:"Wk 46",s:"Done"}],
+    d_done:"Interlock fixture piloted on bench 2, night shift, weeks 46–47 (210 boards).",
+    d_issues:"Clamp sensor needed re-positioning on day 2; cycle time +15 s.",
+    c_result:"0 J3 failures on 210 pilot boards (was 20% for this bench). Day shift unchanged at under 1%.",
+    c_met:"yes", a_act:"std",
+    a_std:["Roll out interlock fixtures to all 4 cable benches","WI step 14 rev D","Apply same fixture to J5 connector on sister PCBA"]}
+});
+
+/* ---------- DMAIC ---------- */
+fwTool({id:"dmaic", icon:"Σ", name:"DMAIC", intro:"Let's work through DMAIC: Define, Measure, Analyze, Improve, Control.",
+  short:"Define, Measure, Analyze, Improve, Control: the Six Sigma roadmap for chronic, data-heavy problems.",
+  phases:[{k:"D",n:"Define",d:"Problem, scope, CTQ metric, goal and team."},{k:"M",n:"Measure",d:"Baseline the metric and check the measurement system."},{k:"A",n:"Analyze",d:"Identify and verify the root causes (Xs)."},{k:"I",n:"Improve",d:"Develop, pilot and implement solutions."},{k:"C",n:"Control",d:"Sustain the gain with a control plan."}],
+  guide:{what:"A data-driven improvement roadmap. It insists on measuring the baseline and proving causes statistically before changing the process.",
+    when:["Chronic problems where the cause is unclear.","Processes with plenty of measurable data.","When the gain must be sustained and audited (control plan)."],
+    steps:["<b>Define:</b> problem statement, scope, the CTQ metric (Y), goal, team.","<b>Measure:</b> baseline Y with data; confirm the measurement system is reliable.","<b>Analyze:</b> list candidate causes (Xs) and prove which ones drive Y.","<b>Improve:</b> choose, pilot and implement solutions; confirm the improvement.","<b>Control:</b> control plan, monitoring, reaction plan and handover."],
+    tips:["Don't skip the measurement-system check; bad data leads to wrong causes.","The control plan is what makes the gain last."]},
+  related:["histogram","controlchart","scatter"],
+  sampleNote:"The 5 V rail undervoltage failure (#2 on the Pareto) as a DMAIC project.",
+  steps:[
+    {id:"d_prob",phase:"D",label:"Problem statement",q:"What is the problem statement?",type:"textarea",tools:["pareto"]},
+    {id:"d_scope",phase:"D",label:"Scope",q:"What is in and out of scope?",type:"text"},
+    {id:"d_ctq",phase:"D",label:"CTQ metric (Y)",q:"What is the critical-to-quality metric (Y) you will improve?",type:"text"},
+    {id:"d_goal",phase:"D",label:"Goal",q:"What is the goal, and by when?",type:"text"},
+    {id:"d_team",phase:"D",label:"Team",q:"Who is on the team?",type:"list",optional:1,tools:["flowchart"]},
+    {id:"m_base",phase:"M",label:"Baseline",q:"What is the baseline performance of Y, from data?",type:"textarea",tools:["histogram","controlchart","checksheet"]},
+    {id:"m_msa",phase:"M",label:"Measurement system",q:"Is the measurement system trustworthy?",type:"choice",opts:[["ok","Yes, checked (Gauge R&R or equivalent)"],["no","No, needs fixing first"],["unk","Not yet checked"]]},
+    {id:"a_x",phase:"A",label:"Candidate causes (Xs)",q:"List the candidate causes (Xs).",type:"list",tools:["fishbone","stratification"]},
+    {id:"a_root",phase:"A",label:"Verified root causes",q:"Which causes were verified, and with what evidence?",type:"textarea",tools:["scatter","fivewhy","fta"]},
+    {id:"i_sol",phase:"I",label:"Solutions",q:"What solutions will you implement?",type:"table",cols:CM_COLS,tools:["forcefield"]},
+    {id:"i_pilot",phase:"I",label:"Pilot result",q:"What did the pilot or confirmation run show?",type:"textarea",tools:["histogram"]},
+    {id:"c_plan",phase:"C",label:"Control plan",q:"What will be monitored, how, and what is the reaction plan?",type:"table",tools:["controlchart"],
+      cols:[{k:"w",l:"What is monitored",w:150},{k:"m",l:"Method / frequency",w:130},{k:"r",l:"Reaction plan",w:170},{k:"o",l:"Owner",w:80}]},
+    {id:"c_hand",phase:"C",label:"Handover",q:"Who owns the process now, and what are the lessons learned?",type:"textarea",optional:1}
+  ],
+  sample:{d_prob:"5 V rail undervoltage is the #2 final-test failure (9 per week). Rail mean sits close to the lower limit.",
+    d_scope:"Power-supply section of the logging-tool PCBA, line 2. Out: field units.",
+    d_ctq:"5 V rail voltage at final test (spec 4.90–5.10 V); Cpk",
+    d_goal:"Cpk ≥ 1.33 and 0 undervoltage failures by end of Q1",
+    d_team:["Soe (Engineering, lead)","Test engineer","Quality / Reliability","PCB technician"],
+    m_base:"80 boards: mean 4.955 V, sd 0.023 V, Cp 1.47 but Cpk 0.79: off-centre toward the lower limit.",
+    m_msa:"ok",
+    a_x:["Feedback resistor tolerance","Regulator lot","Load during test","Test fixture contact resistance","Trace IR drop"],
+    a_root:"Regression on 30 boards: feedback-resistor value explains 70% of rail variation (r = 0.84). Design uses 1% resistors with the nominal set point 0.6% low.",
+    i_sol:[{a:"Change feedback resistor to set rail at 5.00 V nominal (ECO)",o:"Design Eng",d:"Jan",s:"Done"},{a:"Tighten resistor tolerance to 0.5%",o:"Design Eng",d:"Jan",s:"Done"}],
+    i_pilot:"50 pilot boards: mean 5.002 V, sd 0.018 V, Cpk 1.81. No undervoltage failures.",
+    c_plan:[{w:"5 V rail at final test",m:"I-MR chart, every board",r:"Out-of-control point: hold lot, check resistor lot and fixture",o:"Test Eng"},{w:"Feedback resistor lot",m:"Incoming CoC check",r:"Reject lot outside 0.5%",o:"Quality"}],
+    c_hand:"Process owned by Test Engineering. Lesson: check nominal set point against spec centre at design review."}
+});
+
+/* ---------- 8D ---------- */
+fwTool({id:"8d", icon:"8D", name:"8D", intro:"Let's work through the Eight Disciplines (8D).",
+  short:"Eight disciplines from team formation to closure: the standard for customer complaints and field failures.",
+  phases:[{k:"D0",n:"Prepare",d:"Decide if an 8D is needed; emergency response."},{k:"D1",n:"Team",d:"Form a cross-functional team."},{k:"D2",n:"Describe the problem",d:"Facts: what, where, when, how many (Is / Is not)."},{k:"D3",n:"Containment",d:"Protect the customer now."},{k:"D4",n:"Root cause",d:"Root cause of occurrence and of escape, verified."},{k:"D5",n:"Permanent corrective actions",d:"Choose and verify the fixes."},{k:"D6",n:"Implement & validate",d:"Put the fixes in place and prove they work."},{k:"D7",n:"Prevent recurrence",d:"Fix the system: FMEA, standards, similar products."},{k:"D8",n:"Close & recognize",d:"Close the 8D and recognize the team."}],
+  guide:{what:"A disciplined, team-based method that combines immediate containment with permanent correction and systemic prevention. It produces a formal report customers expect.",
+    when:["Customer complaints and field failures.","Escapes, where the defect should have been caught.","When a formal, auditable report is needed."],
+    steps:["<b>D0</b> Prepare and respond to the emergency.","<b>D1</b> Form the team.","<b>D2</b> Describe the problem (Is / Is not).","<b>D3</b> Contain it.","<b>D4</b> Find and verify the root cause of occurrence and of escape.","<b>D5</b> Choose permanent corrective actions.","<b>D6</b> Implement and validate them.","<b>D7</b> Prevent recurrence across the system.","<b>D8</b> Close and recognize the team."],
+    tips:["D4 needs two root causes: why it happened, and why it wasn't detected.","D3 containment is temporary; don't close the 8D on it.","D7 is where the system changes: FMEA, standards, and similar products."]},
+  related:["fishbone","fivewhy","window","fta"],
+  sampleNote:"Customer field return: intermittent J3 open on a logging tool.",
+  steps:[
+    {id:"d0",phase:"D0",label:"Need and emergency response",q:"Why is an 8D needed, and what emergency response was taken?",type:"textarea"},
+    {id:"d1",phase:"D1",label:"Team",q:"Who is on the team?",type:"table",cols:[{k:"n",l:"Name",w:120},{k:"r",l:"Role / department",w:160}]},
+    {id:"d2",phase:"D2",label:"Problem statement",q:"Describe the problem: what failed, on which product, how it was found.",type:"textarea",tools:["flowchart","checksheet","pareto"]},
+    {id:"d2is",phase:"D2",label:"Is / Is not",q:"Complete the Is / Is-not comparison.",type:"table",fixed:1,help:"'Is not' is where it could have happened but didn't. The difference points to the cause.",
+      def:()=>[{dim:"What"},{dim:"Where"},{dim:"When"},{dim:"How many"}],tools:["stratification"],
+      cols:[{k:"dim",l:"",ro:1},{k:"is",l:"Is",w:200},{k:"not",l:"Is not",w:200}]},
+    {id:"d3",phase:"D3",label:"Containment",q:"What containment actions protect the customer?",type:"table",
+      cols:[{k:"a",l:"Action",w:200},{k:"q",l:"Scope / quantity",w:110},{k:"o",l:"Owner",w:80},{k:"e",l:"Effective?",type:"select",opts:["","Yes","No","Checking"]}]},
+    {id:"d4occ",phase:"D4",label:"Root cause of occurrence",q:"What is the root cause of occurrence (why it happened)?",type:"textarea",tools:["fishbone","fivewhy","fta","window"]},
+    {id:"d4esc",phase:"D4",label:"Root cause of escape",q:"What is the root cause of escape (why it wasn't detected)?",type:"textarea",tools:["flowchart","fivewhy"]},
+    {id:"d4ver",phase:"D4",label:"Verification",q:"How were the root causes verified?",type:"textarea",tools:["scatter","stratification"]},
+    {id:"d5",phase:"D5",label:"Permanent corrective actions",q:"Which permanent corrective actions were chosen?",type:"table",tools:["forcefield"],
+      cols:[{k:"a",l:"Action",w:220},{k:"f",l:"Addresses",type:"select",opts:["","Occurrence","Escape"]},{k:"v",l:"Verified by",w:150}]},
+    {id:"d6",phase:"D6",label:"Implementation & validation",q:"How were the actions implemented, and what data validates them?",type:"textarea",tools:["controlchart","pareto"]},
+    {id:"d7",phase:"D7",label:"Prevent recurrence",q:"What systemic changes prevent recurrence (FMEA, standards, similar products, lessons)?",type:"list"},
+    {id:"d8",phase:"D8",label:"Closure",q:"Closure: customer agreement, sign-off, team recognition.",type:"textarea"}
+  ],
+  sample:{d0:"Customer field return: intermittent loss of sensor data on a logging tool, traced to J3 on the PCBA. Spare tools swapped on site; 8D opened because of field impact and 23 in-house failures that week.",
+    d1:[{n:"Soe",r:"Engineering (8D lead)"},{n:"—",r:"Quality / Reliability"},{n:"—",r:"Manufacturing Engineering"},{n:"—",r:"PCB Technician"},{n:"—",r:"Production supervisor (night)"}],
+    d2:"Intermittent open at J3 pins 3–6 on the logging-tool PCBA. Found as a field data dropout and at final test (23 boards in week 44).",
+    d2is:[{dim:"What",is:"Cracked solder joints at J3 pins 3–6",not:"Other connectors (J1, J2, J5) or other joints"},{dim:"Where",is:"Night-shift cable bench 2",not:"Day-shift benches 1 and 3"},{dim:"When",is:"From Wed week 44 (operator D's first week on the bench)",not:"Before week 44"},{dim:"How many",is:"21 of 105 boards by operator D (20%)",not:"Other operators: 2 of 348 (under 1%)"}],
+    d3:[{a:"100% J3 wiggle continuity test on WIP and stock",q:"312 boards",o:"Test Eng",e:"Yes"},{a:"Quarantine and rework suspect boards",q:"4 found",o:"Quality",e:"Yes"},{a:"Field advisory to check J3 on tools built in wk 44–45",q:"6 tools",o:"Service",e:"Checking"}],
+    d4occ:"Board flex during J3 mating without the back-support fixture. Bench 2 had no fixture; operator D transferred without line-specific WI training. The line-transfer process has no training sign-off step.",
+    d4esc:"Final test checks J3 continuity with the board static; an intermittent crack can pass. Visual inspection only checks seating.",
+    d4ver:"Strain gauge 1,100 vs 250 µε; cracks reproduced on 3 of 3 boards mated without fixture after 200 thermal cycles, 0 of 3 with fixture. Stratification: 21 of 23 failures from operator D.",
+    d5:[{a:"Interlock fixtures at all cable benches",f:"Occurrence",v:"Pilot: 0 of 210 failures"},{a:"Training sign-off in line-transfer checklist",f:"Occurrence",v:"Audit of next 3 transfers"},{a:"J3 wiggle test added to final test",f:"Escape",v:"Detects seeded cracked boards 5 of 5"}],
+    d6:"All benches fitted by week 48. J3 failures: 23/week before, 1 in weeks 47–50 (unrelated cause). Wiggle test caught all 5 seeded boards in validation.",
+    d7:["PFMEA: added 'board flex at connector mating', detection = wiggle test","Line-transfer checklist rev B (applies to all lines)","Fixture requirement added to J5 mating on sister PCBA","Lesson shared at engineering forum"],
+    d8:"Customer accepted the 8D on 2 Dec. Team recognized at the monthly quality review."}
+});
+
+/* ---------- BS EN 62740 (IEC 62740) ---------- */
+fwTool({id:"bs62740", icon:"BS", name:"BS EN 62740 RCA", intro:"Let's run a root cause analysis following the BS EN 62740 (IEC 62740) process.",
+  short:"The international standard RCA process: Initiation, Establishing facts, Analysis, Validation, Presentation of results.",
+  phases:[{k:"1",n:"Initiation",d:"Decide the RCA is warranted; set scope, depth and team."},{k:"2",n:"Establishing facts",d:"Gather evidence and build the sequence of events."},{k:"3",n:"Analysis",d:"Choose a technique; identify causal factors and root causes."},{k:"4",n:"Validation",d:"Prove the identified causes explain the event."},{k:"5",n:"Presentation of results",d:"Report findings and recommendations; hand actions over."}],
+  guide:{what:"BS EN 62740:2015 is the UK adoption of IEC 62740, the international standard for root cause analysis. It defines the steps an RCA process should include and describes RCA techniques with their strengths and limitations. It covers events that have already occurred (a 'focus event'), most often failures and incidents.",
+    when:["Serious field failures, safety incidents or audit findings that need a defensible, documented investigation.","When you need to show the investigation followed a recognised standard.","As the investigation half of a CAPA, 8D or FRACAS record."],
+    steps:["<b>Initiation:</b> decide whether the event warrants an RCA; define scope and depth; appoint the team.","<b>Establishing facts:</b> collect physical evidence, data, records and interviews; build the timeline.","<b>Analysis:</b> select a suitable technique and work from the event back to causal factors and root causes.","<b>Validation:</b> confirm the causes are supported by evidence and actually explain the event.","<b>Presentation of results:</b> report findings and recommendations to whoever decides on actions."],
+    tips:["The standard stops at recommendations: implementing and verifying actions belongs to your CAPA / 8D process.","Validation is a separate stage: prove the cause before anyone acts on it.","It is explicitly not about assigning blame or liability.","It includes guidance on analysing human performance; Window analysis fits there."]},
+  related:["fta","fishbone","fivewhy","window"],
+  sampleNote:"The J3 field return investigated to the BS EN 62740 process; actions handed to the 8D.",
+  steps:[
+    {id:"i_event",phase:"1",label:"Focus event",q:"What is the focus event (what happened, where, when)?",type:"textarea"},
+    {id:"i_why",phase:"1",label:"Why an RCA",q:"Why does this event warrant an RCA?",type:"textarea",help:"e.g. safety, customer impact, cost, recurrence, regulatory or contractual requirement."},
+    {id:"i_scope",phase:"1",label:"Scope and depth",q:"What is the scope and depth of the analysis, and any constraints?",type:"textarea"},
+    {id:"i_team",phase:"1",label:"Team",q:"Who is on the analysis team, and who is the sponsor?",type:"table",cols:[{k:"n",l:"Name",w:120},{k:"r",l:"Role in RCA",w:160}]},
+    {id:"f_evid",phase:"2",label:"Evidence gathered",q:"What evidence was gathered?",type:"table",tools:["checksheet","flowchart"],help:"Physical parts, data and records, people (interviews), position or condition.",
+      cols:[{k:"e",l:"Evidence",w:200},{k:"t",l:"Type",type:"select",opts:["","Physical","Data / record","People / interview","Position / condition"]},{k:"s",l:"Source / ref.",w:120}]},
+    {id:"f_time",phase:"2",label:"Sequence of events",q:"Build the sequence of events leading to the focus event.",type:"table",tools:["controlchart","stratification"],
+      cols:[{k:"w",l:"When",w:90},{k:"e",l:"Event / condition",w:240},{k:"s",l:"Evidence",w:110}]},
+    {id:"a_tech",phase:"3",label:"Technique",q:"Which analysis technique fits this event?",type:"choice",opts:[["why","5-Why / why-because chain"],["fish","Fishbone (Ishikawa)"],["fta","Fault tree analysis"],["ecf","Events and causal-factor charting"],["barrier","Barrier analysis"],["change","Change analysis (what was different?)"],["other","Other / combination"]],
+      optHelp:{why:"One clear causal chain",fish:"Many possible causes to explore",fta:"Combined causes, AND/OR logic",ecf:"Complex sequence of events",barrier:"Which defences failed",change:"Worked before, fails now"},tools:["fivewhy","fishbone","fta"]},
+    {id:"a_cf",phase:"3",label:"Causal factors",q:"What causal factors contributed to the event?",type:"list"},
+    {id:"a_root",phase:"3",label:"Root causes",q:"What are the root causes?",type:"textarea",tools:["fivewhy","fta"]},
+    {id:"a_hum",phase:"3",label:"Human performance",q:"Were human-performance factors involved? Describe them without blame.",type:"textarea",optional:1,tools:["window"]},
+    {id:"v_how",phase:"4",label:"How validated",q:"How were the causes validated against the evidence?",type:"textarea",tools:["scatter","stratification"],help:"e.g. reproduction, test, comparison with a known-good, data analysis."},
+    {id:"v_ok",phase:"4",label:"Validation result",q:"Do the validated causes fully explain the focus event?",type:"choice",opts:[["yes","Yes, fully explained"],["partly","Partly: some uncertainty remains"],["no","No: return to Establishing facts / Analysis"]]},
+    {id:"p_sum",phase:"5",label:"Findings",q:"Summarise the findings for the report.",type:"textarea"},
+    {id:"p_rec",phase:"5",label:"Recommendations",q:"What do you recommend, and which cause does each address?",type:"table",tools:["forcefield"],
+      cols:[{k:"r",l:"Recommendation",w:220},{k:"c",l:"Addresses cause",w:150},{k:"t",l:"To (decision owner)",w:110}]},
+    {id:"p_hand",phase:"5",label:"Handed over to",q:"Where will the actions be implemented and tracked?",type:"text",ph:"e.g. 8D-2026-041 / CAPA-1187"}
+  ],
+  sample:{i_event:"Field return: intermittent loss of sensor data on a logging tool during a customer job (week 45). Traced to an intermittent open at J3 on the PCBA.",
+    i_why:"Customer impact and non-productive time; the same failure mode was the top in-house failure in week 44, so recurrence is likely.",
+    i_scope:"PCBA assembly and test at the Singapore line, weeks 40–46. Depth: to the systemic cause in the build and transfer processes. Excludes supplier connector design.",
+    i_team:[{n:"Soe",r:"Lead investigator (Engineering)"},{n:"—",r:"Quality / Reliability"},{n:"—",r:"PCB Technician (FA)"},{n:"—",r:"Sponsor: Operations manager"}],
+    f_evid:[{e:"Returned PCBA, J3 cross-section",t:"Physical",s:"FA-2026-118"},{e:"Final-test failure log weeks 40–46",t:"Data / record",s:"MES export"},{e:"Training records, line-transfer checklist",t:"Data / record",s:"HR / LMS"},{e:"Interviews with night-shift operators",t:"People / interview",s:"Notes 12 Nov"},{e:"Bench 2 had no back-support fixture",t:"Position / condition",s:"Photo, floor walk"}],
+    f_time:[{w:"Wk 43",e:"Operator D transferred from another line; no line-specific WI training",s:"Transfer record"},{w:"Wk 44 Wed",e:"J3 failures at final test jump from 1–2/day to 6–7/day",s:"Check sheet"},{w:"Wk 44",e:"Board built on bench 2 without fixture passes static final test",s:"Test log"},{w:"Wk 45",e:"Intermittent open in the field",s:"Field report"}],
+    a_tech:"why",
+    a_cf:["Board flexed during J3 mating","No fixture at night-shift bench 2","Operator not trained on WI step 14","Final test checks J3 statically"],
+    a_root:"Occurrence: the line-transfer process has no line-specific WI training step, and fixture use relies on memory. Escape: final test cannot detect intermittent J3 opens.",
+    a_hum:"The operator followed the method used on the previous line; the gap was in the transfer process, not individual effort. Window analysis: fixture use = C (communication), missing-tool reporting = B2 (knew, but did not always do it).",
+    v_how:"Reproduced on 3 of 3 boards mated without the fixture (cracks after 200 thermal cycles), 0 of 3 with it. Strain 1,100 vs 250 µε. 21 of 23 failures traced to bench 2 / operator D.",
+    v_ok:"yes",
+    p_sum:"The field failure was caused by fatigue cracking at J3 from board flex during unsupported cable mating. This happened because the transfer process lacks WI training and fixture use is not mistake-proofed, and it escaped because final test checks J3 statically.",
+    p_rec:[{r:"Fixture with presence interlock at all cable benches",c:"Fixture use relies on memory",t:"Mfg Eng manager"},{r:"Add WI training and sign-off to line-transfer checklist",c:"No transfer training step",t:"Operations manager"},{r:"Add J3 wiggle continuity test at final test",c:"Static test misses intermittent opens",t:"Test Eng manager"}],
+    p_hand:"8D-2026-041"}
+});
+
+/* ===================== 7 QC TOOLS ===================== */
+
+/* ---------- Flowchart ---------- */
+const FC_TYPES=[["start","Start"],["process","Process step"],["decision","Decision (Yes/No)"],["inspect","Inspection / test"],["delay","Wait / storage"],["end","End"]];
+const FC_MARK=[["","—"],["create","Defect can be created"],["detect","Defect is detected"]];
+tool({id:"flowchart", cat:"qc", icon:"⇩", name:"Flowchart",
+  short:"Map the real process step by step, and see where a defect is created and where it is caught.",
+  guide:{what:"A picture of the process as it is <b>actually</b> done: each step, decision, inspection and handoff in order.",
+    when:["At the start, so everyone agrees on the process being investigated.","To find where in the process a defect can be created, and where it should be detected.","To spot handoffs between people or departments (candidates for Window analysis)."],
+    steps:["Name the process and its start and end points.","Walk the floor and list each step in order; don't copy the work instruction blindly.","Mark decisions (Yes/No) and where the 'No' path goes.","Mark inspections and tests.","Mark where the defect can be created and where it is detected; look for gaps between them."],
+    tips:["Map what really happens, then compare with the documented process.","A long gap between 'created' and 'detected' means the defect travels, and costs more, before anyone sees it."]},
+  related:["checksheet","window","fishbone"],
+  sampleNote:"Cable-mating station for the J3 connector, where the cracked joints are suspected to start.",
+  resultLabel:"Process map",
+  next:["checksheet","window"],
+  steps:[
+    {id:"name", q:"Which process are you mapping?", type:"text", ph:"e.g. J3 harness mating at cable station"},
+    {id:"steps", q:"List the steps in order. For each Decision, give the step number the 'No' path goes to.", type:"table", minRows:5,
+      help:"Mark where the defect can be created and where it is detected. Start/End steps are optional but help readers.",
+      cols:[{k:"text",l:"Step description",w:220},{k:"type",l:"Type",type:"select",opts:FC_TYPES},{k:"no",l:"If No → step #",type:"number",w:70},{k:"mark",l:"Defect",type:"select",opts:FC_MARK}]},
+    {id:"note", q:"Anything that differs from the written work instruction?", type:"textarea", optional:1, ph:"e.g. Night shift mates the cable on the bench mat, not in the fixture."}
+  ],
+  sample:{name:"J3 harness mating at cable station", steps:[
+    {text:"PCBA received at cable station",type:"start"},
+    {text:"Pick PCBA from kitting tray",type:"process"},
+    {text:"Place PCBA in back-support fixture P/N 123-456",type:"process",mark:"create"},
+    {text:"Mate harness to J3 connector",type:"process",mark:"create"},
+    {text:"Visual check: J3 fully seated",type:"inspect"},
+    {text:"Seated correctly?",type:"decision",no:"4"},
+    {text:"Install PCBA into insert chassis",type:"process"},
+    {text:"Final functional test incl. J3 continuity",type:"inspect",mark:"detect"},
+    {text:"Test passed?",type:"decision",no:"11"},
+    {text:"Release to tool assembly",type:"end"},
+    {text:"Quarantine and send to FA",type:"end"}],
+    note:"Night shift often mates the cable with the board flat on the bench mat because the fixture is slow to set up. A cracked joint can still pass final test if it is only intermittent."},
+  render(a){
+    const st=rows(a.steps).filter(r=>String(r.text||"").trim()); if(!st.length) return EMPTY();
+    const cx=330, bw=250, gap=30, H0=20; let y=H0, g="", pos=[];
+    st.forEach(r=>{ const h=r.type==="decision"?74:(r.type==="start"||r.type==="end")?40:50; pos.push({y,h,c:y+h/2}); y+=h+gap; });
+    const W=700, H=y; const lanes={}; let lane=0;
+    const shape=(r,p,i)=>{ const x=cx-bw/2, txt=clip(wrap(r.text, r.type==="decision"?24:34),2), lh=14, ty=p.c-(txt.length-1)*lh/2+4;
+      let s; const mk=r.mark==="create"?"#dc2626":r.mark==="detect"?"#15803d":"#475569"; const fill=r.mark==="create"?"#fff5f3":r.mark==="detect"?"#effaf3":"#fff";
+      if(r.type==="decision") s=`<polygon points="${cx},${p.y} ${cx+bw/2},${p.c} ${cx},${p.y+p.h} ${cx-bw/2},${p.c}" fill="#fffbea" stroke="#b45309" stroke-width="1.6"/>`;
+      else if(r.type==="start"||r.type==="end") s=`<rect x="${x+30}" y="${p.y}" width="${bw-60}" height="${p.h}" rx="${p.h/2}" fill="#14213d"/>`;
+      else if(r.type==="inspect") s=`<rect x="${x}" y="${p.y}" width="${bw}" height="${p.h}" rx="4" fill="${fill}" stroke="${mk}" stroke-width="1.6"/><rect x="${x+4}" y="${p.y+4}" width="${bw-8}" height="${p.h-8}" rx="3" fill="none" stroke="${mk}" stroke-width="1"/>`;
+      else if(r.type==="delay") s=`<path d="M${x} ${p.y} H${x+bw-p.h/2} A${p.h/2} ${p.h/2} 0 0 1 ${x+bw-p.h/2} ${p.y+p.h} H${x} Z" fill="${fill}" stroke="${mk}" stroke-width="1.6"/>`;
+      else s=`<rect x="${x}" y="${p.y}" width="${bw}" height="${p.h}" rx="6" fill="${fill}" stroke="${mk}" stroke-width="1.6"/>`;
+      const col=(r.type==="start"||r.type==="end")?"#fff":"#14213d";
+      s+=TL(cx,ty,txt,lh,`text-anchor="middle" font-size="12.5" font-weight="600" fill="${col}"`);
+      s+=`<circle cx="${cx-bw/2-16}" cy="${p.c}" r="11" fill="#e2e8f0"/>`+T(cx-bw/2-16,p.c+4,String(i+1),'text-anchor="middle" font-size="11" font-weight="700" fill="#334155"');
+      if(r.mark) s+=TL(cx-bw/2-34,p.c-3,r.mark==="create"?["Defect can","be created"]:["Defect","detected"],12,`text-anchor="end" font-size="11" font-weight="700" fill="${mk}"`);
+      return s; };
+    st.forEach((r,i)=>{ const p=pos[i];
+      if(i<st.length-1 && r.type!=="end"){ g+=`<path d="M${cx} ${p.y+p.h} V${pos[i+1].y-2}" stroke="#64748b" stroke-width="1.6" marker-end="url(#fa)"/>`; if(r.type==="decision") g+=T(cx+8,p.y+p.h+16,"Yes",'font-size="11" font-weight="700" fill="#15803d"'); }
+      if(r.type==="decision"){ const tgt=Math.round(num(r.no))-1; if(tgt>=0 && tgt<st.length && tgt!==i){ const lx=cx+bw/2+24+(lane++%5)*16, tp=pos[tgt];
+        const ex = st[tgt].type==="decision" ? cx+bw/2 : (st[tgt].type==="start"||st[tgt].type==="end") ? cx+bw/2-30 : cx+bw/2;
+        g+=`<path d="M${cx+bw/2} ${p.c} H${lx} V${tp.c} H${ex+3}" fill="none" stroke="#b45309" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#fb)"/>`+T(cx+bw/2+5,p.c-5,"No",'font-size="11" font-weight="700" fill="#b45309"'); } }
+    });
+    st.forEach((r,i)=>{ g+=shape(r,pos[i],i); });
+    const svg=`<svg viewBox="0 0 ${W} ${H}" class="chart" xmlns="http://www.w3.org/2000/svg"><defs><marker id="fa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#64748b"/></marker><marker id="fb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b45309"/></marker></defs>${g}</svg>`;
+    const cr=st.map((r,i)=>r.mark==="create"?i:-1).filter(i=>i>=0), dt=st.map((r,i)=>r.mark==="detect"?i:-1).filter(i=>i>=0), ins=st.filter(r=>r.type==="inspect").length;
+    let f=[];
+    if(cr.length){ const lastC=Math.max(...cr), d=dt.find(i=>i>lastC);
+      if(d===undefined) f.push(`<b>No detection point after step ${lastC+1}.</b> A defect created there can leave the process unseen.`);
+      else f.push(`A defect created at step ${cr.map(i=>i+1).join(", ")} is first detected at step ${d+1}: <b>${d-lastC} step(s) later</b>. Can it be caught closer to where it is made?`); }
+    f.push(`${st.length} steps, ${st.filter(r=>r.type==="decision").length} decisions, ${ins} inspection/test points.`);
+    return `<div class="svscroll">${svg}</div><div class="find${cr.length&&!dt.length?" warn":""}"><ul>${f.map(x=>`<li>${x}</li>`).join("")}</ul></div>${a.note?`<div class="find warn"><b>Differs from the written process:</b> ${esc(a.note)}</div>`:""}`;
+  }
+});
+
+/* ---------- Check sheet ---------- */
+function syncTally(a,v){ const cats=a.cats||[], old=rows(v); return cats.map(c=>Object.assign({}, old.find(r=>r.cat===c)||{}, {cat:c})); }
+const tallyMarks = n => { n=Math.max(0,Math.round(n)); if(n>40) return ""; return "<span class='tally'>"+"<span class='t5'>||||</span>".repeat(Math.floor(n/5))+"|".repeat(n%5)+"</span>"; };
+tool({id:"checksheet", cat:"qc", icon:"☑", name:"Check sheet",
+  short:"Count how often each defect happens, split by time or place, right where it occurs.",
+  guide:{what:"A structured form for tallying events as they happen. It turns opinions (“it happens all the time”) into counts.",
+    when:["At the start of an investigation, to get facts.","When operators collect data on the floor.","To feed a Pareto chart, or to see if one day, shift or location stands out."],
+    steps:["Define exactly what counts as each category.","Choose the time slots or locations for the columns.","Tally each occurrence as it happens.","Total the rows and columns.","Look for the biggest category and any unusual column."],
+    tips:["Make categories mutually exclusive and add an 'Other' row.","Record at the source, not from memory at the end of the shift."]},
+  related:["pareto","stratification"],
+  sampleNote:"One week of final-test failures on the logging-tool PCBA line.",
+  resultLabel:"Tally sheet",
+  next:["pareto","stratification"],
+  steps:[
+    {id:"title", q:"What are you counting? Give the check sheet a title.", type:"text", ph:"e.g. PCBA final-test failures by mode"},
+    {id:"where", q:"Where, and over what period, is the data collected?", type:"text", optional:1, ph:"e.g. Final test station, week 44"},
+    {id:"cats", q:"List the categories you will tally, one per line.", type:"list", help:"Clear definitions so everyone counts the same way. Include 'Other'."},
+    {id:"slots", q:"List the time slots or locations for the columns, one per line.", type:"list", ph:"Mon\nTue\nWed\nThu\nFri"},
+    {id:"tally", q:a=>`Enter the count for each category in each ${(a.slots||[]).length?"column":"slot"}.`, type:"table", fixed:1, sync:syncTally,
+      cols:a=>[{k:"cat",l:"Category",ro:1},...(a.slots||[]).map((s,i)=>({k:"c"+i,l:s,type:"number",w:50}))]}
+  ],
+  sample:{title:"PCBA final-test failures by mode", where:"Final test station, week 44",
+    cats:["J3 open / cracked joint","5 V rail undervoltage","Comms timeout","Sensor offset out of limit","Cosmetic / coating","Other"],
+    slots:["Mon","Tue","Wed","Thu","Fri"],
+    tally:[{cat:"J3 open / cracked joint",c0:2,c1:1,c2:6,c3:7,c4:7},{cat:"5 V rail undervoltage",c0:2,c1:2,c2:1,c3:2,c4:2},{cat:"Comms timeout",c0:1,c1:2,c2:1,c3:1,c4:1},{cat:"Sensor offset out of limit",c0:1,c1:0,c2:1,c3:1,c4:1},{cat:"Cosmetic / coating",c0:1,c1:1,c2:0,c3:1,c4:0},{cat:"Other",c0:0,c1:1,c2:0,c3:0,c4:1}]},
+  actions:{ toPareto(a){ const tl=syncTally(a,a.tally), sl=a.slots||[];
+    sendTo("pareto",{title:a.title||"From check sheet", unit:"Count", items:tl.map(r=>({cat:r.cat, val:String(sum(sl.map((_,i)=>num(r["c"+i])||0)))}))}); toast("Totals sent to the Pareto chart"); } },
+  render(a){
+    const cats=a.cats||[], sl=a.slots||[]; if(!cats.length) return EMPTY();
+    const tl=syncTally(a,a.tally), tot=tl.map(r=>sum(sl.map((_,i)=>num(r["c"+i])||0))), colT=sl.map((_,i)=>sum(tl.map(r=>num(r["c"+i])||0))), G=sum(tot), mx=Math.max(1,...tot);
+    let h=`<div style="font-weight:700">${esc(a.title||"")}</div><div style="font-size:12.5px;color:var(--mute)">${esc(a.where||"")}</div><div class="tscroll"><table class="rt"><tr><th>Category</th>${sl.map(s=>`<th>${esc(s)}</th>`).join("")}<th class="n">Total</th><th style="width:22%"></th></tr>`;
+    tl.forEach((r,j)=>{ h+=`<tr${tot[j]===mx&&G?' class="hi"':""}><td><b>${esc(r.cat)}</b></td>${sl.map((_,i)=>{ const n=num(r["c"+i])||0; return `<td>${tallyMarks(n)} <span style="color:var(--mute);font-size:11px">${n||""}</span></td>`; }).join("")}<td class="n"><b>${tot[j]}</b></td><td><div style="height:9px;border-radius:5px;background:#2563eb;width:${tot[j]/mx*100}%"></div></td></tr>`; });
+    h+=`<tr><th>Total</th>${colT.map(v=>`<th class="n">${v}</th>`).join("")}<th class="n">${G}</th><th></th></tr></table></div>`;
+    if(G){ const top=cats[tot.indexOf(mx)], cm=Math.max(...colT), cmi=colT.indexOf(cm), avg=G/Math.max(1,sl.length);
+      h+=`<div class="find"><ul><li><b>${esc(top)}</b> is the largest category: ${mx} of ${G} (${pct(mx/G,0)}).</li>${sl.length>1&&cm>avg*1.4?`<li><b>${esc(sl[cmi])}</b> has the most events (${cm} vs an average of ${fmtN(avg)}). What changed?</li>`:""}${(()=>{ const j=tot.indexOf(mx), v=sl.map((_,i)=>num(tl[j]["c"+i])||0), lo=Math.min(...v), hi=Math.max(...v), first=v.findIndex(x=>x>=hi*0.8);
+          return sl.length>2&&hi>=3*Math.max(1,lo)?`<li>${esc(top)} rises from ${lo} to ${hi}. The jump starts around <b>${esc(sl[first])}</b>: what changed then (operator, shift, lot, setting)?</li>`:""; })()}</ul></div>
+      <div class="nextt"><button class="btn sm pri" data-tact="toPareto">Send totals to Pareto chart →</button></div>`; }
+    return h;
+  }
+});
+
+/* ---------- Pareto ---------- */
+tool({id:"pareto", cat:"qc", icon:"▇", name:"Pareto chart",
+  short:"Rank problems by size so the team works on the vital few first.",
+  guide:{what:"A bar chart sorted from largest to smallest, with a cumulative-percentage line. It applies the 80/20 rule: a few categories usually cause most of the loss.",
+    when:["To choose which problem to work on first.","To show the effect of a fix (compare before and after).","With cost or downtime instead of counts, when categories differ in impact."],
+    steps:["Collect counts per category (a check sheet is ideal).","Sort from largest to smallest; put 'Other' last.","Plot the bars and the cumulative % line.","The categories up to about 80% cumulative are the 'vital few'.","Break the top bar down further (stratify) before solving it."],
+    tips:["Rank by cost or impact if one category is far more expensive than another.","Keep 'Other' small; if it is large, your categories are too vague."]},
+  related:["checksheet","stratification","fishbone"],
+  sampleNote:"Final-test failures for one week, sent from the check sheet.",
+  resultLabel:"Ranked bars + cumulative %",
+  next:["stratification","fishbone"],
+  steps:[
+    {id:"title", q:"What does the chart rank?", type:"text", ph:"e.g. Final-test failures, week 44"},
+    {id:"unit", q:"What are the values measured in?", type:"choice", opts:[["Count","Count (number of events)"],["Cost","Cost"],["Minutes","Downtime minutes"],["Units","Units scrapped"]]},
+    {id:"items", q:"Enter each category and its value.", type:"table", minRows:5, help:"Order doesn't matter; the chart sorts them. Name an 'Other' row and it stays last.",
+      cols:[{k:"cat",l:"Category",w:200},{k:"val",l:"Value",type:"number",w:80}]}
+  ],
+  sample:{title:"Final-test failures, week 44", unit:"Count", items:[{cat:"J3 open / cracked joint",val:"23"},{cat:"5 V rail undervoltage",val:"9"},{cat:"Comms timeout",val:"6"},{cat:"Sensor offset out of limit",val:"4"},{cat:"Cosmetic / coating",val:"3"},{cat:"Other",val:"2"}]},
+  render(a){
+    let it=rows(a.items).map(r=>({c:String(r.cat||"").trim(),v:num(r.val)})).filter(r=>r.c&&Number.isFinite(r.v)&&r.v>=0);
+    if(!it.length) return EMPTY();
+    const oth=it.filter(r=>/^other/i.test(r.c)); it=it.filter(r=>!/^other/i.test(r.c)).sort((x,y)=>y.v-x.v).concat(oth);
+    const tot=sum(it.map(r=>r.v)); let c=0; it.forEach(r=>{ c+=r.v; r.cum=tot?c/tot:0; });
+    const p=plot({cats:it.map(r=>r.c), ymin:0, ymax:tot, yticks:niceTicks(0,tot,5), ylabel:a.unit||"Value", R:48, H:340});
+    const vf=[]; for(const r of it){ vf.push(r); if(r.cum>=0.8) break; }
+    let g=p.g;
+    it.forEach((r,i)=>{ const x=p.sx(i)-p.bw*0.38, w=p.bw*0.76, y=p.sy(r.v); g+=`<rect x="${x}" y="${y}" width="${w}" height="${p.T+p.ph-y}" rx="3" fill="${vf.includes(r)?"#2563eb":"#94a3b8"}"/>`+T(p.sx(i),y-5,fmtN(r.v),'text-anchor="middle" font-size="11" font-weight="700" fill="#334155"'); });
+    const cy=v=>p.T+p.ph-v*p.ph;
+    g+=`<line x1="${p.L}" x2="${p.L+p.pw}" y1="${cy(.8)}" y2="${cy(.8)}" stroke="#dc2626" stroke-dasharray="5 4"/>`+T(p.L+p.pw-4,cy(.8)-5,"80%",'text-anchor="end" font-size="11" fill="#dc2626" font-weight="700"');
+    g+=`<polyline points="${it.map((r,i)=>`${p.sx(i)},${cy(r.cum)}`).join(" ")}" fill="none" stroke="#f59e0b" stroke-width="2.2"/>`+it.map((r,i)=>`<circle cx="${p.sx(i)}" cy="${cy(r.cum)}" r="3.5" fill="#f59e0b"/>`).join("");
+    [0,.25,.5,.75,1].forEach(v=>{ g+=T(p.L+p.pw+6,cy(v)+4,(v*100)+"%",'font-size="11" fill="#b45309"'); });
+    const svg=p.open+g+"</svg>";
+    return `<div style="font-weight:700;margin-bottom:4px">${esc(a.title||"")}</div>${svg}
+      <div class="kpis">${kpi(fmtN(tot),"Total "+(a.unit||"").toLowerCase())}${kpi(vf.length+" of "+it.length,"Vital few categories")}${kpi(pct(vf[vf.length-1].cum,0),"Share of the vital few")}${kpi(pct(it[0].v/tot,0),"Top category share")}</div>
+      <div class="find"><b>Work on first:</b> ${vf.map(r=>esc(r.c)).join(", ")}. Before solving the top bar, <b>stratify</b> it (by shift, line, lot) to see where it concentrates.</div>`+
+      miniTable([{k:"c",l:"Category"},{k:"v",l:"Value",n:1},{k:"pc",l:"%",n:1},{k:"cu",l:"Cumulative",n:1}], it.map(r=>({c:r.c,v:fmtN(r.v),pc:pct(r.v/tot),cu:pct(r.cum),_hi:vf.includes(r)})));
+  }
+});
+
+/* ---------- Histogram ---------- */
+tool({id:"histogram", cat:"qc", icon:"▙", name:"Histogram",
+  short:"See the shape, centre and spread of a measurement against its specification.",
+  guide:{what:"A bar chart of how often each range of values occurs. It shows whether a process is centred, how wide it spreads, and whether it fits inside the spec limits.",
+    when:["To check if a process can meet its specification (capability).","To compare before and after a change.","To spot two populations mixed together (two humps) or a cut-off tail (screened data)."],
+    steps:["Collect at least 30, ideally 50–100, measurements.","Enter the spec limits if there are any.","Look at the shape: one hump, two humps, skewed, cut off?","Check the centre against the target and the spread against the limits.","Read Cp/Cpk: 1.33 or more is usually considered capable."],
+    tips:["Two humps often mean two machines, shifts or lots: stratify the data.","Cpk assumes a stable, roughly normal process; check the control chart first."]},
+  related:["controlchart","stratification"],
+  sampleNote:"5 V rail voltage at final test (the #2 Pareto failure). Spec 4.90–5.10 V.",
+  resultLabel:"Distribution vs spec",
+  next:["controlchart","stratification"],
+  steps:[
+    {id:"name", q:"What did you measure?", type:"text", ph:"e.g. 5 V rail voltage at final test"},
+    {id:"unit", q:"What unit?", type:"text", optional:1, ph:"e.g. V"},
+    {id:"data", q:"Paste or type the measurements.", type:"numbers", help:"Separate with spaces, commas or new lines. You can paste a column from Excel."},
+    {id:"lsl", q:"Lower spec limit (LSL)?", type:"number", optional:1},
+    {id:"usl", q:"Upper spec limit (USL)?", type:"number", optional:1},
+    {id:"bins", q:"How many bars? Leave blank for automatic.", type:"number", optional:1}
+  ],
+  sample:()=>({name:"5 V rail voltage at final test", unit:"V", data:normals(11,80,4.955,0.022,3), lsl:4.90, usl:5.10}),
+  render(a){
+    const d=parseNums(a.data); if(d.length<2) return EMPTY("Enter at least a few measurements to draw the histogram.");
+    const m=mean(d), s=sd(d), lo=Math.min(...d), hi=Math.max(...d), L=num(a.lsl), U=num(a.usl);
+    let k=Math.round(num(a.bins)); if(!(k>=3&&k<=60)) k=Math.max(5,Math.min(25,Math.ceil(Math.sqrt(d.length))));
+    const xlo=Math.min(lo, Number.isFinite(L)?L:lo), xhi=Math.max(hi, Number.isFinite(U)?U:hi), w=(hi-lo)/k||1;
+    const cnt=Array(k).fill(0); d.forEach(v=>{ let i=Math.floor((v-lo)/w); if(i>=k) i=k-1; if(i<0) i=0; cnt[i]++; });
+    const pad=(xhi-xlo)*0.05||w;
+    const p=plot({xmin:xlo-pad, xmax:xhi+pad, ymin:0, ymax:Math.max(...cnt), ylabel:"Frequency", xlabel:(a.name||"")+(a.unit?` (${a.unit})`:""), H:320});
+    let g=p.g;
+    cnt.forEach((c,i)=>{ const x0=p.sx(lo+i*w), x1=p.sx(lo+(i+1)*w), y=p.sy(c); g+=`<rect x="${x0+0.5}" y="${y}" width="${Math.max(1,x1-x0-1)}" height="${p.T+p.ph-y}" fill="#60a5fa" stroke="#2563eb" stroke-width=".6"/>`; });
+    if(Number.isFinite(s)&&s>0){ const N=d.length*w; let pts=[]; for(let i=0;i<=80;i++){ const x=(xlo-pad)+(xhi-xlo+2*pad)*i/80, y=N/(s*Math.sqrt(2*Math.PI))*Math.exp(-((x-m)**2)/(2*s*s)); pts.push(`${p.sx(x)},${Math.max(p.T,p.sy(Math.min(y,p.y1)))}`); } g+=`<polyline points="${pts.join(" ")}" fill="none" stroke="#1e3a8a" stroke-width="1.6" opacity=".7"/>`; }
+    const vline=(v,c,l)=>`<line x1="${p.sx(v)}" x2="${p.sx(v)}" y1="${p.T}" y2="${p.T+p.ph}" stroke="${c}" stroke-width="2" stroke-dasharray="${l==="Mean"?"0":"6 4"}"/>`+T(p.sx(v),p.T+10,l,`text-anchor="middle" font-size="11" font-weight="700" fill="${c}"`);
+    if(Number.isFinite(L)) g+=vline(L,"#dc2626","LSL"); if(Number.isFinite(U)) g+=vline(U,"#dc2626","USL"); g+=vline(m,"#0f766e","Mean");
+    const out=d.filter(v=>(Number.isFinite(L)&&v<L)||(Number.isFinite(U)&&v>U)).length;
+    const cp=Number.isFinite(L)&&Number.isFinite(U)?(U-L)/(6*s):NaN;
+    const cpk=Math.min(Number.isFinite(U)?(U-m)/(3*s):Infinity, Number.isFinite(L)?(m-L)/(3*s):Infinity);
+    const sk=d.length>2&&s>0?sum(d.map(v=>((v-m)/s)**3))/d.length:0;
+    const f=[];
+    if(Number.isFinite(cpk)){ f.push(cpk>=1.33?`Cpk ${cpk.toFixed(2)}: <b>capable</b>.`:cpk>=1?`Cpk ${cpk.toFixed(2)}: <b>marginal</b> (target 1.33 or more).`:`Cpk ${cpk.toFixed(2)}: <b>not capable</b>; expect out-of-spec parts.`);
+      if(Number.isFinite(cp)&&cp-cpk>0.25) f.push(`Cp (${cp.toFixed(2)}) is well above Cpk: the spread fits, but the process is <b>off-centre</b> toward the ${(U-m)<(m-L)?"upper":"lower"} limit. Re-centring is the first fix.`); }
+    if(Math.abs(sk)>0.8) f.push(`The distribution is ${sk>0?"right":"left"}-skewed. Check for a physical limit, screening, or mixed populations.`);
+    if(out) f.push(`${out} of ${d.length} values (${pct(out/d.length)}) are outside the spec.`);
+    const cls=Number.isFinite(cpk)?(cpk>=1.33?"good":cpk<1?"warn":""):"";
+    return p.open+g+"</svg>"+`<div class="kpis">${kpi(d.length,"n")}${kpi(fmtN(m),"Mean")}${kpi(fmtN(s),"Std dev")}${kpi(fmtN(lo)+" – "+fmtN(hi),"Range")}${kpi(Number.isFinite(cp)?cp.toFixed(2):"–","Cp")}${kpi(Number.isFinite(cpk)?cpk.toFixed(2):"–","Cpk")}</div>${f.length?`<div class="find ${cls}"><ul>${f.map(x=>`<li>${x}</li>`).join("")}</ul></div>`:""}`;
+  }
+});
+
+/* ---------- Scatter ---------- */
+tool({id:"scatter", cat:"qc", icon:"⁘", name:"Scatter diagram",
+  short:"Check whether two variables move together, to test a suspected cause.",
+  guide:{what:"A plot of paired measurements (X, Y). A pattern suggests the two are related; the correlation coefficient r measures how strongly.",
+    when:["To test a cause suggested by the fishbone (does more X give more Y?).","To find a setting that controls a result.","To check if a quick test can stand in for a slow one."],
+    steps:["Choose the suspected cause (X) and the effect (Y).","Collect at least 15–20 pairs from the same units.","Plot and look for a trend, curve, clusters or outliers.","Read r: near ±1 is strong, near 0 is none.","Confirm with an experiment before calling it the cause."],
+    tips:["Correlation is not causation: a third factor may drive both.","Clusters usually mean two groups mixed together; stratify them."]},
+  related:["fishbone","stratification"],
+  sampleNote:"Board strain at J3 during cable mating vs crack length after thermal cycling, 18 boards.",
+  resultLabel:"X–Y plot with trend line",
+  next:["fivewhy"],
+  steps:[
+    {id:"xn", q:"What is the suspected cause (X)? Include the unit.", type:"text", ph:"e.g. Board strain at J3 during mating (µε)"},
+    {id:"yn", q:"What is the effect (Y)? Include the unit.", type:"text", ph:"e.g. Crack length after 200 cycles (µm)"},
+    {id:"pts", q:"Enter the pairs: one row per unit.", type:"table", minRows:6, help:"Paste two columns from Excel into the first cell.",
+      cols:[{k:"x",l:"X",type:"number",w:80},{k:"y",l:"Y",type:"number",w:80},{k:"id",l:"Unit / note (optional)",w:110}]}
+  ],
+  sample:()=>{ const r=rng(5), xs=[220,260,310,350,400,430,480,520,600,640,700,760,820,900,980,1080,1200,1350];
+    return {xn:"Board strain at J3 during mating (µε)", yn:"Crack length after 200 cycles (µm)", pts:xs.map((x,i)=>({x:String(x), y:String(Math.max(0,+(0.06*x-8+(r()-.5)*18).toFixed(1))), id:i<9?"With fixture":"Without fixture"}))}; },
+  render(a){
+    const pts=rows(a.pts).map(r=>({x:num(r.x),y:num(r.y),id:r.id})).filter(r=>Number.isFinite(r.x)&&Number.isFinite(r.y));
+    if(pts.length<3) return EMPTY("Enter at least three X–Y pairs.");
+    const xs=pts.map(p=>p.x), ys=pts.map(p=>p.y), mx=mean(xs), my=mean(ys);
+    const sxy=sum(pts.map(p=>(p.x-mx)*(p.y-my))), sxx=sum(xs.map(x=>(x-mx)**2)), syy=sum(ys.map(y=>(y-my)**2));
+    const b=sxx?sxy/sxx:0, a0=my-b*mx, r=sxx&&syy?sxy/Math.sqrt(sxx*syy):0;
+    const xr=[Math.min(...xs),Math.max(...xs)], yr=[Math.min(...ys),Math.max(...ys)];
+    const p=plot({xmin:xr[0],xmax:xr[1],ymin:yr[0],ymax:yr[1],xlabel:a.xn||"X",ylabel:a.yn||"Y",H:340,L:62});
+    const ids=[...new Set(pts.map(q=>String(q.id||"").trim()).filter(Boolean))]; const grp=ids.length>1&&ids.length<=6;
+    let g=p.g;
+    const x0=p.xt[0], x1=p.xt[p.xt.length-1]; const cl=v=>Math.max(p.y0,Math.min(p.y1,v));
+    g+=`<line x1="${p.sx(x0)}" x2="${p.sx(x1)}" y1="${p.sy(cl(a0+b*x0))}" y2="${p.sy(cl(a0+b*x1))}" stroke="#dc2626" stroke-width="1.8" stroke-dasharray="6 4"/>`;
+    pts.forEach(q=>{ const c=grp?PAL[ids.indexOf(String(q.id||"").trim())%PAL.length]:"#2563eb"; g+=`<circle cx="${p.sx(q.x)}" cy="${p.sy(q.y)}" r="5" fill="${c}" fill-opacity=".8" stroke="#fff"/>`; });
+    if(grp) ids.forEach((id,i)=>{ g+=`<circle cx="${p.L+12}" cy="${p.T+10+i*16}" r="5" fill="${PAL[i]}"/>`+T(p.L+22,p.T+14+i*16,id,'font-size="11" fill="#334155"'); });
+    const ar=Math.abs(r), str=ar>=0.8?"strong":ar>=0.5?"moderate":ar>=0.3?"weak":"no clear";
+    return p.open+g+"</svg>"+`<div class="kpis">${kpi(pts.length,"Pairs")}${kpi(r.toFixed(2),"Correlation r")}${kpi((r*r).toFixed(2),"R² (explained)")}${kpi(fmtN(b),"Slope (Y per X)")}</div>
+      <div class="find ${ar>=0.5?"good":""}"><b>${str[0].toUpperCase()+str.slice(1)} ${ar>=0.3?(r>0?"positive":"negative")+" ":""}relationship.</b> ${ar>=0.3?`As ${esc(a.xn||"X")} increases, ${esc(a.yn||"Y")} tends to ${r>0?"increase":"decrease"}. About ${pct(r*r,0)} of the variation in Y lines up with X.`:"X does not explain Y on its own; look for another cause."} Confirm with a controlled test before treating X as the cause.</div>`;
+  }
+});
+
+/* ---------- Control chart (I-MR) ---------- */
+tool({id:"controlchart", cat:"qc", icon:"〰", name:"Control chart",
+  short:"Tell normal variation from a real change in the process, over time.",
+  guide:{what:"A time-ordered plot with a centre line and control limits calculated from the process itself (here an Individuals and Moving Range chart). Points outside the limits or unusual patterns signal a special cause.",
+    when:["To see whether a process is stable before judging capability.","To find when something changed (new lot, operator, setting).","After a fix, to prove the improvement holds (Control / Check phase)."],
+    steps:["Collect measurements in time order (at least 20).","Choose which points set the limits (a stable baseline).","Plot with centre line and limits (mean ± 2.66 × average moving range).","Look for signals: a point outside limits, 8 in a row on one side, 6 rising or falling.","Investigate what happened at each signal."],
+    tips:["Control limits are the voice of the process, not spec limits.","Don't re-calculate limits to include a known shift; set them from the baseline."]},
+  related:["histogram","stratification"],
+  sampleNote:"Daily PCBA idle current. Limits from the first 20 days; something changes after that.",
+  resultLabel:"I-MR chart",
+  next:["stratification","fishbone"],
+  steps:[
+    {id:"name", q:"What characteristic are you charting?", type:"text", ph:"e.g. PCBA idle current"},
+    {id:"unit", q:"What unit?", type:"text", optional:1, ph:"e.g. mA"},
+    {id:"data", q:"Paste or type the values in time order.", type:"numbers", help:"Oldest first. One value per sample, separated by spaces, commas or new lines."},
+    {id:"base", q:"Use the first how many points to calculate the limits? Leave blank to use all.", type:"number", optional:1, help:"Use a stable period as the baseline, so later changes stand out."}
+  ],
+  sample:()=>({name:"PCBA idle current", unit:"mA", data:normals(7,20,120,1.4,1).concat(normals(9,10,123.6,1.3,1)), base:20}),
+  render(a){
+    const d=parseNums(a.data); if(d.length<3) return EMPTY("Enter at least a few values in time order.");
+    let n=Math.round(num(a.base)); if(!(n>=2&&n<=d.length)) n=d.length;
+    const b=d.slice(0,n), mr=b.slice(1).map((v,i)=>Math.abs(v-b[i])), mrb=mean(mr), cl=mean(b), ucl=cl+2.66*mrb, lcl=cl-2.66*mrb, mucl=3.267*mrb;
+    const sig=new Set(), notes=[];
+    d.forEach((v,i)=>{ if(v>ucl||v<lcl){ sig.add(i); } });
+    if(sig.size) notes.push(`Point${sig.size>1?"s":""} ${[...sig].map(i=>i+1).join(", ")} ${sig.size>1?"are":"is"} outside the control limits.`);
+    for(let i=7;i<d.length;i++){ const w=d.slice(i-7,i+1); if(w.every(v=>v>cl)||w.every(v=>v<cl)){ for(let j=i-7;j<=i;j++) sig.add(j); notes.push(`8 points in a row on one side of the centre line ending at point ${i+1}: a <b>shift</b> in the process.`); i+=7; } }
+    for(let i=6;i<d.length;i++){ const w=d.slice(i-6,i+1); let up=true,dn=true; for(let j=1;j<w.length;j++){ if(!(w[j]>w[j-1])) up=false; if(!(w[j]<w[j-1])) dn=false; } if(up||dn){ for(let j=i-6;j<=i;j++) sig.add(j); notes.push(`7 points steadily ${up?"rising":"falling"} ending at point ${i+1}: a <b>trend</b>.`); i+=6; } }
+    const lo=Math.min(...d,lcl), hi=Math.max(...d,ucl);
+    const p=plot({xdom:[0.5,d.length+0.5],xmin:1,xmax:d.length,xticks:niceTicks(1,d.length,8).filter(v=>v>=1&&v<=d.length),ymin:lo,ymax:hi,ylabel:(a.name||"Value")+(a.unit?` (${a.unit})`:""),H:300,B:34});
+    let g=p.g; const X=i=>p.sx(i+1);
+    const hl=(v,c,l,dash)=>`<line x1="${p.L}" x2="${p.L+p.pw}" y1="${p.sy(v)}" y2="${p.sy(v)}" stroke="${c}" stroke-width="1.5" ${dash?'stroke-dasharray="6 4"':""}/>`+T(p.L+p.pw-2,p.sy(v)-4,`${l} ${fmtN(v)}`,`text-anchor="end" font-size="10.5" font-weight="700" fill="${c}"`);
+    g+=hl(ucl,"#dc2626","UCL",1)+hl(cl,"#0f766e","CL",0)+hl(lcl,"#dc2626","LCL",1);
+    if(n<d.length) g+=`<line x1="${(X(n-1)+X(n))/2}" x2="${(X(n-1)+X(n))/2}" y1="${p.T}" y2="${p.T+p.ph}" stroke="#94a3b8" stroke-dasharray="3 3"/>`+T((X(n-1)+X(n))/2+4,p.T+10,"after baseline",'font-size="10.5" fill="#64748b"');
+    g+=`<polyline points="${d.map((v,i)=>`${X(i)},${p.sy(v)}`).join(" ")}" fill="none" stroke="#2563eb" stroke-width="1.6"/>`;
+    d.forEach((v,i)=>{ g+=`<circle cx="${X(i)}" cy="${p.sy(v)}" r="${sig.has(i)?4.5:3.2}" fill="${sig.has(i)?"#dc2626":"#2563eb"}"/>`; });
+    const mra=d.slice(1).map((v,i)=>Math.abs(v-d[i]));
+    const q=plot({xdom:[0.5,d.length+0.5],xmin:1,xmax:d.length,xticks:niceTicks(1,d.length,8).filter(v=>v>=1&&v<=d.length),ymin:0,ymax:Math.max(...mra,mucl),ylabel:"Moving range",H:170,B:36,xlabel:"Sample number"});
+    let h=q.g+`<line x1="${q.L}" x2="${q.L+q.pw}" y1="${q.sy(mucl)}" y2="${q.sy(mucl)}" stroke="#dc2626" stroke-dasharray="6 4"/><line x1="${q.L}" x2="${q.L+q.pw}" y1="${q.sy(mrb)}" y2="${q.sy(mrb)}" stroke="#0f766e"/>`;
+    h+=`<polyline points="${mra.map((v,i)=>`${q.sx(i+2)},${q.sy(v)}`).join(" ")}" fill="none" stroke="#64748b" stroke-width="1.3"/>`+mra.map((v,i)=>`<circle cx="${q.sx(i+2)}" cy="${q.sy(v)}" r="2.6" fill="${v>mucl?"#dc2626":"#64748b"}"/>`).join("");
+    return p.open+g+"</svg>"+q.open+h+"</svg>"+`<div class="kpis">${kpi(fmtN(cl),"Centre line")}${kpi(fmtN(ucl),"UCL")}${kpi(fmtN(lcl),"LCL")}${kpi(fmtN(mrb),"Avg moving range")}${kpi(n+" pts","Limits based on")}</div>
+      <div class="find ${notes.length?"warn":"good"}">${notes.length?`<b>Special-cause signals found:</b><ul>${notes.map(x=>`<li>${x}</li>`).join("")}</ul>Find out what changed at that time.`:"<b>No special-cause signals.</b> The process is stable; only common-cause variation is present."}</div>`;
+  }
+});
+
+/* ---------- Stratification ---------- */
+tool({id:"stratification", cat:"qc", icon:"≡", name:"Stratification",
+  short:"Split the data by source to see if the problem is concentrated in one group.",
+  guide:{what:"Separating data into groups (strata) by shift, operator, machine, lot, supplier or location. A problem that looks random overall often sits in one group.",
+    when:["Before solving the top Pareto bar.","When a histogram has two humps or a scatter plot has clusters.","When you suspect one shift, line, lot or supplier."],
+    steps:["Decide which factors to split by.","Record each result with its factor values (and the volume built, if you can).","Compare counts, and better, rates, across groups.","Look for a group far above the others.","Take that group into the root-cause analysis."],
+    tips:["Compare rates, not raw counts: a busy shift will have more defects simply because it builds more.","Plan the strata before collecting data, or the tags will be missing."]},
+  related:["pareto","checksheet","window"],
+  sampleNote:"J3 failures for week 44 split by shift and operator, with boards built by each.",
+  resultLabel:"Comparison by group",
+  next:["fishbone","window"],
+  steps:[
+    {id:"what", q:"What result are you splitting?", type:"text", ph:"e.g. J3 cracked-joint failures, week 44"},
+    {id:"f1", q:"First factor to split by?", type:"text", ph:"e.g. Shift"},
+    {id:"f2", q:"Second factor, nested inside the first?", type:"text", optional:1, ph:"e.g. Operator"},
+    {id:"data", q:"Enter one row per group: the factor values, the defect count, and how many were built.", type:"table", minRows:4,
+      help:"'Built' is optional but gives a fair comparison as a defect rate.",
+      cols:a=>[{k:"g1",l:a.f1||"Factor 1",w:90},...(a.f2?[{k:"g2",l:a.f2,w:90}]:[]),{k:"def",l:"Defects",type:"number",w:70},{k:"built",l:"Built",type:"number",w:70}]}
+  ],
+  sample:{what:"J3 cracked-joint failures, week 44", f1:"Shift", f2:"Operator", data:[{g1:"Day",g2:"Op A",def:"1",built:"120"},{g1:"Day",g2:"Op B",def:"0",built:"118"},{g1:"Night",g2:"Op C",def:"1",built:"110"},{g1:"Night",g2:"Op D",def:"21",built:"105"}]},
+  render(a){
+    const d=rows(a.data).map(r=>({g1:String(r.g1||"").trim()||"(blank)",g2:a.f2?String(r.g2||"").trim()||"(blank)":"",def:num(r.def)||0,built:num(r.built)})).filter(r=>r.def>0||Number.isFinite(r.built));
+    if(!d.length) return EMPTY();
+    const useRate=d.every(r=>Number.isFinite(r.built)&&r.built>0);
+    const groups=(key)=>{ const m=new Map(); d.forEach(r=>{ const k=key(r); const o=m.get(k)||{k,def:0,built:0}; o.def+=r.def; o.built+=Number.isFinite(r.built)?r.built:0; m.set(k,o); }); return [...m.values()].map(o=>Object.assign(o,{rate:o.built?o.def/o.built:NaN})); };
+    const G1=groups(r=>r.g1), G2=a.f2?groups(r=>r.g1+" / "+r.g2):null, totD=sum(d.map(r=>r.def)), totB=sum(d.map(r=>Number.isFinite(r.built)?r.built:0));
+    const chart=(G,title)=>{ const vals=G.map(o=>useRate?o.rate*100:o.def), mx=Math.max(...vals,0.0001), top=vals.indexOf(mx);
+      const p=plot({cats:G.map(o=>o.k),ymin:0,ymax:mx,ylabel:useRate?"Defect rate (%)":"Defects",H:250,B:46});
+      let g=p.g; G.forEach((o,i)=>{ const y=p.sy(vals[i]), x=p.sx(i)-p.bw*.33; g+=`<rect x="${x}" y="${y}" width="${p.bw*.66}" height="${p.T+p.ph-y}" rx="3" fill="${i===top?"#dc2626":"#94a3b8"}"/>`+T(p.sx(i),y-5,useRate?vals[i].toFixed(1)+"%":fmtN(vals[i]),'text-anchor="middle" font-size="11" font-weight="700" fill="#334155"'); });
+      if(useRate&&totB){ const avg=totD/totB*100; g+=`<line x1="${p.L}" x2="${p.L+p.pw}" y1="${p.sy(avg)}" y2="${p.sy(avg)}" stroke="#0f766e" stroke-dasharray="5 4"/>`+T(p.L+p.pw-2,p.sy(avg)-4,"overall "+avg.toFixed(1)+"%",'text-anchor="end" font-size="10.5" fill="#0f766e" font-weight="700"'); }
+      return `<div style="font-weight:700;font-size:13px;margin:6px 0 2px">${esc(title)}</div>`+p.open+g+"</svg>"; };
+    const best=G=>{ const s=[...G].sort((x,y)=>useRate?(y.rate-x.rate):(y.def-x.def)); return s[0]; };
+    const t1=best(G1), t2=G2?best(G2):null, tt=t2||t1;
+    let f=`<b>${esc(tt.k)}</b> accounts for ${tt.def} of ${totD} defects (${pct(totD?tt.def/totD:0,0)})`;
+    if(useRate&&totB) f+=` while building ${pct(tt.built/totB,0)} of the units. Its rate is <b>${(tt.rate*100).toFixed(1)}%</b> vs ${(totD/totB*100).toFixed(1)}% overall`+(()=>{ const rest=(totD-tt.def)/(totB-tt.built); return Number.isFinite(rest)&&rest>0?` and ${(rest*100).toFixed(1)}% for everyone else (${(tt.rate/rest).toFixed(1)}× higher).`:"."; })();
+    else f+=".";
+    const tbl=(G2||G1).map(o=>({k:o.k,def:o.def,built:o.built||"–",rate:useRate?pct(o.rate):"–",sh:pct(totD?o.def/totD:0,0),_hi:o===tt}));
+    return `<div style="font-weight:700">${esc(a.what||"")}</div>`+chart(G1,"By "+(a.f1||"factor 1"))+(G2?chart(G2,`By ${a.f1||"factor 1"} / ${a.f2}`):"")+
+      `<div class="find warn">${f} Take this group into the cause analysis: what is different about it?</div>`+
+      miniTable([{k:"k",l:"Group"},{k:"def",l:"Defects",n:1},{k:"built",l:"Built",n:1},{k:"rate",l:"Rate",n:1},{k:"sh",l:"Share of defects",n:1}],tbl);
+  }
+});
+
+/* ---------- Fishbone ---------- */
+const BONES=[["man","Man (people)","Skills, training, fatigue, new or transferred staff, shift handover?"],["machine","Machine","Equipment, fixtures, tools, wear, calibration, maintenance?"],["method","Method","Work instruction, sequence, handling, settings, missing steps?"],["material","Material","Parts, lots, suppliers, PCB, solder, connector variation?"],["measurement","Measurement","Test coverage, gauges, limits, test equipment, inspection method?"],["environment","Environment","Temperature, humidity, ESD, vibration, workspace, time pressure?"]];
+tool({id:"fishbone", cat:"qc", icon:"⋘", name:"Fishbone (Ishikawa)",
+  short:"Brainstorm every possible cause, sorted into six categories (6M).",
+  guide:{what:"A cause-and-effect diagram. The problem is the fish's head; possible causes hang off six bones: Man, Machine, Method, Material, Measurement, Environment.",
+    when:["When there are many possible causes and no clear chain yet.","For team brainstorming, so no area is forgotten.","Before 5-Why: pick the most likely bone and drill it down."],
+    steps:["Write a specific problem statement in the head.","Brainstorm causes for each of the 6M categories.","Add sub-causes by asking 'why' for each cause.","Circle the most likely causes, based on data where possible.","Verify each circled cause with data (stratification, scatter) or test."],
+    tips:["A fishbone lists possible causes; it proves nothing until you verify them.","Keep the head specific: 'J3 joints crack at mating' beats 'quality problems'."]},
+  related:["fivewhy","scatter","stratification"],
+  sampleNote:"Possible causes of cracked J3 solder joints, after the Pareto and stratification pointed at night shift.",
+  resultLabel:"Cause-and-effect diagram",
+  next:["fivewhy","fta","window"],
+  steps:[
+    {id:"effect", q:"What is the problem (the fish's head)? Be specific.", type:"textarea", ph:"e.g. Cracked solder joints at J3 connector found at final test"},
+    ...BONES.map(([k,l,h])=>({id:k, q:`Possible causes under ${l}? One per line.`, type:"list", optional:1, help:h})),
+    {id:"likely", q:"Which 1–3 causes are most likely? Copy them as written above.", type:"list", optional:1, help:"These get circled on the diagram. Base the choice on data where you can."}
+  ],
+  sample:{effect:"Cracked solder joints at J3 connector found at final test",
+    man:["Operator not trained on fixture","New night-shift operator transferred from another line","Rushing to meet takt"],
+    machine:["Back-support fixture worn","Fixture slow to set up","No fixture at night-shift bench 2"],
+    method:["WI step 14 says 'use fixture' with no photo","Mating force not specified","Cable mated before chassis install"],
+    material:["Connector retention force high","Thin solder fillet (process escape)","Board thickness at low limit"],
+    measurement:["Final test misses intermittent opens","No flex check at visual inspection"],
+    environment:["Bench mat surface not flat","Night shift has less supervision"],
+    likely:["No fixture at night-shift bench 2","New night-shift operator transferred from another line","Final test misses intermittent opens"]},
+  render(a){
+    if(!String(a.effect||"").trim()) return EMPTY();
+    const like=(a.likely||[]).map(x=>x.toLowerCase().trim());
+    const W=1000,H=560,sy=280,ax=[340,570,800],hx=820;
+    let g=`<line x1="20" y1="${sy}" x2="${hx}" y2="${sy}" stroke="#14213d" stroke-width="3"/><path d="M${hx} ${sy} l-12 -7 v14z" fill="#14213d"/>`;
+    g+=`<rect x="${hx+6}" y="${sy-62}" width="${W-hx-12}" height="124" rx="10" fill="#14213d"/>`+TL(hx+16,sy-(Math.min(5,wrap(a.effect,20).length)-1)*9+4,clip(wrap(a.effect,20),5),18,'font-size="14" font-weight="700" fill="#fff"');
+    BONES.forEach(([k,l],i)=>{ const top=i<3, at=ax[i%3], tx=at-150, ty=top?50:H-50;
+      g+=`<line x1="${at}" y1="${sy}" x2="${tx}" y2="${ty}" stroke="#475569" stroke-width="2"/>`;
+      g+=`<rect x="${tx-70}" y="${top?ty-38:ty+10}" width="140" height="26" rx="13" fill="#e6f5f3" stroke="#0f766e"/>`+T(tx,top?ty-20:ty+28,l.replace(/ \(people\)/,""),'text-anchor="middle" font-size="14" font-weight="700" fill="#0f766e"');
+      const cs=(a[k]||[]), shown=cs.slice(0,6), n=shown.length;
+      shown.forEach((c,j)=>{ const t=(j+1)/(n+1), px=tx+t*(at-tx), py=ty+t*(sy-ty), L=like.includes(c.toLowerCase().trim());
+        g+=`<line x1="${px-46}" y1="${py}" x2="${px}" y2="${py}" stroke="#94a3b8" stroke-width="1.2"/>`;
+        const tl=clip(wrap(c,23),2), wmax=Math.max(...tl.map(x=>x.length))*7, y0=py-3-(tl.length-1)*14;
+        if(L) g+=`<rect x="${px-54-wmax}" y="${y0-14}" width="${wmax+12}" height="${tl.length*14+8}" rx="8" fill="#fff1f1" stroke="#dc2626" stroke-width="1.8"/>`;
+        g+=TL(px-50,y0,tl,14,`text-anchor="end" font-size="12.5" ${L?'font-weight="700" fill="#dc2626"':'fill="#1e293b"'}`); });
+      if(cs.length>6) g+=T(at-20,top?sy-12:sy+20,`+${cs.length-6} more`,'text-anchor="end" font-size="10.5" fill="#64748b"');
+    });
+    const total=sum(BONES.map(([k])=>(a[k]||[]).length)), empty=BONES.filter(([k])=>!(a[k]||[]).length).map(b=>b[1]);
+    return `<div class="svscroll" style="--minw:720px"><svg viewBox="0 0 ${W} ${H}" class="chart" xmlns="http://www.w3.org/2000/svg">${g}</svg></div>
+      <div class="kpis">${kpi(total,"Possible causes")}${kpi((a.likely||[]).length,"Most likely")}${kpi(6-empty.length+" / 6","Categories used")}</div>
+      ${(a.likely||[]).length?`<div class="find warn"><b>Most likely causes (circled):</b><ul>${a.likely.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>Verify each with data, then drill the confirmed one down with 5-Why.</div>`:""}
+      ${empty.length?`<div class="find">No causes yet under: ${empty.map(esc).join(", ")}. Worth a second look.</div>`:""}`;
+  }
+});
+
+/* ===================== ROOT-CAUSE METHODS ===================== */
+const short = (s,n=70) => { s=String(s||"").trim().replace(/^because\s*/i,""); return s.length>n ? s.slice(0,n-1)+"…" : s; };
+
+/* ---------- 5-Why ---------- */
+const WHYS=["w1","w2","w3","w4","w5"];
+tool({id:"fivewhy", cat:"rc", icon:"5?", name:"5-Why analysis",
+  short:"Ask 'why?' repeatedly to drill from the symptom to a cause you can act on.",
+  guide:{what:"A chain of questions. Each answer becomes the next 'why?', until you reach a cause in the system (a design rule, process, standard or test) that you can fix so the problem can't come back.",
+    when:["When there is one clear causal chain, ideally from a verified failure mechanism.","For problems involving people or process, together with Window analysis.","Inside 8D D4, EAS Analyze or DMAIC Analyze."],
+    steps:["Write a specific problem statement with the facts (what, where, how many).","Ask 'Why did this happen?' and answer with a fact you can check.","Repeat for each answer, usually about five times.","Stop at a cause the organisation controls and can change.","Check it backwards: read the chain upward with 'therefore'.","Run a second chain for 'why wasn't it detected?' if the defect escaped."],
+    tips:["'Operator error' is never a root cause: ask why the system allowed the error.","Five is a guide, not a rule. Stop when the next 'why' leaves your control.","If an answer is a guess, verify it before continuing."]},
+  related:["fishbone","window","fta"],
+  sampleNote:"Drilling from the stratified J3 failures (night shift, operator D) to the systemic cause.",
+  resultLabel:"Why-chain",
+  next:["window","forcefield"],
+  steps:[
+    {id:"problem", q:"What is the problem? State the facts: what, where, when, how many.", type:"textarea", ph:"e.g. J3 solder joints crack on boards built on night shift (21 of 105, week 44)"},
+    {id:"start", q:"What has been verified so far (the failure mechanism or key evidence)?", type:"textarea", optional:1, ph:"e.g. FA confirmed fatigue crack from board flex during mating"},
+    ...WHYS.map((w,i)=>({id:w, optional:i>=3,
+      q:a=>`Why? “${short(i?a[WHYS[i-1]]:a.problem,90)||"…"}”`,
+      help:i>=3?"Leave blank and Skip if you have already reached a cause you can act on.":"Start with 'Because…'. Give a fact you can check, not a guess.",
+      type:"textarea", ph:"Because…", when:a=>i<3||!!String(a[WHYS[i-1]]||"").trim()})),
+    {id:"root", q:"What is the root cause you can act on?", type:"textarea", def:a=>{ const l=[...WHYS].reverse().find(w=>String(a[w]||"").trim()); return l?short(a[l],400):""; },
+      help:"Usually the last 'why'. It should be in the system: a standard, process, design rule or check."},
+    {id:"check", q:a=>"Read it backwards with “therefore”. Does every step follow from the one below it?", type:"choice", opts:[["yes","Yes, the logic holds"],["no","No, a link is weak or unproven"]]},
+    {id:"cm", q:"What countermeasures address the root cause?", type:"table", minRows:3,
+      cols:[{k:"act",l:"Action",w:220},{k:"type",l:"Type",type:"select",opts:[["",""],["Fix","Fix (correct)"],["Prevent","Prevent recurrence"],["Detect","Improve detection"]]},{k:"owner",l:"Owner",w:90},{k:"due",l:"Due",w:70}]},
+    {id:"escape", q:"Why wasn't the problem detected before it escaped?", type:"textarea", optional:1, help:"A second, short why-chain for detection."}
+  ],
+  sample:{problem:"J3 solder joints crack on PCBAs built on night shift: 21 of 105 boards by operator D in week 44 (0–1% for other operators).",
+    start:"FA confirmed fatigue cracks at J3 pins 3–6 caused by board flex during cable mating (strain gauge: about 1,100 µε without support vs 250 µε with the fixture).",
+    w1:"Because the board flexed while the harness was mated to J3.",
+    w2:"Because the board was not in the back-support fixture during mating.",
+    w3:"Because night-shift bench 2 has no fixture, and operator D did not know one was required.",
+    w4:"Because operator D transferred from another line three weeks ago and was not trained on this line's work instruction.",
+    w5:"Because the line-transfer checklist has no step for line-specific work-instruction training and sign-off.",
+    root:"The line-transfer process has no step for line-specific WI training and sign-off, and fixture use depends on memory (no fixture at bench 2, no interlock).",
+    check:"yes",
+    cm:[{act:"Install fixture at night-shift bench 2 and shadow-board all fixtures",type:"Fix",owner:"Mfg Eng",due:"Wk 46"},
+        {act:"Add line-specific WI training and supervisor sign-off to the line-transfer checklist",type:"Prevent",owner:"Prod Supv",due:"Wk 47"},
+        {act:"Add fixture-presence interlock and a photo to WI step 14",type:"Prevent",owner:"Mfg Eng",due:"Wk 48"},
+        {act:"Add J3 flex 'wiggle' continuity test to final test",type:"Detect",owner:"Test Eng",due:"Wk 49"}],
+    escape:"Final test checks J3 continuity with the board static, so an intermittent crack can still pass. Visual inspection only checks that J3 is seated."},
+  render(a){
+    if(!String(a.problem||"").trim()) return EMPTY();
+    const ws=WHYS.map(w=>a[w]).filter(x=>String(x||"").trim());
+    let h=`<div class="wchain"><div class="wbox prob"><div class="lb">PROBLEM</div>${esc(a.problem)}</div>`;
+    if(a.start) h+=`<div class="warr">verified evidence</div><div class="wbox" style="border-style:dashed"><div class="lb">VERIFIED SO FAR</div>${esc(a.start)}</div>`;
+    ws.forEach((w,i)=>{ h+=`<div class="warr"><b>↓</b>Why?</div><div class="wbox"><div class="lb">WHY ${i+1}</div>${esc(w)}</div>`; });
+    if(a.root) h+=`<div class="warr"><b>↓</b>root cause</div><div class="wbox root"><div class="lb">ROOT CAUSE</div><b>${esc(a.root)}</b></div>`;
+    h+=`</div>`;
+    const f=[];
+    if(ws.length && ws.length<3) f.push(["", "Only "+ws.length+" why(s) so far. Keep asking until you reach a cause in the system."]);
+    if(/(operator|human|user)\s+error|careless|forgot|not careful|lack of attention|retrain/i.test(a.root||"")) f.push(["warn","The root cause blames a person. Ask why the system allowed the mistake: missing standard, unclear WI, no mistake-proofing, no training step?"]);
+    if(a.check==="no") f.push(["warn","You flagged a weak link. Verify that step with data before acting on the root cause."]);
+    if(ws.length>=2){ const back=[...ws].reverse().map(x=>short(x,60)); f.push(["", `<b>Backwards check:</b> ${back.map(esc).join(" <b>→ therefore →</b> ")} <b>→ therefore →</b> ${esc(short(a.problem,60))}`]); }
+    h+=f.map(([c,x])=>`<div class="find ${c}">${x}</div>`).join("");
+    const cm=rows(a.cm).filter(filled);
+    if(cm.length) h+=`<div style="font-weight:700;margin-top:12px">Countermeasures</div>`+miniTable([{k:"act",l:"Action"},{k:"type",l:"Type"},{k:"owner",l:"Owner"},{k:"due",l:"Due"}],cm);
+    if(cm.length && !cm.some(r=>r.type==="Prevent")) h+=`<div class="find warn">No 'Prevent recurrence' action yet. A fix alone lets the problem come back.</div>`;
+    if(a.escape) h+=`<div class="find"><b>Why it escaped:</b> ${esc(a.escape)}</div>`;
+    return h;
+  }
+});
+
+/* ---------- Window analysis ---------- */
+const WS=[["KP","Established · practiced 100%"],["KN","Established · not practiced 100%"],["U","Not established"]];
+const BT=[["",""],["B1","B1 · can't do it (skill / how-to)"],["B2","B2 · doesn't always do it (habit / compliance)"]];
+const WCAT={
+  A:{n:"Established",k:"kA",d:"The right method is established and practiced 100% by everyone.",cm:"If the problem still happened, the method itself does not prevent it: treat it as Cat. D (A → D) and revise the standard, or look for a technical cause."},
+  B:{n:"Practice problem",k:"kB",d:"The method is established but not practiced 100%.",cm:"Find out whether it is B1 (can't do it: skill) or B2 (doesn't always do it: compliance). Each needs a different fix."},
+  B1:{n:"Practice problem · skill (B1)",k:"kB",d:"People know the method but don't know how to do it correctly (skill, how-to, tools or means).",cm:"Hands-on training and OJT with a skill check or certification, job aids at the station, and the right tools and means."},
+  B2:{n:"Practice problem · compliance (B2)",k:"kB",d:"People know the method and can do it, but don't always do it (forget, inconvenient, time pressure).",cm:"Make it hard to skip: mistake-proofing (poka-yoke, interlock, monitor with alarm), make the right way the easy way, visual reminders, checklists, supervision and audits."},
+  C:{n:"Communication problem",k:"kC",d:"A right method exists, but not everyone involved knows it.",cm:"Communicate the standard: train the people who don't know it, update and distribute the work instruction, and fix handover and change-notice processes."},
+  D:{n:"Standardization problem",k:"kD",d:"There is no right method (standard) that prevents the problem.",cm:"Establish the standard: investigate or test to find the right method, write it into the WI, then communicate and train."}};
+const wcell=(x,y)=> x==="U"&&y==="U"?"D" : (x==="U"||y==="U")?"C" : (x==="KP"&&y==="KP")?"A" : "B";
+function waCat(a){ const q=k=>a[k]&&a[k].a;
+  if(!q("q1")) return null; if(q("q1")==="no") return "D";
+  if(!q("q2")) return null; if(q("q2")==="no") return "C";
+  if(!q("q3")) return null; if(q("q3")==="no") return "B1";
+  if(!q("q4")) return null; return q("q4")==="no"?"B2":"A"; }
+const wReach=(a,i)=>["q1","q2","q3","q4"].slice(0,i).every(k=>a[k]&&a[k].a==="yes");
+const WPOS={A:["KP","KP"],B1:["KN","KP"],B2:["KN","KP"],C:["U","KP"],D:["U","U"]};   /* [Y, X] */
+const badge = c => `<span class="cell-badge ${WCAT[c].k}">${c}</span>`;
+const WQ=[["q1","Is there a right","method (standard)?","D"],["q2","Does everyone","know that method?","C"],["q3","Do they know how","to do it correctly?","B1"],["q4","Does everyone","always do it?","B2"]];
+function wTree(a){
+  const W=960,H=590, cx=i=>800-i*160, cy=i=>80+i*125, hw=95, hh=48, cat=waCat(a);
+  let g="";
+  g+=`<rect x="14" y="8" width="410" height="66" rx="4" fill="#fef08a" stroke="#ca8a04"/>`+TL(26,30,clip(wrap(a.problem||"Problem",52),2),17,'font-size="13.5" font-weight="700" fill="#3f2d00"');
+  if(a.practice) g+=TL(26,66,clip(wrap("Practice: "+a.practice,64),1),14,'font-size="11.5" fill="#6b4c00"');
+  let reach=true;
+  WQ.forEach(([k,l1,l2,nc],i)=>{
+    const x=cx(i), y=cy(i), ans=a[k]&&a[k].a, done=!!ans;
+    const st=!reach?"#cbd5e1":done?"#14213d":"#2563eb", tc=!reach?"#94a3b8":"#14213d";
+    const yC=reach&&ans==="yes"?"#2563eb":"#a3adbb", nC=reach&&ans==="no"?"#dc2626":"#a3adbb";
+    const yW=reach&&ans==="yes"?2.4:1.3, nW=reach&&ans==="no"?2.4:1.3;
+    // NO branch
+    g+=`<path d="M${x+hw} ${y} H${x+125} V${y+46}" fill="none" stroke="${nC}" stroke-width="${nW}"/>`+T(x+hw+6,y-7,"NO",`font-size="12" font-weight="700" fill="${nC}"`);
+    const hitN=reach&&ans==="no";
+    if(hitN) g+=`<rect x="${x+125-38}" y="${y+50}" width="76" height="26" rx="13" fill="#fff1f1" stroke="#dc2626" stroke-width="2"/>`;
+    g+=T(x+125,y+68,"Cat. "+nc,`text-anchor="middle" font-size="${hitN?14:13}" font-weight="${hitN?800:600}" fill="${hitN?"#dc2626":reach?"#334155":"#94a3b8"}"`);
+    // YES branch
+    const ny = i<3 ? cy(i+1)-hh : y+82;
+    g+=`<path d="M${x-hw} ${y} H${x-160} V${ny}" fill="none" stroke="${yC}" stroke-width="${yW}"/>`+T(x-hw-6,y-7,"YES",`text-anchor="end" font-size="12" font-weight="700" fill="${yC}"`);
+    // because
+    if(reach && a[k] && a[k].b){ const ls=["Because:",...clip(wrap(a[k].b,22),4)], bx=x-160-10, by0=y-8-(ls.length-1)*14;
+      g+=`<text x="${bx}" y="${by0}" text-anchor="end" font-size="11.5" fill="#334155">${ls.map((l,j)=>`<tspan x="${bx}" dy="${j?14:0}"${j?"":' font-weight="700"'}>${esc(l)}</tspan>`).join("")}</text>`; }
+    // diamond
+    g+=`<polygon points="${x},${y-hh} ${x+hw},${y} ${x},${y+hh} ${x-hw},${y}" fill="${reach?"#fff":"#f8fafc"}" stroke="${st}" stroke-width="${done?1.8:1.4}" ${reach&&!done?'stroke-dasharray="6 4"':""}/>`;
+    g+=TL(x,y-4,[l1,l2],15,`text-anchor="middle" font-size="12.5" font-weight="600" fill="${tc}"`);
+    reach = reach && ans==="yes";
+  });
+  const xa=cx(3)-160, hitA=cat==="A";
+  if(hitA) g+=`<rect x="${xa-70}" y="${cy(3)+88}" width="140" height="28" rx="14" fill="#fff1f1" stroke="#dc2626" stroke-width="2"/>`;
+  g+=T(xa,cy(3)+107,"Cat. A → Cat. D",`text-anchor="middle" font-size="${hitA?14:13}" font-weight="${hitA?800:600}" fill="${hitA?"#dc2626":reach?"#334155":"#94a3b8"}"`);
+  return `<div class="svscroll" style="--minw:640px"><svg viewBox="0 0 ${W} ${H}" class="chart" xmlns="http://www.w3.org/2000/svg">${g}</svg></div>`;
+}
+function wGrid(a, cat, items){
+  const marks={};
+  const add=(y,x,html)=>{ (marks[y+"|"+x]=marks[y+"|"+x]||[]).push(html); };
+  if(cat){ const [y,x]=WPOS[cat]; add(y,x,`<span class="mk main" title="${esc(a.practice||"")}">★ ${cat}</span>`); }
+  items.forEach((r,i)=>{ const c=wcell(r.x,r.y); add(r.y,r.x,`<span class="mk" title="${esc(r.p)}">${i+1}${c==="B"&&r.bt?" · "+r.bt:""}</span>`); });
+  const td=(y,x)=>{ const L=wcell(x,y), m=marks[y+"|"+x]||[]; return `<td class="${WCAT[L].k}${m.length?" hit":""}"><div class="L">${L}</div><div class="d">${WCAT[L].n}</div>${m.join("")}</td>`; };
+  return `<table class="wtab"><colgroup><col style="width:30px"><col style="width:96px"><col><col><col></colgroup>
+    <tr><th rowspan="2" colspan="2" class="corner"><span style="float:right">X</span><br><br><span>Y</span></th><th colspan="2">Right method established</th><th rowspan="2">Right method<br>not established</th></tr>
+    <tr><th>Practiced 100%</th><th>Not practiced 100%</th></tr>
+    <tr><th rowspan="2" class="vt">Right method established</th><th>Practiced 100%</th>${td("KP","KP")}${td("KP","KN")}${td("KP","U")}</tr>
+    <tr><th>Not practiced 100%</th>${td("KN","KP")}${td("KN","KN")}${td("KN","U")}</tr>
+    <tr><th colspan="2">Right method<br>not established</th>${td("U","KP")}${td("U","KN")}${td("U","U")}</tr></table>
+    <div style="font-size:11.5px;color:var(--mute);margin-top:4px">X = the side that sets the method (e.g. management, engineering, supervision). Y = the side that does the work. ★ = the practice analysed above; numbers = other practices.</div>`;
+}
+tool({id:"window", cat:"rc", icon:"⊞", name:"Window analysis",
+  short:"Find out whether the right method was missing, not known, not done skilfully, or not always followed — and pick the matching fix.",
+  guide:{what:"A QC tool for problems involving people and methods. It asks whether a right method is <b>established</b> and whether it is <b>practiced 100%</b>, by the side that sets the method (X) and the side that does the work (Y). The answer places the problem in one category, and each category needs a different countermeasure.",
+    when:["Workmanship, handling or procedure-related failures (e.g. ESD damage, missed steps, wrong fixture use).","When the instinct is 'retrain the operator': the window shows whether training is really the gap.","At handoffs in a flowchart (engineering → operator, day → night shift, company → supplier)."],
+    steps:["State the problem and the practice (method) in question.","<b>Is there a right method (standard)?</b> No → <b>Cat. D</b>: establish one.","<b>Does everyone know that method?</b> No → <b>Cat. C</b>: communicate it.","<b>Do they know how to do it correctly?</b> No → <b>Cat. B1</b>: build the skill.","<b>Does everyone always do it?</b> No → <b>Cat. B2</b>: make it hard to skip.","All Yes → <b>Cat. A</b>, yet the problem happened: the method itself is inadequate, so <b>A → D</b>: revise the standard.","Back every answer with evidence (“Because: …”)."],
+    tips:["B is split because the fixes differ: B1 (can't do it) needs training and practice; B2 (doesn't always do it) needs mistake-proofing and discipline. Retraining a B2 problem rarely works.","'Practiced 100%' means by everyone, every time. One person sometimes forgetting is a B2.","Answer from evidence (records, observation, interviews), not assumptions.","For several practices or a chain of handoffs, classify each one and place it in the grid."]},
+  related:["fivewhy","flowchart","stratification"],
+  sampleNote:"Two samples: the J3 fixture case (Load sample) and the ESD wrist-strap example from the course slide.",
+  resultLabel:"Decision tree + window",
+  next:["forcefield","fivewhy"],
+  altSamples:[{label:"ESD example", data:{
+    problem:"Electrostatic damage of IC-005, IC-007 on PCB AU-3, Model A-1 at Line A",
+    practice:"Mount the PCB without electrostatic damage (wear an ESD wrist strap)",
+    q1:{a:"yes",b:"There is an operation standard."},
+    q2:{a:"yes",b:"Everyone on the line is supplied with a wrist strap for ESD protection (100%)."},
+    q3:{a:"yes",b:"They have been trained by the supervisor (100%)."},
+    q4:{a:"no",b:"Someone does not always wear it. They sometimes forget."},
+    cm:[{a:"Wrist-strap continuity monitor with alarm at each station",c:"B2",o:"Mfg Eng",d:"Wk 2"},
+        {a:"Interlock: station cannot start until the wrist strap tests OK",c:"B2",o:"Mfg Eng",d:"Wk 4"},
+        {a:"Wrist-strap test logged at shift start and checked by supervisor",c:"B2",o:"Line supervisor",d:"Wk 1"}]}}],
+  steps:[
+    {id:"problem", q:"What is the problem?", type:"textarea", ph:"e.g. Electrostatic damage of IC-005, IC-007 on PCB AU-3 at Line A"},
+    {id:"practice", q:"Which practice or method is in question?", type:"text", ph:"e.g. Mount the PCB without ESD damage (wear wrist strap)"},
+    {id:"q1", type:"decide", no:"No → Cat. D", q:a=>`Is there a right method (standard) for “${short(a.practice,60)||"this"}” that prevents the problem?`, help:"Look for a work instruction, procedure, drawing note or spec. Give the evidence in 'Because'."},
+    {id:"q2", type:"decide", no:"No → Cat. C", when:a=>wReach(a,1), q:"Does everyone involved know that method?", help:"Check training records and ask the people doing the work, including other shifts and new or transferred staff."},
+    {id:"q3", type:"decide", no:"No → Cat. B1", when:a=>wReach(a,2), q:"Do they know how to do it correctly (skill, tools, means)?", help:"Knowing the rule isn't the same as being able to do it well. Observe someone doing it."},
+    {id:"q4", type:"decide", no:"No → Cat. B2", when:a=>wReach(a,3), q:"Does everyone always do it, 100% of the time?", help:"Observe across shifts. One person sometimes forgetting is a No."},
+    {id:"anote", type:"textarea", optional:1, when:a=>waCat(a)==="A", q:"The method is known and always followed, yet the problem happened (Cat. A → D). What is wrong with the method itself?"},
+    {id:"more", type:"table", optional:1, minRows:2, def:a=>a.items, q:"Any other practices involved? Classify each by X (who sets the method) and Y (who does the work).",
+      help:"Optional. Each one is placed in the window. If it lands in B, say whether it is B1 or B2.",
+      cols:[{k:"p",l:"Practice",w:170},{k:"x",l:"X: method owner",type:"select",opts:[["",""],...WS]},{k:"y",l:"Y: people doing it",type:"select",opts:[["",""],...WS]},{k:"bt",l:"If B",type:"select",opts:BT},{k:"ev",l:"Evidence",w:130}]},
+    {id:"cm", type:"table", minRows:2, q:"What countermeasures match the category?",
+      help:a=>{ const c=waCat(a); return c?`Cat. ${c}${c==="A"?" → D":""}: ${WCAT[c].cm}`:"Choose actions that match the category, not just 'retrain'."; },
+      cols:[{k:"a",l:"Action",w:220},{k:"c",l:"For category",type:"select",opts:["","A→D","B1","B2","C","D"]},{k:"o",l:"Owner",w:90},{k:"d",l:"Due",w:70}]}
+  ],
+  sample:{problem:"J3 solder joints crack on boards built on night-shift bench 2 (21 of 105, week 44).",
+    practice:"Use the back-support fixture when mating the J3 harness",
+    q1:{a:"yes",b:"WI rev C step 14 requires fixture P/N 123-456."},
+    q2:{a:"no",b:"Operator D transferred from another line 3 weeks ago; no training record for WI step 14."},
+    more:[{p:"Visual check that J3 is fully seated",x:"KP",y:"KP",ev:"Observed on shift; done on every board"},
+      {p:"Maximum mating force for J3",x:"U",y:"U",ev:"No limit in WI, drawing or connector datasheet review"},
+      {p:"Report missing tools to supervisor at shift start",x:"KP",y:"KN",bt:"B2",ev:"Operator knew bench 2 had no fixture but didn't report it (time pressure)"}],
+    cm:[{a:"Add line-specific WI training and supervisor sign-off to the line-transfer checklist",c:"C",o:"Prod Supv",d:"Wk 47"},
+      {a:"Brief all night-shift operators on WI step 14, with a photo at the station",c:"C",o:"Prod Supv",d:"Wk 46"},
+      {a:"Fixture shadow board checked at shift start (missing tool = stop)",c:"B2",o:"Line supervisor",d:"Wk 46"},
+      {a:"Define a maximum J3 mating force and add it to the WI",c:"D",o:"Design Eng",d:"Wk 49"}]},
+  render(a){
+    if(!String(a.problem||"").trim() && !String(a.practice||"").trim()) return EMPTY();
+    const cat=waCat(a);
+    const items=rows(a.more).filter(r=>String(r.p||"").trim()&&r.x&&r.y);
+    let h=wTree(a);
+    if(cat){ const c=WCAT[cat];
+      h+=`<div class="find ${cat==="A"?"":"warn"}">${badge(cat)} <b>${esc(c.n)}${cat==="A"?" → Cat. D":""}</b><br>${esc(c.d)}${cat==="A"?" But the problem still happened, so the method itself is inadequate.":""}<br><b>Countermeasure type:</b> ${esc(c.cm)}</div>`;
+      if(cat==="A"&&a.anote) h+=`<div class="find"><b>What's wrong with the method:</b> ${esc(a.anote)}</div>`;
+      if(cat==="B1"||cat==="B2") h+=`<div class="find">B is split because the fixes differ: <b>B1</b> can't do it → build the skill; <b>B2</b> doesn't always do it → mistake-proof it. Retraining alone rarely fixes a B2.</div>`;
+    } else h+=`<div class="find">Answer the questions in order. The first <b>No</b> gives the category.</div>`;
+    h+=wGrid(a,cat,items);
+    if(items.length){
+      h+=miniTable([{k:"n",l:"#"},{k:"p",l:"Practice",html:1},{k:"c",l:"Category",html:1},{k:"ev",l:"Evidence",html:1}],
+        items.map((r,i)=>{ let c=wcell(r.x,r.y); if(c==="B"&&r.bt) c=r.bt; return {n:i+1,p:esc(r.p),c:`${badge(c)} ${esc(WCAT[c].n)}`,ev:esc(r.ev||"")}; }));
+      const bNoType=items.filter(r=>wcell(r.x,r.y)==="B"&&!r.bt).length;
+      if(bNoType) h+=`<div class="find warn">${bNoType} practice(s) in B without B1/B2. Decide which, so the fix matches.</div>`;
+    }
+    const cm=rows(a.cm).filter(filled);
+    if(cm.length){ h+=`<div style="font-weight:700;margin-top:12px">Countermeasures</div>`+miniTable([{k:"a",l:"Action"},{k:"c",l:"For"},{k:"o",l:"Owner"},{k:"d",l:"Due"}],cm);
+      if(cat && !cm.some(r=>r.c===(cat==="A"?"A→D":cat))) h+=`<div class="find warn">No action is marked for the main category (${cat}${cat==="A"?" → D":""}).</div>`;
+      if(cat==="B2" && cm.filter(r=>r.c==="B2").every(r=>/train|brief|remind/i.test(r.a||""))) h+=`<div class="find warn">The B2 actions are all training or reminders. Add mistake-proofing so the step can't be skipped.</div>`; }
+    return h;
+  }
+});
+
+/* ---------- Fault tree analysis ---------- */
+const FK=[["basic","Basic event"],["or","OR gate (any one)"],["and","AND gate (all together)"]];
+function ftaBuild(a){
+  const ev=rows(a.events).map(r=>({id:String(r.id||"").trim(),d:String(r.d||"").trim(),par:String(r.par||"").trim()||"T",k:r.k||"basic",p:num(r.p)})).filter(r=>r.id&&r.id!=="T");
+  const nodes={T:{id:"T",d:a.top||"Top event",k:a.gate||"or",ch:[]}}; const warn=[];
+  ev.forEach(e=>{ if(nodes[e.id]) warn.push(`Duplicate ID ${e.id}`); nodes[e.id]=Object.assign({ch:[]},e); });
+  ev.forEach(e=>{ const p=nodes[e.par]; if(!p){ warn.push(`${e.id}: parent “${e.par}” not found`); return; } if(p.k==="basic"){ warn.push(`${e.id}: parent ${e.par} is a basic event; make it a gate`); return; } p.ch.push(e.id); });
+  const prob=(id,seen=new Set())=>{ const n=nodes[id]; if(seen.has(id)) return NaN; seen.add(id);
+    if(n.k==="basic"||!n.ch.length) return n.k==="basic"?n.p:NaN;
+    const ps=n.ch.map(c=>prob(c,new Set(seen))); if(ps.some(x=>!Number.isFinite(x))) return NaN;
+    return n.k==="and" ? ps.reduce((x,y)=>x*y,1) : 1-ps.reduce((x,y)=>x*(1-y),1); };
+  const cuts=(id,depth=0)=>{ const n=nodes[id]; if(depth>30) return [];
+    if(n.k==="basic") return [[id]]; if(!n.ch.length) return [];
+    const cs=n.ch.map(c=>cuts(c,depth+1));
+    if(n.k==="or") return cs.flat();
+    let acc=[[]]; cs.forEach(set=>{ const nx=[]; acc.forEach(x=>set.forEach(y=>nx.push([...new Set([...x,...y])].sort()))); acc=nx.slice(0,500); }); return acc; };
+  let cs=cuts("T").sort((x,y)=>x.length-y.length); const min=[];
+  cs.forEach(c=>{ if(!min.some(m=>m.every(x=>c.includes(x)))) min.push(c); });
+  return {nodes,warn,P:prob("T"),min,prob};
+}
+tool({id:"fta", cat:"rc", icon:"⏚", name:"Fault tree analysis",
+  short:"Map how basic events combine through AND/OR gates to cause the top event, and find the critical combinations.",
+  guide:{what:"A top-down logic diagram. The undesired event sits at the top; below it, gates show whether any one cause is enough (OR) or several must happen together (AND). With probabilities, it estimates how likely the top event is and which combinations (cut sets) matter most.",
+    when:["When several causes combine, or there are redundant protections.","For safety-critical or system-level failures.","To decide where a barrier or detection step gives the most benefit (see IEC 61025)."],
+    steps:["Define the top event precisely.","Break it into immediate causes and choose the gate: OR (any one) or AND (all needed).","Keep breaking down until you reach basic events you can't or needn't divide further.","Estimate a probability for each basic event, if you have one.","Read the minimal cut sets: single-event sets are single points of failure."],
+    tips:["An AND gate means the causes are independent barriers; check that they really are.","Probabilities are optional. The structure and cut sets are useful on their own."]},
+  related:["fishbone","fivewhy"],
+  sampleNote:"Why a J3 intermittent open can reach the field: a cracked joint needs both flex stress and a thin fillet.",
+  resultLabel:"Fault tree + cut sets",
+  next:["forcefield"],
+  steps:[
+    {id:"top", q:"What is the top (undesired) event?", type:"text", ph:"e.g. J3 intermittent open in the field"},
+    {id:"gate", q:"How do the immediate causes combine to cause the top event?", type:"choice", opts:[["or","OR — any one cause is enough"],["and","AND — all must happen together"]]},
+    {id:"events", q:"List every event below the top. Give each an ID, its parent (T = top event), and whether it's a gate or a basic event.", type:"table", minRows:4,
+      help:"Probabilities are only needed for basic events (e.g. 0.02 = 2%). Leave blank if unknown.",
+      cols:[{k:"id",l:"ID",w:50,ph:"G1"},{k:"d",l:"Description",w:210},{k:"par",l:"Parent",w:55,ph:"T"},{k:"k",l:"Type",type:"select",opts:FK},{k:"p",l:"Probability",type:"number",w:70}]}
+  ],
+  sample:{top:"J3 intermittent open in the field", gate:"or", events:[
+    {id:"G1",d:"Cracked solder joint at J3",par:"T",k:"and"},
+    {id:"G2",d:"Excessive flex stress on the joint",par:"G1",k:"or"},
+    {id:"B1",d:"Board flexed at mating, no support fixture",par:"G2",k:"basic",p:"0.08"},
+    {id:"B2",d:"Thermal-cycling fatigue downhole",par:"G2",k:"basic",p:"0.02"},
+    {id:"B3",d:"Thin solder fillet (process escape)",par:"G1",k:"basic",p:"0.03"},
+    {id:"B4",d:"Connector pin bent or damaged",par:"T",k:"basic",p:"0.002"},
+    {id:"B5",d:"Harness-side connector defect",par:"T",k:"basic",p:"0.001"}]},
+  render(a){
+    if(!String(a.top||"").trim()) return EMPTY();
+    const {nodes,warn,P,min,prob}=ftaBuild(a);
+    const BW=156, BH=60, LX=176, LY=124;
+    const lay={}; let leaf=0;
+    const place=(id,depth,seen)=>{ if(seen.has(id)) return; seen.add(id); const n=nodes[id];
+      if(!n.ch.length){ lay[id]={x:leaf*LX, d:depth}; leaf++; return; }
+      n.ch.forEach(c=>place(c,depth+1,seen)); const xs=n.ch.filter(c=>lay[c]).map(c=>lay[c].x); lay[id]={x:(Math.min(...xs)+Math.max(...xs))/2, d:depth}; };
+    place("T",0,new Set());
+    const maxD=Math.max(...Object.values(lay).map(l=>l.d)), W=Math.max(1,leaf)*LX+20, H=(maxD+1)*LY+20;
+    const X=id=>lay[id].x+10+(LX-BW)/2, Y=id=>lay[id].d*LY+10;
+    const crit=new Set(min.filter(c=>c.length===1).flat());
+    let g="";
+    Object.keys(lay).forEach(id=>{ const n=nodes[id]; if(!n.ch.length||n.k==="basic") return; const cx=X(id)+BW/2, gy=Y(id)+BH+30;
+      n.ch.filter(c=>lay[c]).forEach(c=>{ const tx=X(c)+BW/2, ty=Y(c); g+=`<path d="M${cx} ${gy} V${gy+12} H${tx} V${ty}" fill="none" stroke="#64748b" stroke-width="1.4"/>`; }); });
+    Object.keys(lay).forEach(id=>{ const n=nodes[id], x=X(id), y=Y(id), isB=n.k==="basic", cr=crit.has(id);
+      const pr=prob(id);
+      g+=`<rect x="${x}" y="${y}" width="${BW}" height="${BH}" rx="6" fill="${id==="T"?"#14213d":isB?(cr?"#fff1f1":"#fff"):"#fdf3e5"}" stroke="${id==="T"?"#14213d":isB?(cr?"#dc2626":"#64748b"):"#b45309"}" stroke-width="1.5"/>`;
+      g+=T(x+7,y+14,id,`font-size="10.5" font-weight="800" fill="${id==="T"?"#93c5fd":"#64748b"}" font-family="monospace"`);
+      if(Number.isFinite(pr)) g+=T(x+BW-7,y+14,"p="+(pr<0.001?pr.toExponential(1):(+pr.toPrecision(2))),`text-anchor="end" font-size="10.5" font-weight="700" fill="${id==="T"?"#fcd34d":"#b45309"}"`);
+      g+=TL(x+BW/2,y+30,clip(wrap(n.d,24),2),13,`text-anchor="middle" font-size="11.5" font-weight="600" fill="${id==="T"?"#fff":"#14213d"}"`);
+      const cx=x+BW/2, gy=y+BH;
+      if(!isB && n.ch.length){
+        if(n.k==="and") g+=`<path d="M${cx-14} ${gy+30} V${gy+14} A14 14 0 0 1 ${cx+14} ${gy+14} V${gy+30} Z" fill="#fff" stroke="#b45309" stroke-width="1.6"/>`+T(cx,gy+26,"AND",'text-anchor="middle" font-size="8" font-weight="800" fill="#b45309"');
+        else g+=`<path d="M${cx-15} ${gy+30} Q${cx} ${gy+22} ${cx+15} ${gy+30} Q${cx+13} ${gy+12} ${cx} ${gy+2} Q${cx-13} ${gy+12} ${cx-15} ${gy+30} Z" fill="#fff" stroke="#b45309" stroke-width="1.6"/>`+T(cx,gy+24,"OR",'text-anchor="middle" font-size="8" font-weight="800" fill="#b45309"');
+        g+=`<line x1="${cx}" y1="${gy}" x2="${cx}" y2="${gy+2}" stroke="#b45309"/>`;
+      }
+      if(isB) g+=`<circle cx="${cx}" cy="${gy+12}" r="9" fill="#fff" stroke="${cr?"#dc2626":"#64748b"}" stroke-width="1.5"/><line x1="${cx}" y1="${gy}" x2="${cx}" y2="${gy+3}" stroke="#64748b"/>`;
+    });
+    const svg=`<div class="svscroll" style="--minw:${W>900?Math.round(W*0.6):0}px"><svg viewBox="0 0 ${W} ${H}" class="chart" xmlns="http://www.w3.org/2000/svg">${g}</svg></div>`;
+    const csRows=min.map(c=>{ const p=c.map(id=>nodes[id].p); const pp=p.every(Number.isFinite)?p.reduce((x,y)=>x*y,1):NaN; return {cs:c.map(id=>`${id} · ${nodes[id].d}`).join("  +  "),o:c.length,p:pp}; }).sort((x,y)=>(Number.isFinite(y.p)?y.p:-1)-(Number.isFinite(x.p)?x.p:-1)||x.o-y.o);
+    const tot=sum(csRows.filter(r=>Number.isFinite(r.p)).map(r=>r.p));
+    const tbl=miniTable([{k:"cs",l:"Minimal cut set (events that together cause the top event)"},{k:"o",l:"Order",n:1},{k:"pp",l:"Probability",n:1},{k:"sh",l:"Share",n:1}], csRows.map(r=>({cs:r.cs,o:r.o,pp:Number.isFinite(r.p)?(+r.p.toPrecision(2)):"–",sh:Number.isFinite(r.p)&&tot?pct(r.p/tot,0):"–",_hi:r.o===1})));
+    const sp=min.filter(c=>c.length===1);
+    return svg+`<div class="kpis">${kpi(Number.isFinite(P)?(P<0.001?P.toExponential(2):pct(P,2)):"–","Top-event probability")}${kpi(min.length,"Minimal cut sets")}${kpi(sp.length,"Single points of failure")}</div>`+
+      (warn.length?`<div class="find warn"><b>Check the tree:</b><ul>${warn.map(w=>`<li>${esc(w)}</li>`).join("")}</ul></div>`:"")+
+      (csRows.length?`<div class="find">${csRows[0]&&Number.isFinite(csRows[0].p)?`The largest contributor is <b>${esc(csRows[0].cs)}</b> (${pct(tot?csRows[0].p/tot:0,0)} of the total). `:""}${sp.length?`<b>${sp.length} single point(s) of failure</b> (highlighted red) need only one event to cause the top event.`:"No single point of failure: every path needs two or more events."}</div>`+tbl:"");
+  }
+});
+
+/* ===================== SOLUTION & CHANGE ===================== */
+const STR=[["",""],["1","1 weak"],["2","2"],["3","3 medium"],["4","4"],["5","5 strong"]];
+tool({id:"forcefield", cat:"sol", icon:"⇄", name:"Force-field analysis",
+  short:"Weigh the forces driving a change against those resisting it, and plan how to tip the balance.",
+  guide:{what:"Kurt Lewin's method for planning change. List the forces pushing toward the change (driving) and against it (restraining), rate their strength, then plan actions to strengthen drivers and, usually more effectively, weaken restraints.",
+    when:["Before implementing a countermeasure that people must adopt.","When a past fix didn't stick.","To decide between proceeding, adjusting, or stopping a change."],
+    steps:["State the change and the desired end state.","List the driving forces and rate each 1–5.","List the restraining forces and rate each 1–5.","Compare the totals and look at the strongest restraints.","Plan actions, focusing first on reducing the strongest restraints."],
+    tips:["Pushing harder on drivers often increases resistance; removing restraints is usually more effective.","Ask the people doing the work for the restraining forces; they know them best."]},
+  related:["fivewhy","window"],
+  sampleNote:"Making the J3 back-support fixture mandatory, with an interlock, at every cable bench.",
+  resultLabel:"Force-field diagram",
+  next:["controlchart"],
+  steps:[
+    {id:"change", q:"What change are you proposing?", type:"textarea", ph:"e.g. Make the J3 back-support fixture mandatory with an interlock at every cable bench"},
+    {id:"goal", q:"What is the desired end state?", type:"text", optional:1, ph:"e.g. Zero J3 cracks from mating"},
+    {id:"drv", q:"What forces drive the change forward? Rate each 1 (weak) to 5 (strong).", type:"table", minRows:3,
+      cols:[{k:"f",l:"Driving force",w:230},{k:"s",l:"Strength",type:"select",opts:STR}]},
+    {id:"res", q:"What forces resist or block the change? Rate each 1 to 5.", type:"table", minRows:3,
+      cols:[{k:"f",l:"Restraining force",w:230},{k:"s",l:"Strength",type:"select",opts:STR}]},
+    {id:"acts", q:"What actions will strengthen drivers or weaken restraints?", type:"table", optional:1, minRows:2,
+      cols:[{k:"a",l:"Action",w:220},{k:"t",l:"Targets which force",w:150},{k:"o",l:"Owner",w:80}]},
+    {id:"dec", q:"What is the decision?", type:"choice", optional:1, opts:[["go","Proceed"],["go-act","Proceed with the actions above"],["hold","Hold: rework the proposal"],["stop","Do not proceed"]]}
+  ],
+  sample:{change:"Make the J3 back-support fixture mandatory, with a presence interlock, at every cable bench", goal:"Zero J3 cracked joints from mating; fixture use no longer depends on memory",
+    drv:[{f:"Field failures and non-productive time cost on customer jobs",s:"5"},{f:"23 J3 failures per week at final test (rework cost)",s:"4"},{f:"Low-cost fixture design already exists",s:"3"},{f:"Quality / Reliability backing the change",s:"3"}],
+    res:[{f:"Fixture adds about 2 minutes per board against takt",s:"4"},{f:"Three more fixtures needed: cost and 6-week lead time",s:"3"},{f:"Operators see it as an extra step",s:"2"},{f:"WI and training updates across all shifts",s:"2"}],
+    acts:[{a:"Redesign fixture with quick-clamp (under 20 s)",t:"Adds 2 min per board",o:"Mfg Eng"},{a:"3D-print interim fixtures this week",t:"Cost and lead time",o:"Mfg Eng"},{a:"Show the FA crack photos at a toolbox talk",t:"Seen as extra step",o:"Prod Supv"}],
+    dec:"go-act"},
+  render(a){
+    const D=rows(a.drv).filter(r=>String(r.f||"").trim()).map(r=>({f:r.f,s:num(r.s)||1})), R=rows(a.res).filter(r=>String(r.f||"").trim()).map(r=>({f:r.f,s:num(r.s)||1}));
+    if(!String(a.change||"").trim()) return EMPTY();
+    const n=Math.max(D.length,R.length,1), RH=54, W=720, cx=360, U=22, top=96, H=top+n*RH+16;
+    let g=`<rect x="${cx-190}" y="6" width="380" height="54" rx="8" fill="#14213d"/>`+TL(cx,28,clip(wrap(a.change,48),2),16,'text-anchor="middle" font-size="13" font-weight="700" fill="#fff"');
+    g+=`<line x1="${cx}" y1="${top-8}" x2="${cx}" y2="${H-6}" stroke="#14213d" stroke-width="3"/>`;
+    g+=T(cx-14,top-14,"DRIVING →",'text-anchor="end" font-size="12" font-weight="800" fill="#15803d"')+T(cx+14,top-14,"← RESTRAINING",'font-size="12" font-weight="800" fill="#dc2626"');
+    D.forEach((d,i)=>{ const y=top+i*RH+RH/2, L=d.s*U, x0=cx-8-L; g+=`<path d="M${x0} ${y-7} H${cx-22} V${y-13} L${cx-8} ${y} L${cx-22} ${y+13} V${y+7} H${x0} Z" fill="#22c55e" fill-opacity=".85"/>`+T(x0+6,y+4,d.s,'font-size="11" font-weight="800" fill="#fff"')+TL(x0-8,y-(clip(wrap(d.f,26),3).length-1)*7+4,clip(wrap(d.f,26),3),14,'text-anchor="end" font-size="12.5" fill="#14532d"'); });
+    R.forEach((d,i)=>{ const y=top+i*RH+RH/2, L=d.s*U, x1=cx+8+L; g+=`<path d="M${x1} ${y-7} H${cx+22} V${y-13} L${cx+8} ${y} L${cx+22} ${y+13} V${y+7} H${x1} Z" fill="#ef4444" fill-opacity=".85"/>`+T(x1-6,y+4,d.s,'text-anchor="end" font-size="11" font-weight="800" fill="#fff"')+TL(x1+8,y-(clip(wrap(d.f,26),3).length-1)*7+4,clip(wrap(d.f,26),3),14,'font-size="12.5" fill="#7f1d1d"'); });
+    const sd_=sum(D.map(d=>d.s)), sr=sum(R.map(d=>d.s)), strongest=[...R].sort((x,y)=>y.s-x.s)[0];
+    const acts=rows(a.acts).filter(filled);
+    const DEC={go:"Proceed",["go-act"]:"Proceed with the actions",hold:"Hold: rework the proposal",stop:"Do not proceed"};
+    return `<div class="svscroll" style="--minw:560px"><svg viewBox="0 0 ${W} ${H}" class="chart" xmlns="http://www.w3.org/2000/svg">${g}</svg></div>
+      <div class="kpis">${kpi(sd_,"Driving total")}${kpi(sr,"Restraining total")}${kpi((sd_-sr>0?"+":"")+(sd_-sr),"Balance")}${a.dec?kpi(DEC[a.dec],"Decision"):""}</div>
+      <div class="find ${sd_>sr?"good":"warn"}">${sd_>sr?"Driving forces outweigh the restraints, but strong restraints can still stall the change.":"Restraints are as strong as or stronger than the drivers: the change is likely to stall without action."}${strongest?` Tackle <b>${esc(strongest.f)}</b> (${strongest.s}/5) first; weakening a restraint usually works better than pushing harder.`:""}</div>
+      ${a.goal?`<div class="find"><b>Desired end state:</b> ${esc(a.goal)}</div>`:""}
+      ${acts.length?miniTable([{k:"a",l:"Action"},{k:"t",l:"Targets"},{k:"o",l:"Owner"}],acts):""}`;
+  }
+});
+
+/* ===================== state ===================== */
+const KEY = "rcakit.v1";
+let DB = {}; try{ DB = JSON.parse(localStorage.getItem(KEY)||"{}")||{}; }catch(e){ DB = {}; }
+let UI = {}; try{ UI = JSON.parse(localStorage.getItem(KEY+".ui")||"{}")||{}; }catch(e){ UI = {}; }
+function persist(){ try{ localStorage.setItem(KEY, JSON.stringify(DB)); localStorage.setItem(KEY+".ui", JSON.stringify(UI)); }catch(e){} }
+const blank = () => ({ans:{}, seen:{}, cur:null, done:false, started:false});
+function S(id){ return DB[id] || (DB[id]=blank()); }
+let curTool = null, choiceTmp = undefined;
+
+const vis = (t,a) => t.steps.filter(s => !s.when || s.when(a));
+const qText = (s,a) => typeof s.q==="function" ? s.q(a) : s.q;
+const colsOf = (s,a) => typeof s.cols==="function" ? s.cols(a) : s.cols;
+function optsOf(s,a){ const o=typeof s.opts==="function"?s.opts(a):s.opts; return o.map(x=>Array.isArray(x)?x:[x,x]); }
+function valOf(s,a){
+  let v = a[s.id];
+  if(v===undefined && s.def) v = s.def(a);
+  if(s.type==="table"){ v = Array.isArray(v) ? v : []; if(s.sync) v = s.sync(a,v); if(!v.length) v = Array.from({length:s.minRows||3},()=>({})); }
+  return v;
+}
+function isEmptyVal(s,v,a){
+  if(v===undefined||v===null) return true;
+  if(s.type==="number") return !Number.isFinite(v);
+  if(s.type==="decide") return !v || !v.a;
+  if(s.type==="list"||s.type==="numbers") return !v.length;
+  if(s.type==="table"){ const cols=colsOf(s,a).filter(c=>!c.ro).map(c=>c.k); return !v.some(r=>cols.some(k=>String(r[k]??"").trim()!=="")); }
+  return String(v).trim()==="";
+}
+function stepsDone(t,st){ const v=vis(t,st.ans); return {n:v.filter(s=>st.seen[s.id]).length, of:v.length}; }
+
+/* ===================== answer formatting ===================== */
+function fmtAns(s,v,a){
+  if(v===undefined||v===null||(Array.isArray(v)&&!v.length)||v==="") return `<i style="opacity:.7">Skipped</i>`;
+  switch(s.type){
+    case "choice": { const o=optsOf(s,a).find(x=>x[0]===v); return esc(o?o[1]:v); }
+    case "decide": return `<b>${v.a==="yes"?"YES":"NO"}</b>${v.b?` — because: ${esc(v.b)}`:""}`;
+    case "list": return `<ul>${v.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
+    case "numbers": return `${v.length} values: ${esc(v.slice(0,10).join(", "))}${v.length>10?" …":""}`;
+    case "table": {
+      const cols=colsOf(s,a), keep=cols.filter(c=>v.some(r=>String(r[c.k]??"").trim()!==""));
+      const rr=v.filter(r=>keep.some(c=>!c.ro&&String(r[c.k]??"").trim()!==""));
+      if(!rr.length) return `<i style="opacity:.7">No rows</i>`;
+      const show=rr.slice(0,8);
+      return `<div class="tscroll"><table class="mt"><tr>${keep.map(c=>`<th>${esc(c.l)}</th>`).join("")}</tr>${show.map(r=>`<tr>${keep.map(c=>`<td>${esc(c.type==="select"&&c.opts?((c.opts.map(o=>Array.isArray(o)?o:[o,o]).find(o=>o[0]===r[c.k])||[0,r[c.k]])[1]):r[c.k])}</td>`).join("")}</tr>`).join("")}</table></div>${rr.length>8?`<div style="font-size:11.5px;opacity:.75">+ ${rr.length-8} more rows</div>`:""}`;
+    }
+    default: return esc(v).replace(/\n/g,"<br>");
+  }
+}
+
+/* ===================== input widgets ===================== */
+function inputHTML(s,a){
+  const v=valOf(s,a), ph=s.ph?` placeholder="${esc(s.ph)}"`:"";
+  switch(s.type){
+    case "text": return `<input class="inp" data-in${ph} value="${esc(v??"")}">`;
+    case "number": return `<input class="inp" type="number" step="any" data-in${ph} value="${Number.isFinite(v)?v:""}">`;
+    case "textarea": return `<textarea data-in${ph}>${esc(v??"")}</textarea>`;
+    case "list": return `<textarea data-in${ph||' placeholder="One item per line"'}>${esc((v||[]).join("\n"))}</textarea>`;
+    case "numbers": return `<textarea data-in${ph||' placeholder="e.g. 5.01 5.03 4.99 …"'}>${esc((v||[]).join("  "))}</textarea>`;
+    case "decide": { choiceTmp=v&&v.a; return `<div class="choices">${[["yes",s.yes||"Yes"],["no",s.no||"No"]].map(([k,l])=>`<button type="button" class="choice${choiceTmp===k?" on":""}" data-dc="${k}">${esc(l)}</button>`).join("")}</div><textarea data-in style="margin-top:8px;min-height:64px" placeholder="${esc(s.ph||"Because… (the evidence for your answer)")}">${esc(v&&v.b||"")}</textarea>`; }
+    case "choice": { choiceTmp=v; return `<div class="choices">${optsOf(s,a).map(([k,l])=>`<button type="button" class="choice${v===k?" on":""}" data-ch="${esc(k)}">${esc(l)}${s.optHelp&&s.optHelp[k]?`<small>${esc(s.optHelp[k])}</small>`:""}</button>`).join("")}</div>`; }
+    case "table": {
+      const cols=colsOf(s,a);
+      let h=`<div class="tscroll"><table class="etbl" data-tbl><tr>${cols.map(c=>`<th>${esc(c.l)}</th>`).join("")}${s.fixed?"":"<th></th>"}</tr>`;
+      v.forEach((r,i)=>{ h+=`<tr data-r="${i}">`+cols.map(c=>{
+          const cv=r[c.k]??"";
+          if(c.ro) return `<td class="ro" data-c="${c.k}" data-v="${esc(cv)}">${esc(cv)}</td>`;
+          if(c.type==="select") return `<td><select data-c="${c.k}">${c.opts.map(o=>Array.isArray(o)?o:[o,o]).map(([k,l])=>`<option value="${esc(k)}"${String(cv)===String(k)?" selected":""}>${esc(l)}</option>`).join("")}</select></td>`;
+          return `<td><input data-c="${c.k}" ${c.type==="number"?'type="number" step="any"':""} value="${esc(cv)}"${c.ph?` placeholder="${esc(c.ph)}"`:""} style="${c.w?`min-width:${c.w}px`:""}"></td>`;
+        }).join("")+(s.fixed?"":`<td class="x"><button type="button" class="xb" data-delrow="${i}" title="Remove row">×</button></td>`)+`</tr>`; });
+      h+=`</table></div>`;
+      if(!s.fixed) h+=`<div class="row" style="margin-top:6px"><button type="button" class="btn sm" data-addrow>+ Add row</button><span class="hint">Tip: you can paste rows copied from Excel into the first cell.</span></div>`;
+      return h;
+    }
+  }
+  return "";
+}
+function readInput(s,a){
+  const box=$("#inbox"); if(!box) return a[s.id];
+  if(s.type==="choice") return choiceTmp;
+  if(s.type==="decide"){ const el=box.querySelector("[data-in]"); return {a:choiceTmp, b:el?el.value.trim():""}; }
+  if(s.type==="table"){
+    const cols=colsOf(s,a), out=[];
+    box.querySelectorAll("tr[data-r]").forEach(tr=>{ const r={};
+      cols.forEach(c=>{ const el=tr.querySelector(`[data-c="${c.k}"]`); if(!el) return; r[c.k]= c.ro ? el.dataset.v : el.value.trim(); });
+      out.push(r); });
+    return s.fixed ? out : out.filter(r=>cols.some(c=>!c.ro && String(r[c.k]??"").trim()!==""));
+  }
+  const el=box.querySelector("[data-in]"); if(!el) return undefined;
+  const raw=el.value;
+  if(s.type==="number") return num(raw);
+  if(s.type==="list") return raw.split("\n").map(x=>x.trim()).filter(Boolean);
+  if(s.type==="numbers") return parseNums(raw);
+  return raw.trim();
+}
+
+/* ===================== chat / wizard ===================== */
+function renderChat(){
+  const t=TOOLS[curTool], st=S(curTool), a=st.ans, steps=vis(t,a), p=stepsDone(t,st);
+  let h=`<h3>Step-by-step <span class="prog">${p.n} of ${p.of} answered</span></h3>`;
+  h+=`<div class="msg bot"><div class="av">RCA</div><div class="bub">${t.intro?esc(t.intro):`Let's build your <b>${esc(t.name)}</b>.`} I'll ask ${steps.length} short questions, one at a time. Your result builds on the right as you go.</div></div>`;
+  if(!st.started){
+    h+=`<div class="start"><button class="btn pri" data-act="begin">Start with my own data</button><button class="btn" data-act="sample">Load the sample case</button>${(t.altSamples||[]).map((x,i)=>`<button class="btn" data-alt="${i}">Load ${esc(x.label)}</button>`).join("")}</div>`;
+    $("#chat").innerHTML=h; return;
+  }
+  steps.forEach((s,i)=>{
+    const isCur = s.id===st.cur;
+    if(!isCur && !st.seen[s.id]) return;
+    const ph = s.phase ? `<span class="phase">${esc(s.phase)}</span>` : "";
+    const sug = s.tools && s.tools.length ? `<div class="sugg">Helpful tools: ${s.tools.map(x=>chipOf(x)).join("")}</div>` : "";
+    h+=`<div class="msg bot"><div class="av">${i+1}</div><div class="bub">${ph}<b class="q">${esc(qText(s,a))}${s.optional?' <span style="font-weight:400;color:var(--mute);font-size:12px">(optional)</span>':""}</b>${isCur&&s.help?`<div class="help">${esc(typeof s.help==="function"?s.help(a):s.help)}</div>`:""}${isCur?sug:""}</div></div>`;
+    if(isCur){
+      h+=`<div class="inbox" id="inbox" data-step="${s.id}">${inputHTML(s,a)}
+        <div class="row"><span class="hint">${s.type==="text"||s.type==="number"?"Press Enter to continue":s.type==="choice"?"Pick one to continue":s.type==="decide"?"Choose Yes or No, give the reason, then Next":"Ctrl + Enter to continue"}</span>
+        ${i>0?`<button class="btn ghost sm" data-act="back">← Back</button>`:""}
+        ${s.optional?`<button class="btn sm" data-act="skip">Skip</button>`:""}
+        ${s.type!=="choice"||a[s.id]!==undefined?`<button class="btn pri sm" data-act="next">${i===steps.length-1?"Finish":"Next →"}</button>`:""}</div></div>`;
+    } else {
+      h+=`<div class="msg user"><div class="bub">${fmtAns(s,a[s.id],a)}<span class="edit" data-edit="${s.id}">Edit</span></div></div>`;
+    }
+  });
+  if(!st.cur && st.done){
+    h+=`<div class="msg bot"><div class="av">✓</div><div class="bub"><b>All done.</b> Your ${esc(t.name)} is complete${t.cat==="fw"?" — the phase report is on the right":" on the right"}. Click <b>Edit</b> on any answer to change it, or <b>Print / PDF</b> to keep a record.${t.next&&t.next.length?`<div class="sugg">Next, consider: ${t.next.map(x=>chipOf(x)).join("")}</div>`:""}</div></div>`;
+  }
+  $("#chat").innerHTML=h;
+}
+function renderOut(ans){
+  const t=TOOLS[curTool]; const a=ans||S(curTool).ans; let h;
+  try{ h=t.render(a); }catch(e){ console.error(e); h=EMPTY("Some answers can't be drawn yet: "+esc(e.message)); }
+  $("#out").innerHTML=h;
+}
+function focusInbox(){ const el=$("#inbox [data-in], #inbox input, #inbox select, #inbox .choice"); if(el){ el.focus({preventScroll:true}); } const b=$("#inbox"); if(b) b.scrollIntoView({block:"nearest",behavior:"smooth"}); }
+function saveCurrent(validate){
+  const t=TOOLS[curTool], st=S(curTool); if(!st.cur) return true;
+  const s=t.steps.find(x=>x.id===st.cur); const v=readInput(s,st.ans);
+  if(isEmptyVal(s,v,st.ans)){
+    if(validate && !s.optional){ const b=$("#inbox"); b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake"); toast("Please answer this one to continue"); return false; }
+    delete st.ans[s.id];
+  } else st.ans[s.id]=v;
+  return true;
+}
+function advance(fromId){
+  const t=TOOLS[curTool], st=S(curTool), steps=vis(t,st.ans);
+  st.seen[fromId]=true;
+  const i=steps.findIndex(s=>s.id===fromId);
+  const nxt = steps.slice(i+1).find(s=>!st.seen[s.id]) || steps.find(s=>!st.seen[s.id]);
+  st.cur = nxt ? nxt.id : null; st.done = !nxt;
+  // drop answers for steps that are no longer visible
+  Object.keys(st.seen).forEach(k=>{ if(!steps.find(s=>s.id===k)) delete st.seen[k]; });
+  persist(); renderChat(); renderOut(); renderSide(); setTimeout(focusInbox,30);
+}
+function chatAct(act){
+  const t=TOOLS[curTool], st=S(curTool);
+  if(act==="begin"){ st.started=true; st.cur=vis(t,st.ans)[0].id; persist(); renderChat(); focusInbox(); return; }
+  if(act==="sample"){ loadSample(); return; }
+  if(act==="next"){ if(!saveCurrent(true)) return; advance(st.cur); return; }
+  if(act==="skip"){ delete st.ans[st.cur]; advance(st.cur); return; }
+  if(act==="back"){ saveCurrent(false); const steps=vis(t,st.ans), i=steps.findIndex(s=>s.id===st.cur); if(i>0){ st.cur=steps[i-1].id; persist(); renderChat(); renderOut(); focusInbox(); } return; }
+}
+function loadSample(alt){
+  const t=TOOLS[curTool], st=S(curTool);
+  if(Object.keys(st.seen).length && !confirm("Replace your current answers with the sample case?")) return;
+  const a=alt!==undefined&&t.altSamples ? clone(t.altSamples[alt].data) : typeof t.sample==="function"?t.sample():clone(t.sample);
+  DB[curTool]={ans:a, seen:{}, cur:null, done:true, started:true};
+  vis(t,a).forEach(s=>DB[curTool].seen[s.id]=true);
+  persist(); renderChat(); renderOut(); renderSide(); toast("Sample case loaded — edit any answer to try your own");
+}
+
+/* chat events */
+document.addEventListener("click", e=>{
+  const el=e.target.closest("[data-act],[data-edit],[data-ch],[data-addrow],[data-delrow],[data-open],[data-go],[data-tact],[data-dc],[data-alt]");
+  if(el && el.dataset.dc){ choiceTmp=el.dataset.dc; $$("#inbox [data-dc]").forEach(b=>b.classList.toggle("on",b===el)); const st=S(curTool), s=TOOLS[curTool].steps.find(x=>x.id===st.cur); const tmp=Object.assign({},st.ans); tmp[s.id]=readInput(s,tmp); renderOut(tmp); return; }
+  if(el && el.dataset.alt!==undefined){ loadSample(+el.dataset.alt); return; }
+  if(!el) return;
+  if(el.dataset.open){ go("tool/"+el.dataset.open); return; }
+  if(el.dataset.go){ go(el.dataset.go==="home"?"":el.dataset.go); return; }
+  if(el.dataset.tact){ const t=TOOLS[curTool]; t.actions[el.dataset.tact](S(curTool).ans); return; }
+  if(el.dataset.edit){ const st=S(curTool); saveCurrent(false); st.cur=el.dataset.edit; st.done=false; persist(); renderChat(); renderOut(); focusInbox(); return; }
+  if(el.dataset.ch!==undefined){ const st=S(curTool); choiceTmp=el.dataset.ch; st.ans[st.cur]=choiceTmp; advance(st.cur); return; }
+  if(el.dataset.addrow!==undefined){ const st=S(curTool), t=TOOLS[curTool], s=t.steps.find(x=>x.id===st.cur); const v=readInput(s,st.ans); v.push({}); st.ans[s.id]=v; renderChat(); focusLastRow(); return; }
+  if(el.dataset.delrow!==undefined){ const st=S(curTool), t=TOOLS[curTool], s=t.steps.find(x=>x.id===st.cur);
+    const all=[]; const cols=colsOf(s,st.ans); $$("#inbox tr[data-r]").forEach(tr=>{ const r={}; cols.forEach(c=>{ const x=tr.querySelector(`[data-c="${c.k}"]`); if(x) r[c.k]=c.ro?x.dataset.v:x.value; }); all.push(r); });
+    all.splice(+el.dataset.delrow,1); st.ans[s.id]=all; renderChat(); renderOut(); return; }
+  if(el.dataset.act){ const a=el.dataset.act;
+    if(["begin","sample","next","skip","back"].includes(a)) chatAct(a);
+    else if(a==="restart"){ if(!confirm("Clear all answers for this tool and start again?")) return; DB[curTool]=blank(); persist(); viewTool(curTool); renderSide(); }
+    else if(a==="print") window.print();
+    else if(a==="full"){ const d=$("#full"); $("#fullT").textContent=TOOLS[curTool].name; $("#fullB").innerHTML=$("#out").innerHTML; d.showModal(); }
+    else if(a==="closefull") $("#full").close();
+    else if(a==="guide"){ const d=$("#guide"); d.open=!d.open; }
+  }
+});
+function focusLastRow(){ const r=$$("#inbox tr[data-r]").pop(); if(r){ const i=r.querySelector("input,select"); if(i) i.focus(); } }
+document.addEventListener("keydown", e=>{
+  const box=e.target.closest && e.target.closest("#inbox"); if(!box || e.key!=="Enter") return;
+  const s=TOOLS[curTool].steps.find(x=>x.id===S(curTool).cur); if(!s) return;
+  if(e.ctrlKey||e.metaKey||((s.type==="text"||s.type==="number") && !e.shiftKey)){ e.preventDefault(); chatAct("next"); }
+  else if(s.type==="table" && e.target.tagName==="INPUT"){ e.preventDefault(); chatAct("next"); }
+});
+let liveT=null;
+document.addEventListener("input", e=>{
+  if(!e.target.closest || !e.target.closest("#inbox")) return;
+  clearTimeout(liveT); liveT=setTimeout(()=>{ const st=S(curTool), t=TOOLS[curTool], s=t.steps.find(x=>x.id===st.cur); if(!s) return;
+    const tmp=Object.assign({}, st.ans); const v=readInput(s,tmp); if(!isEmptyVal(s,v,tmp)) tmp[s.id]=v; renderOut(tmp); },220);
+});
+/* paste a block from Excel into a table */
+document.addEventListener("paste", e=>{
+  const inp=e.target; if(!inp.closest || !inp.closest("#inbox [data-tbl]") || inp.tagName!=="INPUT") return;
+  const txt=(e.clipboardData||window.clipboardData).getData("text"); if(!/[\t\n]/.test(txt.trim())) return;
+  e.preventDefault();
+  const st=S(curTool), t=TOOLS[curTool], s=t.steps.find(x=>x.id===st.cur), cols=colsOf(s,st.ans), editable=cols.filter(c=>!c.ro);
+  const tr=inp.closest("tr"), r0=+tr.dataset.r, c0=editable.findIndex(c=>c.k===inp.dataset.c);
+  const all=[]; $$("#inbox tr[data-r]").forEach(row=>{ const r={}; cols.forEach(c=>{ const x=row.querySelector(`[data-c="${c.k}"]`); if(x) r[c.k]=c.ro?x.dataset.v:x.value; }); all.push(r); });
+  txt.replace(/\r/g,"").split("\n").filter(l=>l.trim()!=="").forEach((line,i)=>{
+    if(s.fixed && r0+i>=all.length) return;
+    const r=all[r0+i] || (all[r0+i]={});
+    line.split("\t").forEach((cell,j)=>{ const c=editable[c0+j]; if(c) r[c.k]=cell.trim(); });
+  });
+  st.ans[s.id]=all; renderChat(); renderOut(Object.assign({},st.ans)); toast("Pasted "+txt.trim().split("\n").length+" rows");
+});
+
+/* ===================== views ===================== */
+function viewTool(id){
+  curTool=id; const t=TOOLS[id], c=CATS[t.cat], st=S(id), g=t.guide;
+  const gOpen = UI["g_"+id]===undefined ? true : UI["g_"+id];
+  $("#view").innerHTML=`
+  <div class="thead"><div class="big" style="background:${c.bg};color:${c.color}">${esc(t.icon)}</div>
+    <div style="flex:1;min-width:240px"><div><span class="tag" style="background:${c.bg};color:${c.color}">${esc(c.short)}</span></div><h1>${esc(t.name)}</h1><div class="meta">${esc(t.short)}</div></div>
+    <div class="acts"><button class="btn" data-act="sample">Load sample</button>${(t.altSamples||[]).map((x,i)=>`<button class="btn" data-alt="${i}">Load ${esc(x.label)}</button>`).join("")}<button class="btn" data-act="restart">Start over</button><button class="btn" data-act="print">Print / PDF</button></div></div>
+  <div class="tgrid">
+    <div>
+      <details class="card guide" id="guide"${gOpen?" open":""}><summary>Guide — what it is, when to use it, how</summary><div class="gb">
+        <div class="what">${g.what}</div>
+        ${g.when?`<h4>When to use it</h4><ul>${g.when.map(x=>`<li>${x}</li>`).join("")}</ul>`:""}
+        ${g.steps?`<h4>${t.cat==="fw"?"Phases":"How to do it"}</h4><ol>${g.steps.map(x=>`<li>${x}</li>`).join("")}</ol>`:""}
+        ${g.tips?`<h4>Tips and traps</h4><ul>${g.tips.map(x=>`<li>${x}</li>`).join("")}</ul>`:""}
+        ${t.related&&t.related.length?`<h4>Works with</h4><div class="sugg" style="margin:0">${t.related.map(x=>chipOf(x)).join("")}</div>`:""}
+        ${t.sampleNote?`<h4>Sample case</h4><div>${t.sampleNote}</div>`:""}
+      </div></details>
+      <div class="card chat" id="chat"></div>
+    </div>
+    <div class="rcol"><div class="card out"><h3>Result <span style="margin-left:auto;font:600 11.5px var(--sans);text-transform:none;letter-spacing:0;color:var(--mute)">${esc(t.resultLabel||"")}</span><button class="btn sm" data-act="full" title="Open the result full screen">⤢ Full view</button></h3><div id="out"></div></div></div>
+  </div>`;
+  $("#guide").addEventListener("toggle", e=>{ UI["g_"+id]=e.target.open; persist(); });
+  if(st.started && !st.cur && !st.done){ const f=vis(t,st.ans).find(s=>!st.seen[s.id]); st.cur=f?f.id:null; st.done=!f; }
+  renderChat(); renderOut();
+}
+
+function viewHome(){
+  curTool=null;
+  const COLS=[["Define & expose","What exactly is wrong, where, how big?"],["Analyze the cause","Why does it happen?"],["Solve & implement","Fix it and make the change happen"],["Verify & sustain","Prove it worked and keep it fixed"]];
+  const FW=[
+    ["eas","EAS","Expose · Analyze · Solve",[[1,1,"E · Expose the problem"],[2,1,"A · Analyze the problem"],[3,2,"S · Solve the problem (fix, verify, standardize)"]]],
+    ["pdca","PDCA","Deming cycle",[[1,2,"P · Plan (problem, root cause, action plan)"],[3,1,"D · Do (implement or pilot)"],[4,1,"C · Check  ·  A · Act"]]],
+    ["dmaic","DMAIC","Six Sigma",[[1,1,"D · Define  ·  M · Measure"],[2,1,"A · Analyze"],[3,1,"I · Improve"],[4,1,"C · Control"]]],
+    ["8d","8D","Eight disciplines",[[1,1,"D0–D3 · Prepare, team, describe, contain"],[2,1,"D4 · Root cause (occurrence & escape)"],[3,1,"D5–D6 · Choose, implement, validate fix"],[4,1,"D7–D8 · Prevent recurrence, close"]]],
+    ["bs62740","BS EN 62740","RCA standard (IEC 62740)",[[1,1,"1 · Initiation  ·  2 · Establishing facts"],[2,1,"3 · Analysis  ·  4 · Validation"],[3,2,"5 · Presentation of results → actions handed to CAPA / 8D"]]]
+  ];
+  const TC=[["flowchart","checksheet","pareto","histogram","controlchart","stratification"],["fishbone","fivewhy","fta","window","scatter","stratification"],["forcefield","window"],["controlchart","pareto","checksheet","histogram"]];
+  let ig=`<div class="ig"><div></div>${COLS.map((c,i)=>`<div class="ch c${i+1}">${i+1}. ${esc(c[0])}<small>${esc(c[1])}</small></div>`).join("")}`;
+  FW.forEach(([id,n,sub,ph],r)=>{ ig+=`<div class="rl" data-open="${id}" style="grid-row:${r+2}"><div>${n}<small>${sub}</small></div></div>`;
+    ph.forEach(([c,span,l])=>{ ig+=`<div class="ph" data-open="${id}" style="grid-row:${r+2};grid-column:${c+1} / span ${span}">${esc(l)}</div>`; }); });
+  ig+=`<div class="rl" style="grid-row:${FW.length+2};cursor:default"><div>Tools<small>used in each stage</small></div></div>`;
+  TC.forEach((list,i)=>{ ig+=`<div class="tcell" style="grid-row:${FW.length+2};grid-column:${i+2}">${list.map(x=>chipOf(x)).join("")}</div>`; });
+  ig+=`</div><div class="legend">${Object.entries(CATS).map(([k,c])=>`<span><i style="background:${c.color}"></i>${esc(c.name)}</span>`).join("")}<span style="color:var(--mute)">Click any phase or tool to open it.</span></div>`;
+
+  const cats=Object.entries(CATS).map(([k,c])=>`<div class="catc" style="border-color:${c.color};background:${c.bg}"><h3 style="color:${c.color}">${esc(c.name)}</h3><div class="q" style="color:${c.color}">“${esc(c.q)}”</div><p>${esc(c.desc)}</p><div class="chips">${TOOL_ORDER.filter(id=>TOOLS[id].cat===k).map(id=>chipOf(id)).join("")}</div></div>`).join("");
+
+  const CH=[["flowchart","Map the process and its handoffs"],["checksheet","Count defects at the source"],["pareto","Pick the biggest problem"],["stratification","Find which shift, line or lot"],["fishbone","List every possible cause"],["fivewhy","Drill one chain to the root"],["fta","…or map combined causes"],["window","…or classify a people/standard cause"],["forcefield","Plan the change"],["controlchart","Prove it stays fixed"]];
+  const chain=`<div class="chain">${CH.map(([id,l],i)=>`${i?'<span class="ar">→</span>':""}<div class="step">${chipOf(id)}<small>${esc(l)}</small></div>`).join("")}</div>`;
+
+  const PICK=[["Where in the process is the defect created or missed?","flowchart"],["How often does each defect happen, and when?","checksheet"],["Which problem should we attack first?","pareto"],["Is the process centred and within spec?","histogram"],["Is the process stable, or did something change?","controlchart"],["Is the problem concentrated in one shift, machine or lot?","stratification"],["Are two variables related?","scatter"],["What could possibly be causing it?","fishbone"],["What is the chain from symptom to root cause?","fivewhy"],["Do several causes have to combine? Which combinations matter?","fta"],["Was the standard missing, not communicated, or not followed?","window"],["What will help or block the fix from being adopted?","forcefield"]];
+  const pick=`<div class="pick">${PICK.map(([q,id])=>`<div><span>${esc(q)}</span>${chipOf(id)}</div>`).join("")}</div>`;
+  const FWP=[["pdca","PDCA","Small, quick improvements and repeated test cycles."],["eas","EAS","Everyday shop-floor problems; easy for any team to follow."],["8d","8D","Customer complaints, field failures and escapes that need containment and a formal report."],["dmaic","DMAIC","Chronic, data-heavy process problems where the cause is unclear."],["bs62740","BS EN 62740","Serious incidents or audits that need a defensible investigation to a recognised standard; actions go to CAPA / 8D."]];
+  const fwp=`<div class="fwpick">${FWP.map(([id,n,d])=>`<div data-open="${id}"><b>${n}</b>${esc(d)}</div>`).join("")}</div>`;
+
+  $("#view").innerHTML=`
+  <div class="hero"><h1>Root Cause Analysis Toolkit</h1><p>Every problem-solving framework follows the same four stages. The <b>framework</b> gives you the roadmap; the <b>7 QC tools</b> expose the problem with data; the <b>root-cause methods</b> find why; and the <b>change tools</b> make the fix stick. Each tool asks you one question at a time and comes with a worked sample case: cracked J3 connector joints on a logging-tool PCBA.</p></div>
+  <div class="panel"><h2>How the frameworks and tools fit together</h2><p class="sub">Read across: each framework's phases line up with the same four stages. Read down: the tools that do the work in each stage.</p><div class="igwrap">${ig}</div></div>
+  <div class="panel"><h2>Four categories</h2><p class="sub">Categorize by the question the tool answers.</p><div class="cats">${cats}</div></div>
+  <div class="panel"><h2>A typical investigation, linked end to end</h2><p class="sub">The sample case follows this chain. Open the tools in order to see how each output feeds the next.</p>${chain}</div>
+  <div class="panel"><h2>Which framework?</h2><p class="sub">Choose one roadmap per problem.</p>${fwp}</div>
+  <div class="panel"><h2>Which tool answers my question?</h2>${pick}</div>`;
+}
+
+function renderSide(){
+  const h=location.hash.replace(/^#\/?/,"");
+  let s=`<div class="nav-home${!h?" on":""}" data-go="home">⌂ Overview & infographic</div>`;
+  Object.entries(CATS).forEach(([k,c])=>{
+    s+=`<div class="ncat" style="color:${c.color}"><i style="background:${c.color}"></i>${esc(c.name)}</div>`;
+    TOOL_ORDER.filter(id=>TOOLS[id].cat===k).forEach(id=>{ const t=TOOLS[id], st=DB[id];
+      const p=st&&st.started?stepsDone(t,st):null; const stx=!p?"":st.done?'<span class="st done">✓</span>':`<span class="st">${p.n}/${p.of}</span>`;
+      s+=`<div class="ni${h==="tool/"+id?" on":""}" data-open="${id}"><span class="ic" style="background:${c.bg};color:${c.color}">${esc(t.icon)}</span>${esc(t.name)}${stx}</div>`; });
+  });
+  $("#side").innerHTML=s;
+}
+function go(h){ location.hash = h ? "#/"+h : "#/"; }
+function route(){
+  const fd=$("#full"); if(fd&&fd.open) fd.close();
+  const h=location.hash.replace(/^#\/?/,"");
+  const m=h.match(/^tool\/(.+)$/);
+  if(m && TOOLS[m[1]]) viewTool(m[1]); else viewHome();
+  renderSide(); $("#side").classList.remove("open"); window.scrollTo({top:0});
+}
+addEventListener("hashchange", route);
+
+/* ===================== top bar ===================== */
+$("#bMenu").onclick=()=>$("#side").classList.toggle("open");
+$("#bPrint").onclick=()=>window.print();
+$("#bExport").onclick=()=>{
+  const blob=new Blob([JSON.stringify({app:"rca-toolkit",version:1,saved:new Date().toISOString(),data:DB},null,1)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="RCA_toolkit_"+new Date().toISOString().slice(0,10)+".json"; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); toast("Saved all tools to a file");
+};
+$("#bImport").onclick=()=>$("#fileIn").click();
+$("#fileIn").onchange=e=>{ const f=e.target.files[0]; e.target.value=""; if(!f) return;
+  const r=new FileReader(); r.onload=()=>{ try{ const o=JSON.parse(r.result); if(o.app!=="rca-toolkit"||!o.data) throw new Error("not a toolkit file");
+    if(!confirm("Replace all current entries with the ones in this file?")) return; DB=o.data; persist(); route(); toast("Opened "+f.name); }
+    catch(err){ toast("Cannot open: "+err.message); } }; r.readAsText(f); };
+
+/* tool-specific buttons inside results */
+function sendTo(id, ans){ const t=TOOLS[id]; DB[id]={ans, seen:{}, cur:null, done:true, started:true}; vis(t,ans).forEach(s=>DB[id].seen[s.id]=true);
+  const nxt=vis(t,ans).find(s=>isEmptyVal(s,ans[s.id],ans)&&!s.optional); if(nxt){ DB[id].cur=nxt.id; DB[id].done=false; delete DB[id].seen[nxt.id]; }
+  persist(); go("tool/"+id); }
+
+route();
+
+</script>
+</body>
+</html>
