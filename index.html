@@ -207,6 +207,18 @@ svg text{font-family:var(--sans)}
 .cD{background:#fdeeee;border-color:#f3b0b0;color:#7a1414}
 .cell-badge{display:inline-block;font:800 12px var(--mono);border-radius:5px;padding:1px 7px;border:1.5px solid}
 
+.wtab{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px;table-layout:fixed}
+.wtab th{background:#eef1f5;color:#3e4a63;font-weight:600;padding:5px 6px;border:1px solid #c3cad5;text-align:center;line-height:1.25}
+.wtab td{border:1px solid #c3cad5;padding:6px 4px;vertical-align:top;height:78px;text-align:center}
+.wtab td .L{font:800 22px var(--sans);line-height:1.1;color:#1f2937}
+.wtab td .d{font-size:10.5px;color:#374151;opacity:.85;margin-bottom:2px}
+.wtab td.hit{box-shadow:inset 0 0 0 3px #dc2626}
+.wtab .vt{writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;padding:2px 0;white-space:nowrap}
+.wtab .corner{background:linear-gradient(to top right,#eef1f5 49.4%,#c3cad5 50%,#eef1f5 50.6%);text-align:left;font-weight:700}
+.kA{background:#bfe5c6;border-color:#7cc68b!important}.kB{background:#dde3da;border-color:#a9b5a4!important}.kC{background:#ddc9ee;border-color:#b69ad3!important}.kD{background:#f6c8a5;border-color:#e09a62!important}
+.cell-badge.kA,.cell-badge.kB,.cell-badge.kC,.cell-badge.kD{color:#1f2937}
+.mk{display:inline-block;margin:2px;padding:1px 7px;border-radius:9px;background:#14213d;color:#fff;font:700 10.5px var(--mono)}
+.mk.main{background:#dc2626}
 /* framework report */
 .fwrep{display:grid;gap:10px}
 .fwp{border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -554,7 +566,7 @@ fwTool({id:"bs62740", icon:"BS", name:"BS EN 62740 RCA", intro:"Let's run a root
     a_tech:"why",
     a_cf:["Board flexed during J3 mating","No fixture at night-shift bench 2","Operator not trained on WI step 14","Final test checks J3 statically"],
     a_root:"Occurrence: the line-transfer process has no line-specific WI training step, and fixture use relies on memory. Escape: final test cannot detect intermittent J3 opens.",
-    a_hum:"The operator followed the method used on the previous line; the gap was in the transfer process, not individual effort. Window analysis: fixture use = C (communication), missing-tool reporting = B (practice).",
+    a_hum:"The operator followed the method used on the previous line; the gap was in the transfer process, not individual effort. Window analysis: fixture use = C (communication), missing-tool reporting = B2 (knew, but did not always do it).",
     v_how:"Reproduced on 3 of 3 boards mated without the fixture (cracks after 200 thermal cycles), 0 of 3 with it. Strain 1,100 vs 250 µε. 21 of 23 failures traced to bench 2 / operator D.",
     v_ok:"yes",
     p_sum:"The field failure was caused by fatigue cracking at J3 from board flex during unsupported cable mating. This happened because the transfer process lacks WI training and fixture use is not mistake-proofed, and it escaped because final test checks J3 statically.",
@@ -1001,45 +1013,139 @@ tool({id:"fivewhy", cat:"rc", icon:"5?", name:"5-Why analysis",
 });
 
 /* ---------- Window analysis ---------- */
-const WS=[["KP","Known & practiced"],["KN","Known, not practiced"],["U","Unknown"]];
-const WCELL={A:["Established","No procedural gap. If the failure still happened, the cause is technical: go back to engineering analysis.","cA"],
-  B:["Practice problem","The standard is known but not followed. Find out why (inconvenient, slow, easy to forget) and mistake-proof it: poka-yoke, checklist, remove friction, audit.","cB"],
-  C:["Communication problem","One party knows the standard; the other doesn't. Fix training, the work instruction, handover or change-notice process.","cC"],
-  D:["Standardization problem","Nobody knows the right method: there is no standard. Establish one (analysis or test), write it into the WI, then train.","cD"]};
+const WS=[["KP","Established · practiced 100%"],["KN","Established · not practiced 100%"],["U","Not established"]];
+const BT=[["",""],["B1","B1 · can't do it (skill / how-to)"],["B2","B2 · doesn't always do it (habit / compliance)"]];
+const WCAT={
+  A:{n:"Established",k:"kA",d:"The right method is established and practiced 100% by everyone.",cm:"If the problem still happened, the method itself does not prevent it: treat it as Cat. D (A → D) and revise the standard, or look for a technical cause."},
+  B:{n:"Practice problem",k:"kB",d:"The method is established but not practiced 100%.",cm:"Find out whether it is B1 (can't do it: skill) or B2 (doesn't always do it: compliance). Each needs a different fix."},
+  B1:{n:"Practice problem · skill (B1)",k:"kB",d:"People know the method but don't know how to do it correctly (skill, how-to, tools or means).",cm:"Hands-on training and OJT with a skill check or certification, job aids at the station, and the right tools and means."},
+  B2:{n:"Practice problem · compliance (B2)",k:"kB",d:"People know the method and can do it, but don't always do it (forget, inconvenient, time pressure).",cm:"Make it hard to skip: mistake-proofing (poka-yoke, interlock, monitor with alarm), make the right way the easy way, visual reminders, checklists, supervision and audits."},
+  C:{n:"Communication problem",k:"kC",d:"A right method exists, but not everyone involved knows it.",cm:"Communicate the standard: train the people who don't know it, update and distribute the work instruction, and fix handover and change-notice processes."},
+  D:{n:"Standardization problem",k:"kD",d:"There is no right method (standard) that prevents the problem.",cm:"Establish the standard: investigate or test to find the right method, write it into the WI, then communicate and train."}};
 const wcell=(x,y)=> x==="U"&&y==="U"?"D" : (x==="U"||y==="U")?"C" : (x==="KP"&&y==="KP")?"A" : "B";
+function waCat(a){ const q=k=>a[k]&&a[k].a;
+  if(!q("q1")) return null; if(q("q1")==="no") return "D";
+  if(!q("q2")) return null; if(q("q2")==="no") return "C";
+  if(!q("q3")) return null; if(q("q3")==="no") return "B1";
+  if(!q("q4")) return null; return q("q4")==="no"?"B2":"A"; }
+const wReach=(a,i)=>["q1","q2","q3","q4"].slice(0,i).every(k=>a[k]&&a[k].a==="yes");
+const WPOS={A:["KP","KP"],B1:["KN","KP"],B2:["KN","KP"],C:["U","KP"],D:["U","U"]};   /* [Y, X] */
+const badge = c => `<span class="cell-badge ${WCAT[c].k}">${c}</span>`;
+const WQ=[["q1","Is there a right","method (standard)?","D"],["q2","Does everyone","know that method?","C"],["q3","Do they know how","to do it correctly?","B1"],["q4","Does everyone","always do it?","B2"]];
+function wTree(a){
+  const W=960,H=590, cx=i=>800-i*160, cy=i=>80+i*125, hw=95, hh=48, cat=waCat(a);
+  let g="";
+  g+=`<rect x="14" y="8" width="410" height="66" rx="4" fill="#fef08a" stroke="#ca8a04"/>`+TL(26,30,clip(wrap(a.problem||"Problem",52),2),17,'font-size="13.5" font-weight="700" fill="#3f2d00"');
+  if(a.practice) g+=TL(26,66,clip(wrap("Practice: "+a.practice,64),1),14,'font-size="11.5" fill="#6b4c00"');
+  let reach=true;
+  WQ.forEach(([k,l1,l2,nc],i)=>{
+    const x=cx(i), y=cy(i), ans=a[k]&&a[k].a, done=!!ans;
+    const st=!reach?"#cbd5e1":done?"#14213d":"#2563eb", tc=!reach?"#94a3b8":"#14213d";
+    const yC=reach&&ans==="yes"?"#2563eb":"#a3adbb", nC=reach&&ans==="no"?"#dc2626":"#a3adbb";
+    const yW=reach&&ans==="yes"?2.4:1.3, nW=reach&&ans==="no"?2.4:1.3;
+    // NO branch
+    g+=`<path d="M${x+hw} ${y} H${x+125} V${y+46}" fill="none" stroke="${nC}" stroke-width="${nW}"/>`+T(x+hw+6,y-7,"NO",`font-size="12" font-weight="700" fill="${nC}"`);
+    const hitN=reach&&ans==="no";
+    if(hitN) g+=`<rect x="${x+125-38}" y="${y+50}" width="76" height="26" rx="13" fill="#fff1f1" stroke="#dc2626" stroke-width="2"/>`;
+    g+=T(x+125,y+68,"Cat. "+nc,`text-anchor="middle" font-size="${hitN?14:13}" font-weight="${hitN?800:600}" fill="${hitN?"#dc2626":reach?"#334155":"#94a3b8"}"`);
+    // YES branch
+    const ny = i<3 ? cy(i+1)-hh : y+82;
+    g+=`<path d="M${x-hw} ${y} H${x-160} V${ny}" fill="none" stroke="${yC}" stroke-width="${yW}"/>`+T(x-hw-6,y-7,"YES",`text-anchor="end" font-size="12" font-weight="700" fill="${yC}"`);
+    // because
+    if(reach && a[k] && a[k].b){ const ls=["Because:",...clip(wrap(a[k].b,22),4)], bx=x-160-10, by0=y-8-(ls.length-1)*14;
+      g+=`<text x="${bx}" y="${by0}" text-anchor="end" font-size="11.5" fill="#334155">${ls.map((l,j)=>`<tspan x="${bx}" dy="${j?14:0}"${j?"":' font-weight="700"'}>${esc(l)}</tspan>`).join("")}</text>`; }
+    // diamond
+    g+=`<polygon points="${x},${y-hh} ${x+hw},${y} ${x},${y+hh} ${x-hw},${y}" fill="${reach?"#fff":"#f8fafc"}" stroke="${st}" stroke-width="${done?1.8:1.4}" ${reach&&!done?'stroke-dasharray="6 4"':""}/>`;
+    g+=TL(x,y-4,[l1,l2],15,`text-anchor="middle" font-size="12.5" font-weight="600" fill="${tc}"`);
+    reach = reach && ans==="yes";
+  });
+  const xa=cx(3)-160, hitA=cat==="A";
+  if(hitA) g+=`<rect x="${xa-70}" y="${cy(3)+88}" width="140" height="28" rx="14" fill="#fff1f1" stroke="#dc2626" stroke-width="2"/>`;
+  g+=T(xa,cy(3)+107,"Cat. A → Cat. D",`text-anchor="middle" font-size="${hitA?14:13}" font-weight="${hitA?800:600}" fill="${hitA?"#dc2626":reach?"#334155":"#94a3b8"}"`);
+  return `<div class="svscroll" style="--minw:640px"><svg viewBox="0 0 ${W} ${H}" class="chart" xmlns="http://www.w3.org/2000/svg">${g}</svg></div>`;
+}
+function wGrid(a, cat, items){
+  const marks={};
+  const add=(y,x,html)=>{ (marks[y+"|"+x]=marks[y+"|"+x]||[]).push(html); };
+  if(cat){ const [y,x]=WPOS[cat]; add(y,x,`<span class="mk main" title="${esc(a.practice||"")}">★ ${cat}</span>`); }
+  items.forEach((r,i)=>{ const c=wcell(r.x,r.y); add(r.y,r.x,`<span class="mk" title="${esc(r.p)}">${i+1}${c==="B"&&r.bt?" · "+r.bt:""}</span>`); });
+  const td=(y,x)=>{ const L=wcell(x,y), m=marks[y+"|"+x]||[]; return `<td class="${WCAT[L].k}${m.length?" hit":""}"><div class="L">${L}</div><div class="d">${WCAT[L].n}</div>${m.join("")}</td>`; };
+  return `<table class="wtab"><colgroup><col style="width:30px"><col style="width:96px"><col><col><col></colgroup>
+    <tr><th rowspan="2" colspan="2" class="corner"><span style="float:right">X</span><br><br><span>Y</span></th><th colspan="2">Right method established</th><th rowspan="2">Right method<br>not established</th></tr>
+    <tr><th>Practiced 100%</th><th>Not practiced 100%</th></tr>
+    <tr><th rowspan="2" class="vt">Right method established</th><th>Practiced 100%</th>${td("KP","KP")}${td("KP","KN")}${td("KP","U")}</tr>
+    <tr><th>Not practiced 100%</th>${td("KN","KP")}${td("KN","KN")}${td("KN","U")}</tr>
+    <tr><th colspan="2">Right method<br>not established</th>${td("U","KP")}${td("U","KN")}${td("U","U")}</tr></table>
+    <div style="font-size:11.5px;color:var(--mute);margin-top:4px">X = the side that sets the method (e.g. management, engineering, supervision). Y = the side that does the work. ★ = the practice analysed above; numbers = other practices.</div>`;
+}
 tool({id:"window", cat:"rc", icon:"⊞", name:"Window analysis",
-  short:"Classify a people or procedure cause: was the standard missing, not communicated, or not followed?",
-  guide:{what:"A 3 × 3 'window' comparing two parties (usually the one who sets the standard and the one who does the work). For each practice, is it known and practiced, known but not practiced, or unknown? The cell tells you the type of cause and the type of fix.",
-    when:["For workmanship, handling or procedure-related failures.","When the instinct is 'retrain the operator'. The window shows if that's really the gap.","At handoffs in the flowchart (engineer → operator, day → night, company → supplier)."],
-    steps:["Name the two parties.","List the specific practices or standards involved in the failure.","For each, decide each party's state, from evidence (records, interviews, observation).","Read the cell: A established, B practice, C communication, D standardization.","Choose the countermeasure that matches the cell."],
-    tips:["Base the states on evidence, not assumptions.","For a chain of handoffs, run one window per pair."]},
+  short:"Find out whether the right method was missing, not known, not done skilfully, or not always followed — and pick the matching fix.",
+  guide:{what:"A QC tool for problems involving people and methods. It asks whether a right method is <b>established</b> and whether it is <b>practiced 100%</b>, by the side that sets the method (X) and the side that does the work (Y). The answer places the problem in one category, and each category needs a different countermeasure.",
+    when:["Workmanship, handling or procedure-related failures (e.g. ESD damage, missed steps, wrong fixture use).","When the instinct is 'retrain the operator': the window shows whether training is really the gap.","At handoffs in a flowchart (engineering → operator, day → night shift, company → supplier)."],
+    steps:["State the problem and the practice (method) in question.","<b>Is there a right method (standard)?</b> No → <b>Cat. D</b>: establish one.","<b>Does everyone know that method?</b> No → <b>Cat. C</b>: communicate it.","<b>Do they know how to do it correctly?</b> No → <b>Cat. B1</b>: build the skill.","<b>Does everyone always do it?</b> No → <b>Cat. B2</b>: make it hard to skip.","All Yes → <b>Cat. A</b>, yet the problem happened: the method itself is inadequate, so <b>A → D</b>: revise the standard.","Back every answer with evidence (“Because: …”)."],
+    tips:["B is split because the fixes differ: B1 (can't do it) needs training and practice; B2 (doesn't always do it) needs mistake-proofing and discipline. Retraining a B2 problem rarely works.","'Practiced 100%' means by everyone, every time. One person sometimes forgetting is a B2.","Answer from evidence (records, observation, interviews), not assumptions.","For several practices or a chain of handoffs, classify each one and place it in the grid."]},
   related:["fivewhy","flowchart","stratification"],
-  sampleNote:"Manufacturing Engineering (sets the WI) vs night-shift operator D, for the J3 practices.",
-  resultLabel:"Window and countermeasure type",
-  next:["forcefield"],
+  sampleNote:"Two samples: the J3 fixture case (Load sample) and the ESD wrist-strap example from the course slide.",
+  resultLabel:"Decision tree + window",
+  next:["forcefield","fivewhy"],
+  altSamples:[{label:"ESD example", data:{
+    problem:"Electrostatic damage of IC-005, IC-007 on PCB AU-3, Model A-1 at Line A",
+    practice:"Mount the PCB without electrostatic damage (wear an ESD wrist strap)",
+    q1:{a:"yes",b:"There is an operation standard."},
+    q2:{a:"yes",b:"Everyone on the line is supplied with a wrist strap for ESD protection (100%)."},
+    q3:{a:"yes",b:"They have been trained by the supervisor (100%)."},
+    q4:{a:"no",b:"Someone does not always wear it. They sometimes forget."},
+    cm:[{a:"Wrist-strap continuity monitor with alarm at each station",c:"B2",o:"Mfg Eng",d:"Wk 2"},
+        {a:"Interlock: station cannot start until the wrist strap tests OK",c:"B2",o:"Mfg Eng",d:"Wk 4"},
+        {a:"Wrist-strap test logged at shift start and checked by supervisor",c:"B2",o:"Line supervisor",d:"Wk 1"}]}}],
   steps:[
-    {id:"px", q:"Party X: who sets or owns the standard?", type:"text", ph:"e.g. Manufacturing Engineering"},
-    {id:"py", q:"Party Y: who carries out the work?", type:"text", ph:"e.g. Night-shift operator"},
-    {id:"items", q:"For each practice involved, choose each party's state and note the evidence.", type:"table", minRows:3,
-      cols:a=>[{k:"p",l:"Practice / standard",w:200},{k:"x",l:a.px||"Party X",type:"select",opts:[["",""],...WS]},{k:"y",l:a.py||"Party Y",type:"select",opts:[["",""],...WS]},{k:"ev",l:"Evidence",w:160}]}
+    {id:"problem", q:"What is the problem?", type:"textarea", ph:"e.g. Electrostatic damage of IC-005, IC-007 on PCB AU-3 at Line A"},
+    {id:"practice", q:"Which practice or method is in question?", type:"text", ph:"e.g. Mount the PCB without ESD damage (wear wrist strap)"},
+    {id:"q1", type:"decide", no:"No → Cat. D", q:a=>`Is there a right method (standard) for “${short(a.practice,60)||"this"}” that prevents the problem?`, help:"Look for a work instruction, procedure, drawing note or spec. Give the evidence in 'Because'."},
+    {id:"q2", type:"decide", no:"No → Cat. C", when:a=>wReach(a,1), q:"Does everyone involved know that method?", help:"Check training records and ask the people doing the work, including other shifts and new or transferred staff."},
+    {id:"q3", type:"decide", no:"No → Cat. B1", when:a=>wReach(a,2), q:"Do they know how to do it correctly (skill, tools, means)?", help:"Knowing the rule isn't the same as being able to do it well. Observe someone doing it."},
+    {id:"q4", type:"decide", no:"No → Cat. B2", when:a=>wReach(a,3), q:"Does everyone always do it, 100% of the time?", help:"Observe across shifts. One person sometimes forgetting is a No."},
+    {id:"anote", type:"textarea", optional:1, when:a=>waCat(a)==="A", q:"The method is known and always followed, yet the problem happened (Cat. A → D). What is wrong with the method itself?"},
+    {id:"more", type:"table", optional:1, minRows:2, def:a=>a.items, q:"Any other practices involved? Classify each by X (who sets the method) and Y (who does the work).",
+      help:"Optional. Each one is placed in the window. If it lands in B, say whether it is B1 or B2.",
+      cols:[{k:"p",l:"Practice",w:170},{k:"x",l:"X: method owner",type:"select",opts:[["",""],...WS]},{k:"y",l:"Y: people doing it",type:"select",opts:[["",""],...WS]},{k:"bt",l:"If B",type:"select",opts:BT},{k:"ev",l:"Evidence",w:130}]},
+    {id:"cm", type:"table", minRows:2, q:"What countermeasures match the category?",
+      help:a=>{ const c=waCat(a); return c?`Cat. ${c}${c==="A"?" → D":""}: ${WCAT[c].cm}`:"Choose actions that match the category, not just 'retrain'."; },
+      cols:[{k:"a",l:"Action",w:220},{k:"c",l:"For category",type:"select",opts:["","A→D","B1","B2","C","D"]},{k:"o",l:"Owner",w:90},{k:"d",l:"Due",w:70}]}
   ],
-  sample:{px:"Manufacturing Engineering", py:"Night-shift operator D",
-    items:[{p:"Use back-support fixture when mating J3",x:"KP",y:"U",ev:"Interview; transferred 3 weeks ago, no training record for WI step 14"},
-      {p:"Visual check that J3 is fully seated",x:"KP",y:"KP",ev:"Observed on shift; seated-check done every board"},
+  sample:{problem:"J3 solder joints crack on boards built on night-shift bench 2 (21 of 105, week 44).",
+    practice:"Use the back-support fixture when mating the J3 harness",
+    q1:{a:"yes",b:"WI rev C step 14 requires fixture P/N 123-456."},
+    q2:{a:"no",b:"Operator D transferred from another line 3 weeks ago; no training record for WI step 14."},
+    more:[{p:"Visual check that J3 is fully seated",x:"KP",y:"KP",ev:"Observed on shift; done on every board"},
       {p:"Maximum mating force for J3",x:"U",y:"U",ev:"No limit in WI, drawing or connector datasheet review"},
-      {p:"Report missing tools to supervisor at shift start",x:"KP",y:"KN",ev:"Operator knew bench 2 had no fixture but didn't report it (time pressure)"}]},
+      {p:"Report missing tools to supervisor at shift start",x:"KP",y:"KN",bt:"B2",ev:"Operator knew bench 2 had no fixture but didn't report it (time pressure)"}],
+    cm:[{a:"Add line-specific WI training and supervisor sign-off to the line-transfer checklist",c:"C",o:"Prod Supv",d:"Wk 47"},
+      {a:"Brief all night-shift operators on WI step 14, with a photo at the station",c:"C",o:"Prod Supv",d:"Wk 46"},
+      {a:"Fixture shadow board checked at shift start (missing tool = stop)",c:"B2",o:"Line supervisor",d:"Wk 46"},
+      {a:"Define a maximum J3 mating force and add it to the WI",c:"D",o:"Design Eng",d:"Wk 49"}]},
   render(a){
-    const it=rows(a.items).filter(r=>String(r.p||"").trim()&&r.x&&r.y);
-    if(!it.length) return EMPTY("Add at least one practice with both states to place it in the window.");
-    const cells={}; it.forEach((r,i)=>{ const k=r.y+"|"+r.x; (cells[k]=cells[k]||[]).push(i+1); });
-    let h=`<div style="font-size:12px;color:var(--mute);margin-bottom:4px">Columns: <b>${esc(a.px||"Party X")}</b> &nbsp;·&nbsp; Rows: <b>${esc(a.py||"Party Y")}</b></div><div class="wgrid"><div></div>${WS.map(s=>`<div class="h">${esc(a.px||"X")}:<br>${s[1]}</div>`).join("")}`;
-    WS.forEach(([ys,yl])=>{ h+=`<div class="h">${esc(a.py||"Y")}:<br>${yl}</div>`; WS.forEach(([xs])=>{ const L=wcell(xs,ys), c=WCELL[L]; h+=`<div class="c ${c[2]}"><div class="L">${L}</div><div class="d">${c[0]}</div>${(cells[ys+"|"+xs]||[]).map(n=>`<span class="dot">${n}</span>`).join("")}</div>`; }); });
-    h+=`</div>`;
-    const tbl=it.map((r,i)=>{ const L=wcell(r.x,r.y); return {n:i+1,p:esc(r.p),c:`<span class="cell-badge ${WCELL[L][2]}">${L}</span> ${WCELL[L][0]}`,cm:esc(WCELL[L][1]),ev:esc(r.ev||"")}; });
-    h+=miniTable([{k:"n",l:"#"},{k:"p",l:"Practice",html:1},{k:"c",l:"Cell",html:1},{k:"cm",l:"Countermeasure type",html:1},{k:"ev",l:"Evidence",html:1}],tbl);
-    const by={}; it.forEach(r=>{ const L=wcell(r.x,r.y); by[L]=(by[L]||0)+1; });
-    const f=Object.keys(by).filter(L=>L!=="A").sort().map(L=>`<li><b>${L} · ${WCELL[L][0]}</b> (${by[L]}): ${WCELL[L][1]}</li>`);
-    return h+(f.length?`<div class="find warn"><b>Gaps found</b><ul>${f.join("")}</ul>Each type needs a different fix; 'retrain' only addresses C.</div>`:`<div class="find good">All practices are in cell A: known and practiced by both. Look for a technical cause instead.</div>`);
+    if(!String(a.problem||"").trim() && !String(a.practice||"").trim()) return EMPTY();
+    const cat=waCat(a);
+    const items=rows(a.more).filter(r=>String(r.p||"").trim()&&r.x&&r.y);
+    let h=wTree(a);
+    if(cat){ const c=WCAT[cat];
+      h+=`<div class="find ${cat==="A"?"":"warn"}">${badge(cat)} <b>${esc(c.n)}${cat==="A"?" → Cat. D":""}</b><br>${esc(c.d)}${cat==="A"?" But the problem still happened, so the method itself is inadequate.":""}<br><b>Countermeasure type:</b> ${esc(c.cm)}</div>`;
+      if(cat==="A"&&a.anote) h+=`<div class="find"><b>What's wrong with the method:</b> ${esc(a.anote)}</div>`;
+      if(cat==="B1"||cat==="B2") h+=`<div class="find">B is split because the fixes differ: <b>B1</b> can't do it → build the skill; <b>B2</b> doesn't always do it → mistake-proof it. Retraining alone rarely fixes a B2.</div>`;
+    } else h+=`<div class="find">Answer the questions in order. The first <b>No</b> gives the category.</div>`;
+    h+=wGrid(a,cat,items);
+    if(items.length){
+      h+=miniTable([{k:"n",l:"#"},{k:"p",l:"Practice",html:1},{k:"c",l:"Category",html:1},{k:"ev",l:"Evidence",html:1}],
+        items.map((r,i)=>{ let c=wcell(r.x,r.y); if(c==="B"&&r.bt) c=r.bt; return {n:i+1,p:esc(r.p),c:`${badge(c)} ${esc(WCAT[c].n)}`,ev:esc(r.ev||"")}; }));
+      const bNoType=items.filter(r=>wcell(r.x,r.y)==="B"&&!r.bt).length;
+      if(bNoType) h+=`<div class="find warn">${bNoType} practice(s) in B without B1/B2. Decide which, so the fix matches.</div>`;
+    }
+    const cm=rows(a.cm).filter(filled);
+    if(cm.length){ h+=`<div style="font-weight:700;margin-top:12px">Countermeasures</div>`+miniTable([{k:"a",l:"Action"},{k:"c",l:"For"},{k:"o",l:"Owner"},{k:"d",l:"Due"}],cm);
+      if(cat && !cm.some(r=>r.c===(cat==="A"?"A→D":cat))) h+=`<div class="find warn">No action is marked for the main category (${cat}${cat==="A"?" → D":""}).</div>`;
+      if(cat==="B2" && cm.filter(r=>r.c==="B2").every(r=>/train|brief|remind/i.test(r.a||""))) h+=`<div class="find warn">The B2 actions are all training or reminders. Add mistake-proofing so the step can't be skipped.</div>`; }
+    return h;
   }
 });
 
@@ -1198,6 +1304,7 @@ function valOf(s,a){
 function isEmptyVal(s,v,a){
   if(v===undefined||v===null) return true;
   if(s.type==="number") return !Number.isFinite(v);
+  if(s.type==="decide") return !v || !v.a;
   if(s.type==="list"||s.type==="numbers") return !v.length;
   if(s.type==="table"){ const cols=colsOf(s,a).filter(c=>!c.ro).map(c=>c.k); return !v.some(r=>cols.some(k=>String(r[k]??"").trim()!=="")); }
   return String(v).trim()==="";
@@ -1209,6 +1316,7 @@ function fmtAns(s,v,a){
   if(v===undefined||v===null||(Array.isArray(v)&&!v.length)||v==="") return `<i style="opacity:.7">Skipped</i>`;
   switch(s.type){
     case "choice": { const o=optsOf(s,a).find(x=>x[0]===v); return esc(o?o[1]:v); }
+    case "decide": return `<b>${v.a==="yes"?"YES":"NO"}</b>${v.b?` — because: ${esc(v.b)}`:""}`;
     case "list": return `<ul>${v.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
     case "numbers": return `${v.length} values: ${esc(v.slice(0,10).join(", "))}${v.length>10?" …":""}`;
     case "table": {
@@ -1231,6 +1339,7 @@ function inputHTML(s,a){
     case "textarea": return `<textarea data-in${ph}>${esc(v??"")}</textarea>`;
     case "list": return `<textarea data-in${ph||' placeholder="One item per line"'}>${esc((v||[]).join("\n"))}</textarea>`;
     case "numbers": return `<textarea data-in${ph||' placeholder="e.g. 5.01 5.03 4.99 …"'}>${esc((v||[]).join("  "))}</textarea>`;
+    case "decide": { choiceTmp=v&&v.a; return `<div class="choices">${[["yes",s.yes||"Yes"],["no",s.no||"No"]].map(([k,l])=>`<button type="button" class="choice${choiceTmp===k?" on":""}" data-dc="${k}">${esc(l)}</button>`).join("")}</div><textarea data-in style="margin-top:8px;min-height:64px" placeholder="${esc(s.ph||"Because… (the evidence for your answer)")}">${esc(v&&v.b||"")}</textarea>`; }
     case "choice": { choiceTmp=v; return `<div class="choices">${optsOf(s,a).map(([k,l])=>`<button type="button" class="choice${v===k?" on":""}" data-ch="${esc(k)}">${esc(l)}${s.optHelp&&s.optHelp[k]?`<small>${esc(s.optHelp[k])}</small>`:""}</button>`).join("")}</div>`; }
     case "table": {
       const cols=colsOf(s,a);
@@ -1251,6 +1360,7 @@ function inputHTML(s,a){
 function readInput(s,a){
   const box=$("#inbox"); if(!box) return a[s.id];
   if(s.type==="choice") return choiceTmp;
+  if(s.type==="decide"){ const el=box.querySelector("[data-in]"); return {a:choiceTmp, b:el?el.value.trim():""}; }
   if(s.type==="table"){
     const cols=colsOf(s,a), out=[];
     box.querySelectorAll("tr[data-r]").forEach(tr=>{ const r={};
@@ -1272,7 +1382,7 @@ function renderChat(){
   let h=`<h3>Step-by-step <span class="prog">${p.n} of ${p.of} answered</span></h3>`;
   h+=`<div class="msg bot"><div class="av">RCA</div><div class="bub">${t.intro?esc(t.intro):`Let's build your <b>${esc(t.name)}</b>.`} I'll ask ${steps.length} short questions, one at a time. Your result builds on the right as you go.</div></div>`;
   if(!st.started){
-    h+=`<div class="start"><button class="btn pri" data-act="begin">Start with my own data</button><button class="btn" data-act="sample">Load the sample case</button></div>`;
+    h+=`<div class="start"><button class="btn pri" data-act="begin">Start with my own data</button><button class="btn" data-act="sample">Load the sample case</button>${(t.altSamples||[]).map((x,i)=>`<button class="btn" data-alt="${i}">Load ${esc(x.label)}</button>`).join("")}</div>`;
     $("#chat").innerHTML=h; return;
   }
   steps.forEach((s,i)=>{
@@ -1283,7 +1393,7 @@ function renderChat(){
     h+=`<div class="msg bot"><div class="av">${i+1}</div><div class="bub">${ph}<b class="q">${esc(qText(s,a))}${s.optional?' <span style="font-weight:400;color:var(--mute);font-size:12px">(optional)</span>':""}</b>${isCur&&s.help?`<div class="help">${esc(typeof s.help==="function"?s.help(a):s.help)}</div>`:""}${isCur?sug:""}</div></div>`;
     if(isCur){
       h+=`<div class="inbox" id="inbox" data-step="${s.id}">${inputHTML(s,a)}
-        <div class="row"><span class="hint">${s.type==="text"||s.type==="number"?"Press Enter to continue":s.type==="choice"?"Pick one to continue":"Ctrl + Enter to continue"}</span>
+        <div class="row"><span class="hint">${s.type==="text"||s.type==="number"?"Press Enter to continue":s.type==="choice"?"Pick one to continue":s.type==="decide"?"Choose Yes or No, give the reason, then Next":"Ctrl + Enter to continue"}</span>
         ${i>0?`<button class="btn ghost sm" data-act="back">← Back</button>`:""}
         ${s.optional?`<button class="btn sm" data-act="skip">Skip</button>`:""}
         ${s.type!=="choice"||a[s.id]!==undefined?`<button class="btn pri sm" data-act="next">${i===steps.length-1?"Finish":"Next →"}</button>`:""}</div></div>`;
@@ -1329,10 +1439,10 @@ function chatAct(act){
   if(act==="skip"){ delete st.ans[st.cur]; advance(st.cur); return; }
   if(act==="back"){ saveCurrent(false); const steps=vis(t,st.ans), i=steps.findIndex(s=>s.id===st.cur); if(i>0){ st.cur=steps[i-1].id; persist(); renderChat(); renderOut(); focusInbox(); } return; }
 }
-function loadSample(){
+function loadSample(alt){
   const t=TOOLS[curTool], st=S(curTool);
   if(Object.keys(st.seen).length && !confirm("Replace your current answers with the sample case?")) return;
-  const a=typeof t.sample==="function"?t.sample():clone(t.sample);
+  const a=alt!==undefined&&t.altSamples ? clone(t.altSamples[alt].data) : typeof t.sample==="function"?t.sample():clone(t.sample);
   DB[curTool]={ans:a, seen:{}, cur:null, done:true, started:true};
   vis(t,a).forEach(s=>DB[curTool].seen[s.id]=true);
   persist(); renderChat(); renderOut(); renderSide(); toast("Sample case loaded — edit any answer to try your own");
@@ -1340,7 +1450,9 @@ function loadSample(){
 
 /* chat events */
 document.addEventListener("click", e=>{
-  const el=e.target.closest("[data-act],[data-edit],[data-ch],[data-addrow],[data-delrow],[data-open],[data-go],[data-tact]");
+  const el=e.target.closest("[data-act],[data-edit],[data-ch],[data-addrow],[data-delrow],[data-open],[data-go],[data-tact],[data-dc],[data-alt]");
+  if(el && el.dataset.dc){ choiceTmp=el.dataset.dc; $$("#inbox [data-dc]").forEach(b=>b.classList.toggle("on",b===el)); const st=S(curTool), s=TOOLS[curTool].steps.find(x=>x.id===st.cur); const tmp=Object.assign({},st.ans); tmp[s.id]=readInput(s,tmp); renderOut(tmp); return; }
+  if(el && el.dataset.alt!==undefined){ loadSample(+el.dataset.alt); return; }
   if(!el) return;
   if(el.dataset.open){ go("tool/"+el.dataset.open); return; }
   if(el.dataset.go){ go(el.dataset.go==="home"?"":el.dataset.go); return; }
@@ -1396,7 +1508,7 @@ function viewTool(id){
   $("#view").innerHTML=`
   <div class="thead"><div class="big" style="background:${c.bg};color:${c.color}">${esc(t.icon)}</div>
     <div style="flex:1;min-width:240px"><div><span class="tag" style="background:${c.bg};color:${c.color}">${esc(c.short)}</span></div><h1>${esc(t.name)}</h1><div class="meta">${esc(t.short)}</div></div>
-    <div class="acts"><button class="btn" data-act="sample">Load sample</button><button class="btn" data-act="restart">Start over</button><button class="btn" data-act="print">Print / PDF</button></div></div>
+    <div class="acts"><button class="btn" data-act="sample">Load sample</button>${(t.altSamples||[]).map((x,i)=>`<button class="btn" data-alt="${i}">Load ${esc(x.label)}</button>`).join("")}<button class="btn" data-act="restart">Start over</button><button class="btn" data-act="print">Print / PDF</button></div></div>
   <div class="tgrid">
     <div>
       <details class="card guide" id="guide"${gOpen?" open":""}><summary>Guide — what it is, when to use it, how</summary><div class="gb">
