@@ -219,6 +219,11 @@ svg text{font-family:var(--sans)}
 .cell-badge.kA,.cell-badge.kB,.cell-badge.kC,.cell-badge.kD{color:#1f2937}
 .mk{display:inline-block;margin:2px;padding:1px 7px;border-radius:9px;background:#14213d;color:#fff;font:700 10.5px var(--mono)}
 .mk.main{background:#dc2626}
+.credit{max-width:1320px;margin:22px auto 0;padding:12px 4px 0;border-top:1px solid var(--line);font-size:12.5px;color:var(--mute);text-align:center}
+.credit a{color:inherit}
+.hcred{display:flex;flex-wrap:wrap;gap:8px 18px;margin:-6px 0 16px;font-size:13px;color:var(--ink2)}
+.hcred span{background:#fff;border:1px solid var(--line);border-radius:16px;padding:4px 12px}
+@media print{.credit{position:fixed;bottom:0;left:0;right:0;margin:0;padding:3px 0 0;font-size:8pt;background:#fff}}
 /* framework report */
 .fwrep{display:grid;gap:10px}
 .fwp{border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -274,7 +279,7 @@ dialog#full .svscroll svg{min-width:0}
 </header>
 <div class="app">
   <aside class="side" id="side"></aside>
-  <main><div class="wrap" id="view"></div></main>
+  <main><div class="wrap" id="view"></div><footer class="credit">Developed by <b>Soe Moe</b> · <a href="mailto:soe.moe@halliburton.com">soe.moe@halliburton.com</a> &nbsp;|&nbsp; Course conductor: <b>Chang Keen Weng</b> (ACT, QC Tools)</footer></main>
 </div>
 <input type="file" id="fileIn" accept=".json,application/json" hidden>
 <div id="toast"></div>
@@ -1085,7 +1090,7 @@ tool({id:"window", cat:"rc", icon:"⊞", name:"Window analysis",
     steps:["State the problem and the practice (method) in question.","<b>Is there a right method (standard)?</b> No → <b>Cat. D</b>: establish one.","<b>Does everyone know that method?</b> No → <b>Cat. C</b>: communicate it.","<b>Do they know how to do it correctly?</b> No → <b>Cat. B1</b>: build the skill.","<b>Does everyone always do it?</b> No → <b>Cat. B2</b>: make it hard to skip.","All Yes → <b>Cat. A</b>, yet the problem happened: the method itself is inadequate, so <b>A → D</b>: revise the standard.","Back every answer with evidence (“Because: …”)."],
     tips:["B is split because the fixes differ: B1 (can't do it) needs training and practice; B2 (doesn't always do it) needs mistake-proofing and discipline. Retraining a B2 problem rarely works.","'Practiced 100%' means by everyone, every time. One person sometimes forgetting is a B2.","Answer from evidence (records, observation, interviews), not assumptions.","For several practices or a chain of handoffs, classify each one and place it in the grid."]},
   related:["fivewhy","flowchart","stratification"],
-  sampleNote:"Two samples: the J3 fixture case (Load sample) and the ESD wrist-strap example from the course slide.",
+  sampleNote:"Two samples: the J3 fixture case (Load sample) and the ESD wrist-strap example from the QC Tools course by Chang Keen Weng (ACT). The categories, B1/B2 split and the A → D rule follow that course.",
   resultLabel:"Decision tree + window",
   next:["forcefield","fivewhy"],
   altSamples:[{label:"ESD example", data:{
@@ -1557,7 +1562,7 @@ function viewHome(){
   const fwp=`<div class="fwpick">${FWP.map(([id,n,d])=>`<div data-open="${id}"><b>${n}</b>${esc(d)}</div>`).join("")}</div>`;
 
   $("#view").innerHTML=`
-  <div class="hero"><h1>Root Cause Analysis Toolkit</h1><p>Every problem-solving framework follows the same four stages. The <b>framework</b> gives you the roadmap; the <b>7 QC tools</b> expose the problem with data; the <b>root-cause methods</b> find why; and the <b>change tools</b> make the fix stick. Each tool asks you one question at a time and comes with a worked sample case: cracked J3 connector joints on a logging-tool PCBA.</p></div>
+  <div class="hero"><h1>Root Cause Analysis Toolkit</h1><p>Every problem-solving framework follows the same four stages. The <b>framework</b> gives you the roadmap; the <b>7 QC tools</b> expose the problem with data; the <b>root-cause methods</b> find why; and the <b>change tools</b> make the fix stick. Each tool asks you one question at a time and comes with a worked sample case: cracked J3 connector joints on a logging-tool PCBA.</p><div class="hcred"><span>Developed by <b>Soe Moe</b> · <a href="mailto:soe.moe@halliburton.com">soe.moe@halliburton.com</a></span><span>Course conductor: <b>Chang Keen Weng</b> (ACT, QC Tools)</span></div></div>
   <div class="panel"><h2>How the frameworks and tools fit together</h2><p class="sub">Read across: each framework's phases line up with the same four stages. Read down: the tools that do the work in each stage.</p><div class="igwrap">${ig}</div></div>
   <div class="panel"><h2>Four categories</h2><p class="sub">Categorize by the question the tool answers.</p><div class="cats">${cats}</div></div>
   <div class="panel"><h2>A typical investigation, linked end to end</h2><p class="sub">The sample case follows this chain. Open the tools in order to see how each output feeds the next.</p>${chain}</div>
