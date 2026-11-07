@@ -236,6 +236,27 @@ svg text{font-family:var(--sans)}
 .igr span{color:#1d2b7a}
 .igt{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
 .igarr{text-align:center;color:#94a3b8;font-size:13px;line-height:1;padding:4px 0}
+.cmvt{width:100%;min-width:640px;border-collapse:separate;border-spacing:3px;font-size:12px;table-layout:fixed}
+.cmvt th{background:#14213d;color:#fff;border-radius:6px;padding:6px 4px;font-size:12px}
+.cmvt th .ic{display:block;font-size:16px;line-height:1.2}
+.cmvt th.rh{writing-mode:vertical-rl;transform:rotate(180deg);width:30px;padding:6px 2px}
+.cmvt th.rhV{background:#0f766e}.cmvt th.rhM{background:#b45309}.cmvt th.rhC{background:#7c3aed}
+.cmvt tr>th:first-child{width:34px}
+.cmvt td{background:#f5f7fa;border:1px solid #dbe1e9;border-radius:6px;padding:5px;vertical-align:top;min-height:60px}
+.cmvt td.has{background:#fff;border-color:#94a3b8}
+.cmvt td.n,.cmvt th.n{text-align:center;width:46px}
+.cmvt .cc{background:#eef2f7;border-radius:4px;padding:3px 5px;margin-bottom:3px;line-height:1.3}
+.cmvt .cc.v{background:#fde8e8;color:#b91c1c;font-weight:700}
+.cmvt .ex{color:#94a3b8;font-style:italic;font-size:11px;line-height:1.3}
+.iwm{border-collapse:collapse;font-size:12.5px;min-width:100%}
+.iwm th,.iwm td{border:1px solid #c3cad5;padding:4px 8px;text-align:center}
+.iwm tr:first-child th{background:#f1f4f8;font-weight:600}
+.iwm tr.wt td{background:#d9e66b;font-weight:600}
+.iwm tr.rt2 td{color:#475569;background:#fafbfc}
+.iwm td.tot{font-weight:700;background:#f1f4f8}
+.iwm td.rk{font-weight:800;background:#f3d3c4;color:#7c2d12;font-size:14px}
+.iwm td.rk.top{background:#fbbf9b}
+.iwm th[rowspan]{background:#f1f4f8}
 /* framework report */
 .fwrep{display:grid;gap:10px}
 .fwp{border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -1303,6 +1324,245 @@ tool({id:"forcefield", cat:"sol", icon:"⇄", name:"Force-field analysis",
   }
 });
 
+/* ===================== Course additions (QC Tools course, Chang Keen Weng, ACT) ===================== */
+const COURSE = "From the QC Tools course by Chang Keen Weng (ACT).";
+
+/* ---------- Fault tree: fire-alarm course example ---------- */
+TOOLS.fta.altSamples=[{label:"Fire alarm example", data:{top:"Fire alarm fails", gate:"or", events:[
+  {id:"G1",d:"Signal to solenoid fails",par:"T",k:"or"},
+  {id:"G2",d:"Bell fails",par:"T",k:"or"},
+  {id:"G3",d:"Smoke detector fails",par:"T",k:"or"},
+  {id:"G4",d:"No power source",par:"G1",k:"and"},
+  {id:"B1",d:"Break in circuit",par:"G1",k:"basic"},
+  {id:"B2",d:"Short circuit",par:"G1",k:"basic"},
+  {id:"B3",d:"Battery failure",par:"G4",k:"basic"},
+  {id:"B4",d:"Mains failure",par:"G4",k:"basic"},
+  {id:"B5",d:"Solenoid fails",par:"G2",k:"basic"},
+  {id:"B6",d:"Clapper stuck",par:"G2",k:"basic"},
+  {id:"B7",d:"Low sensitivity to smoke",par:"G3",k:"basic"},
+  {id:"B8",d:"Photoelectric source fails",par:"G3",k:"basic"}]}}];
+TOOLS.fta.sampleNote="Two samples: the J3 field failure with probabilities (Load sample), and the fire-alarm example. "+COURSE+" In the fire alarm, only 'No power source' needs two events together (battery AND mains), so every other basic event is a single point of failure.";
+TOOLS.fishbone.guide.tips.push("<b>CEDAC</b> (Cause-and-Effect Diagram with the Addition of Cards) is a team variant: the fishbone is posted on the floor, and people add cards with causes and improvement ideas as they find them.");
+
+/* ---------- 4M + I / CMV matrix ---------- */
+const M5=[["man","Man"],["machine","Machine"],["material","Materials"],["method","Methods"],["info","Information"]];
+const CMV=[["V","Variation","Things that vary from part to part, person to person or day to day."],["M","Mistakes","Something done wrong or left out."],["C","Complexity","Something hard to do, make or understand, so errors are likely."]];
+const CMV_EX={
+  V:{man:"Training, experience, skill",machine:"Tool wear, bearing wear, fixture wear, vibration",material:"Purity, density, homogeneity",method:"Differences in execution",info:"Gauge consistency or accuracy"},
+  M:{man:"Omission errors, dropped parts",machine:"Incorrect setup, software errors",material:"Wrong material, wrong part",method:"Wrong method, error in method",info:"Wrong instructions, instruction error, misread gauge"},
+  C:{man:"Individual differences, emotion",machine:"Difficult setup, difficult operation",material:"Difficult to make, difficult to shape",method:"Difficult method",info:"Lengthy or verbose instructions, many interpretations"}};
+const CMV_FIX={V:"Reduce and control variation: standard settings, preventive maintenance, material specs, training to a standard, gauge R&R; monitor with control charts.",
+  M:"Mistake-proof: poka-yoke, interlocks, checklists, clear labelling and part keying. See Window analysis (B2) for 'not always done'.",
+  C:"Simplify: design for assembly, fewer and simpler steps, easier setups, short instructions with pictures and one interpretation."};
+const ICON={man:"👤",machine:"⚙",material:"▭",method:"⇄",info:"ⓘ"};
+tool({id:"cmv", cat:"rc", icon:"4M", name:"4M + I / CMV matrix",
+  short:"Classify each defect source by where it comes from (Man, Machine, Materials, Methods, Information) and what kind it is (Variation, Mistake, Complexity).",
+  guide:{what:"A 5 × 3 matrix for classifying defect sources. The columns are the 4 M's plus Information; the rows are the three ways defects arise: <b>Variation</b>, <b>Mistakes</b> and <b>Complexity</b>. Where the causes cluster tells you which kind of countermeasure to use.",
+    when:["After a fishbone, to sort the causes and see where they cluster.","When a team keeps proposing the same type of fix (often 'retrain') for different kinds of problem.","To decide between variation reduction, mistake-proofing and simplification."],
+    steps:["State the problem.","List causes that are about <b>variation</b> and assign each to an M (or Information).","List causes that are <b>mistakes</b>.","List causes that come from <b>complexity</b>.","Mark which causes are verified, then read the matrix: the busiest row tells you the type of fix."],
+    tips:["Variation → reduce and control it (SPC). Mistakes → mistake-proof. Complexity → simplify.","'Information' covers instructions, drawings, gauges and test data: a wrong or ambiguous instruction is a cause in its own right.","The cell examples come from the course chart and are shown as prompts in empty cells."]},
+  related:["fishbone","window","controlchart"],
+  sampleNote:"The J3 cracked-joint causes from the fishbone, classified. "+COURSE,
+  resultLabel:"Classification matrix",
+  next:["fivewhy","window"],
+  steps:[
+    {id:"problem", q:"What is the problem?", type:"textarea", ph:"e.g. Cracked solder joints at J3 found at final test"},
+    ...CMV.map(([k,n,d])=>({id:"r"+k, type:"table", minRows:2, optional:1,
+      q:`Which causes are about ${n.toUpperCase()}? ${d}`,
+      help:"Examples: "+M5.map(([m,l])=>`${l}: ${CMV_EX[k][m]}`).join(" · "),
+      cols:[{k:"c",l:"Cause",w:210},{k:"m",l:"Source",type:"select",opts:[["",""],...M5]},{k:"s",l:"Status",type:"select",opts:["","Suspected","Verified"]}]}))
+  ],
+  sample:{problem:"Cracked solder joints at J3 connector found at final test",
+    rV:[{c:"Operator D new to the line (experience)",m:"man",s:"Verified"},{c:"Back-support fixture worn",m:"machine",s:"Suspected"},{c:"Board thickness at low limit",m:"material",s:"Suspected"}],
+    rM:[{c:"Fixture step omitted on night shift",m:"man",s:"Verified"},{c:"No fixture set up at bench 2",m:"machine",s:"Verified"},{c:"Transfer checklist has no WI training step",m:"method",s:"Verified"},{c:"WI step 14 has no photo; easy to misread",m:"info",s:"Suspected"}],
+    rC:[{c:"Fixture slow to set up",m:"method",s:"Verified"},{c:"High connector retention force: hard to mate",m:"material",s:"Suspected"}]},
+  render(a){
+    const all=[]; CMV.forEach(([k])=>rows(a["r"+k]).forEach(r=>{ if(String(r.c||"").trim()&&r.m) all.push(Object.assign({t:k},r)); }));
+    if(!String(a.problem||"").trim() && !all.length) return EMPTY();
+    let h=`<div class="find" style="margin:0 0 10px"><b>Problem:</b> ${esc(a.problem||"")}</div><div class="tscroll"><table class="cmvt"><tr><th></th>${M5.map(([m,l])=>`<th><span class="ic">${ICON[m]}</span>${l}</th>`).join("")}<th class="n">Total</th></tr>`;
+    CMV.forEach(([k,n])=>{ const rr=all.filter(r=>r.t===k);
+      h+=`<tr><th class="rh rh${k}">${n}</th>`+M5.map(([m])=>{ const cs=rr.filter(r=>r.m===m);
+        return `<td class="${cs.length?"has":""}">${cs.length?cs.map(r=>`<div class="cc${r.s==="Verified"?" v":""}">${esc(r.c)}</div>`).join(""):`<div class="ex">${esc(CMV_EX[k][m])}</div>`}</td>`; }).join("")+`<td class="n"><b>${rr.length}</b></td></tr>`; });
+    h+=`<tr><th>Total</th>${M5.map(([m])=>`<td class="n"><b>${all.filter(r=>r.m===m).length}</b></td>`).join("")}<td class="n"><b>${all.length}</b></td></tr></table></div>
+      <div style="font-size:11.5px;color:var(--mute);margin-top:4px">Grey italic text in empty cells is the course chart's example, as a prompt. <b style="color:#b91c1c">Bold red</b> = verified.</div>`;
+    if(all.length){
+      const ver=all.filter(r=>r.s==="Verified"), base=ver.length?ver:all;
+      const byT=CMV.map(([k,n])=>[k,n,base.filter(r=>r.t===k).length]).sort((x,y)=>y[2]-x[2]);
+      const byM=M5.map(([m,l])=>[l,all.filter(r=>r.m===m).length]).sort((x,y)=>y[1]-x[1]);
+      h+=`<div class="kpis">${kpi(all.length,"Causes classified")}${kpi(ver.length,"Verified")}${kpi(esc(byT[0][1]),"Most common type"+(ver.length?" (verified)":""))}${kpi(esc(byM[0][0]),"Most common source")}</div>`;
+      h+=`<div class="find warn"><b>Countermeasure type</b>${ver.length?" (based on verified causes)":""}:<ul>${byT.filter(x=>x[2]).map(([k,n,c])=>`<li><b>${n}</b> (${c}): ${esc(CMV_FIX[k])}</li>`).join("")}</ul></div>`;
+    }
+    return h;
+  }
+});
+
+/* ---------- Importance weighting matrix ---------- */
+function iwCrit(a){ return rows(a.crit).filter(r=>String(r.n||"").trim()).map(r=>({n:String(r.n).trim(),w:num(r.w)})); }
+function iwSync(a,v){ const old=rows(v); return (a.opts||[]).map(o=>Object.assign({}, old.find(r=>r.opt===o)||{}, {opt:o})); }
+const f2 = v => Number.isFinite(v) ? String(+v.toFixed(2)) : "–";
+tool({id:"weighting", cat:"sol", icon:"⚖", name:"Importance weighting matrix",
+  short:"Score options against weighted criteria and rank them, to choose a solution objectively.",
+  guide:{what:"A decision matrix. Each criterion gets a weight (its importance); each option is rated 1–5 against each criterion (5 is high, i.e. best). Weighted score = rating × weight; the option with the highest total is rank 1, the best selection.",
+    when:["Choosing between several countermeasures or solutions.","Selecting which problem or project to tackle first.","When the team disagrees and needs a transparent, agreed basis for the choice."],
+    steps:["State the decision.","List the criteria and give each a weight (normally adding up to 1.00).","List the options.","Rate every option 1–5 against every criterion (5 = best: e.g. low cost scores high).","Multiply each rating by its weight and add up. Rank 1 is the best selection."],
+    tips:["Agree the weights <b>before</b> rating the options, so they aren't bent to favour a preferred answer.","Rate so that 5 is always good: high safety, high quality, <i>low</i> cost, <i>short</i> time.","If the top two are close, check how sensitive the result is to the weights.","Safety or legal criteria may be a must-have: drop options that fail them before scoring."]},
+  related:["forcefield","fivewhy"],
+  sampleNote:"Two samples: choosing the J3 countermeasure (Load sample), and the P1–P5 example. "+COURSE+" Note that the course example's weights add up to 1.10.",
+  resultLabel:"Weighted scores and rank",
+  next:["forcefield"],
+  altSamples:[{label:"Course P1–P5 example", data:{decision:"Select the best proposal (P1–P5)",
+    crit:[{n:"CS",w:"0.30"},{n:"Safety",w:"0.20"},{n:"Productivity",w:"0.20"},{n:"Quality",w:"0.20"},{n:"Cost",w:"0.10"},{n:"Time",w:"0.10"}],
+    opts:["P1","P2","P3","P4","P5"],
+    rate:[{opt:"P1",c0:"4",c1:"3",c2:"4",c3:"5",c4:"5",c5:"3"},{opt:"P2",c0:"4",c1:"4",c2:"3",c3:"4",c4:"2",c5:"1"},{opt:"P3",c0:"3",c1:"5",c2:"3",c3:"2",c4:"4",c5:"1"},{opt:"P4",c0:"2",c1:"3",c2:"5",c3:"3",c4:"1",c5:"2"},{opt:"P5",c0:"3",c1:"3",c2:"3",c3:"5",c4:"4",c5:"4"}]}}],
+  steps:[
+    {id:"decision", q:"What are you deciding?", type:"text", ph:"e.g. Choose the permanent countermeasure for J3 cracks"},
+    {id:"crit", q:"List the criteria and their weights.", type:"table", minRows:4, help:"Weights normally add up to 1.00. Agree them before rating the options.",
+      cols:[{k:"n",l:"Criterion",w:180},{k:"w",l:"Weight",type:"number",w:70}]},
+    {id:"opts", q:"List the options, one per line.", type:"list"},
+    {id:"rate", q:"Rate each option 1–5 against each criterion (5 = best).", type:"table", fixed:1, sync:iwSync,
+      help:"5 is always good: high safety or quality, low cost, short time.",
+      cols:a=>[{k:"opt",l:"Option",ro:1},...iwCrit(a).map((c,i)=>({k:"c"+i,l:`${c.n} (${Number.isFinite(c.w)?c.w.toFixed(2):"–"})`,type:"number",w:55}))]},
+    {id:"note", q:"What is the decision or next step?", type:"textarea", optional:1}
+  ],
+  sample:{decision:"Choose the permanent countermeasure for J3 cracked joints",
+    crit:[{n:"Effectiveness",w:"0.30"},{n:"Sustainability",w:"0.20"},{n:"Cost",w:"0.20"},{n:"Time to implement",w:"0.20"},{n:"Safety",w:"0.10"}],
+    opts:["Interlock fixture at all benches","Retrain all operators","Add J3 wiggle test only","Lower-retention connector (redesign)"],
+    rate:[{opt:"Interlock fixture at all benches",c0:"5",c1:"5",c2:"3",c3:"4",c4:"5"},{opt:"Retrain all operators",c0:"2",c1:"2",c2:"5",c3:"5",c4:"4"},{opt:"Add J3 wiggle test only",c0:"3",c1:"4",c2:"4",c3:"4",c4:"4"},{opt:"Lower-retention connector (redesign)",c0:"4",c1:"5",c2:"1",c3:"1",c4:"4"}],
+    note:"Go with the interlock fixture; add the wiggle test as the detection improvement."},
+  render(a){
+    const cr=iwCrit(a), op=a.opts||[];
+    if(!cr.length) return EMPTY();
+    const ws=sum(cr.map(c=>Number.isFinite(c.w)?c.w:0));
+    let h=`<div style="font-weight:700;margin-bottom:6px">${esc(a.decision||"")}</div>`;
+    if(Math.abs(ws-1)>0.005) h+=`<div class="find warn" style="margin-top:0">The weights add up to <b>${ws.toFixed(2)}</b>, not 1.00. Totals are still comparable, but check the weights are what you intended.</div>`;
+    if(!op.length) return h+EMPTY("Add the options to score.");
+    const rt=iwSync(a,a.rate), bad=[];
+    const res=rt.map(r=>{ const rs=cr.map((c,i)=>{ const v=num(r["c"+i]); if(Number.isFinite(v)&&(v<1||v>5)) bad.push(`${r.opt} / ${c.n}`); return v; });
+      const wv=rs.map((v,i)=>Number.isFinite(v)&&Number.isFinite(cr[i].w)?v*cr[i].w:NaN);
+      return {o:r.opt, rs, wv, tot:sum(wv.filter(Number.isFinite)), n:rs.filter(Number.isFinite).length}; });
+    const sorted=[...res].map(r=>r.tot).sort((x,y)=>y-x); res.forEach(r=>r.rank=sorted.indexOf(r.tot)+1);
+    h+=`<div class="tscroll"><table class="iwm"><tr><th></th>${cr.map(c=>`<th>${esc(c.n)}</th>`).join("")}<th colspan="2"></th></tr>
+      <tr class="wt"><th></th>${cr.map(c=>`<td>${Number.isFinite(c.w)?c.w.toFixed(2):"–"}</td>`).join("")}<td colspan="2">Weight factor</td></tr>`;
+    res.forEach(r=>{ const top=r.rank===1&&r.n;
+      h+=`<tr class="rt1"><th rowspan="2">${esc(r.o)}</th>${r.rs.map(v=>`<td>${Number.isFinite(v)?fmtN(v):""}</td>`).join("")}<td rowspan="2" class="tot">${r.n?r.tot.toFixed(2):"–"}</td><td rowspan="2" class="rk${top?" top":""}">${r.n?(top?"★ ":"")+r.rank:""}</td></tr>
+        <tr class="rt2">${r.wv.map(v=>`<td>${Number.isFinite(v)?v.toFixed(Math.abs(v*10-Math.round(v*10))<1e-9?1:2):""}</td>`).join("")}</tr>`; });
+    h+=`</table></div><div style="font-size:11.5px;color:var(--mute);margin-top:4px">Each option: top row = rating (1–5), bottom row = rating × weight. Rank 1 is the best selection.</div>`;
+    if(bad.length) h+=`<div class="find warn">Ratings outside 1–5: ${bad.map(esc).join(", ")}.</div>`;
+    const done=res.filter(r=>r.n);
+    if(done.length){
+      const s=[...done].sort((x,y)=>y.tot-x.tot);
+      const p=plot({cats:s.map(r=>r.o),ymin:0,ymax:Math.max(...s.map(r=>r.tot),0.1),ylabel:"Weighted score",H:240,B:46});
+      let g=p.g; s.forEach((r,i)=>{ const y=p.sy(r.tot); g+=`<rect x="${p.sx(i)-p.bw*.32}" y="${y}" width="${p.bw*.64}" height="${p.T+p.ph-y}" rx="3" fill="${r.rank===1?"#7c3aed":"#c4b5fd"}"/>`+T(p.sx(i),y-5,r.tot.toFixed(2),'text-anchor="middle" font-size="11" font-weight="700" fill="#334155"'); });
+      h+=p.open+g+"</svg>";
+      const gap=s.length>1?s[0].tot-s[1].tot:NaN;
+      h+=`<div class="find good"><b>Rank 1: ${esc(s[0].o)}</b> (${s[0].tot.toFixed(2)})${s.length>1?`, ahead of ${esc(s[1].o)} by ${gap.toFixed(2)}.`:"."}${Number.isFinite(gap)&&gap<0.2?" The margin is small: check how sensitive the result is to the weights before deciding.":""}</div>`;
+    }
+    if(a.note) h+=`<div class="find"><b>Decision:</b> ${esc(a.note)}</div>`;
+    return h;
+  }
+});
+
+/* ---------- RCA procedure flow (Responsibility · Flow chart · Interface) ---------- */
+const PT=[["process","Process step"],["decision","Decision (Yes/No)"],["key","Key RCA step (highlighted)"],["ref","Refer to another procedure"],["start","Start"],["end","End / close"]];
+const TOOLMAP=[[/5[\s-]*why/i,["fivewhy"]],[/\b8D\b/,["8d"]],[/CEDAC|fishbone|ishikawa/i,["fishbone"]],[/QC\s*7|7\s*QC/i,["flowchart","checksheet","pareto","histogram","scatter","controlchart","stratification"]],[/fault\s*tree|\bFTA\b/i,["fta"]],[/window/i,["window"]],[/\bPDCA\b/,["pdca"]],[/DMAIC/,["dmaic"]],[/62740/,["bs62740"]],[/weight/i,["weighting"]],[/\bCMV\b|4M/,["cmv"]],[/force[\s-]*field/i,["forcefield"]]];
+function procRender(a){
+  const st=rows(a.steps).filter(r=>String(r.t||"").trim()); if(!st.length) return EMPTY();
+  const W=920, RX=10, L0=168, L1=330, CX=470, BW=250, IX=642, LH=15, GAP=24;
+  let y=56; const P=[];
+  st.forEach(r=>{ const ty=r.ty||"process", dec=ty==="decision";
+    const bl=clip(wrap(r.t,dec?24:36),3), rl=clip(wrap(r.r||"",20),3), il=clip(wrap(r.i||"",36),7);
+    const bh=dec?Math.max(70,bl.length*LH+40):Math.max(44,bl.length*LH+18);
+    const nm=String(r.no||"").trim().match(/^(\d+)\s*[-–:.]?\s*(.*)$/);
+    const side=String(r.no||"").trim()&&!nm ? clip(wrap(r.no,21),4) : null;
+    const lab=nm&&nm[2]?clip(wrap(nm[2],19),3):null;
+    const rh=Math.max(bh, rl.length*LH+8, il.length*LH+8, side?side.length*LH+18:0, lab?bh/2+lab.length*LH+14:0);
+    P.push({r,ty,dec,bl,rl,il,bh,rh,top:y,cy:y+rh/2,tgt:nm?(+nm[1]-1):null,side,lab}); y+=rh+GAP; });
+  const H=y;
+  let g=`<defs><marker id="pa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#475569"/></marker><marker id="pb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b45309"/></marker></defs>`;
+  [["Responsibility",RX,"start"],["Flow chart",CX,"middle"],["Interface",IX,"start"]].forEach(([l,x,an])=>{ const w=l.length*8.2; const x0=an==="middle"?x-w/2:x;
+    g+=T(x,24,l,`text-anchor="${an}" font-size="15" font-weight="700" fill="#1e293b"`)+`<line x1="${x0}" x2="${x0+w}" y1="29" y2="29" stroke="#1e293b"/>`; });
+  const mid=(p,lines)=>p.cy-(lines.length-1)*LH/2+4;
+  let lane=0;
+  P.forEach((p,i)=>{ const bx=CX-BW/2, bt=p.cy-p.bh/2;
+    if(i<P.length-1 && p.ty!=="end" && p.ty!=="ref"){ g+=`<path d="M${CX} ${bt+p.bh} V${P[i+1].cy-P[i+1].bh/2-1}" stroke="#475569" stroke-width="1.6" marker-end="url(#pa)"/>`; if(p.dec) g+=T(CX+8,bt+p.bh+16,"Yes",'font-size="12" font-weight="700" fill="#15803d"'); }
+    if(p.dec && p.tgt!==null && P[p.tgt] && p.tgt!==i){ const q=P[p.tgt], lx=L1-18-(lane++%4)*18, ex=CX-BW/2;
+      g+=`<path d="M${CX-BW/2} ${p.cy} H${lx} V${q.cy} H${ex-2}" fill="none" stroke="#b45309" stroke-width="1.6" marker-end="url(#pb)"/>`+T(CX-BW/2-8,p.cy-7,"No",'text-anchor="end" font-size="12" font-weight="700" fill="#b45309"');
+      if(p.lab){ const w=140, h=p.lab.length*LH+12, x=Math.max(2,lx-w-8), yy=p.cy+10; g+=`<rect x="${x}" y="${yy}" width="${w}" height="${h}" fill="#fff" stroke="#b45309" stroke-width="1.3"/>`+TL(x+w/2,yy+17,p.lab,LH,'text-anchor="middle" font-size="12" fill="#7c2d12"'); } }
+    if(p.dec && p.side){ const w=150, h=p.side.length*LH+16, x=L0-6, yy=p.cy-h/2;
+      g+=`<path d="M${CX-BW/2} ${p.cy} H${x+w+2}" stroke="#b45309" stroke-width="1.6" marker-end="url(#pb)"/>`+T(CX-BW/2-8,p.cy-7,"No",'text-anchor="end" font-size="12" font-weight="700" fill="#b45309"');
+      g+=`<rect x="${x}" y="${yy}" width="${w}" height="${h}" fill="#fff" stroke="#475569" stroke-width="1.4" stroke-dasharray="3 3"/>`+TL(x+w/2,yy+19,p.side,LH,'text-anchor="middle" font-size="12" fill="#1e293b"'); }
+    if(p.dec) g+=`<polygon points="${CX},${bt} ${CX+BW/2},${p.cy} ${CX},${bt+p.bh} ${CX-BW/2},${p.cy}" fill="#fff" stroke="#334155" stroke-width="1.6"/>`;
+    else { const fill=p.ty==="key"?"#f6c9cf":p.ty==="start"||p.ty==="end"?"#eef2f7":"#fff", sk=p.ty==="key"?"#9f1239":"#334155";
+      g+=`<rect x="${bx}" y="${bt}" width="${BW}" height="${p.bh}" rx="${p.ty==="start"||p.ty==="end"?14:2}" fill="${fill}" stroke="${sk}" stroke-width="1.6" ${p.ty==="ref"?'stroke-dasharray="3 3"':""}/>`; }
+    g+=TL(CX,mid(p,p.bl),p.bl,LH,'text-anchor="middle" font-size="12.5" fill="#0f172a"');
+    if(p.rl.length) g+=TL(RX,mid(p,p.rl),p.rl,LH,'font-size="12.5" fill="#334155"');
+    if(p.il.length) g+=TL(IX,mid(p,p.il),p.il,LH,'font-size="12.5" fill="#334155"');
+    g+=`<circle cx="${CX+BW/2+14}" cy="${bt+10}" r="9" fill="#e2e8f0"/>`+T(CX+BW/2+14,bt+14,String(i+1),'text-anchor="middle" font-size="10.5" font-weight="700" fill="#334155"');
+  });
+  const svg=`<div class="svscroll" style="--minw:560px"><svg viewBox="0 0 ${W} ${H}" class="chart" xmlns="http://www.w3.org/2000/svg">${g}</svg></div>`;
+  const resp={}; st.forEach(r=>{ const k=String(r.r||"").trim(); if(k) resp[k]=(resp[k]||0)+1; });
+  const txt=st.map(r=>[r.t,r.i,r.no].join(" ")).join(" ");
+  const tl=[...new Set(TOOLMAP.filter(([re])=>re.test(txt)).flatMap(x=>x[1]))];
+  const f=[];
+  if(!st.some(r=>/verif|approv|confirm|audit/i.test(r.t))) f.push("No verification, approval or confirmation step: who checks the RCA and the corrective action before closing?");
+  if(!st.some(r=>/close/i.test(r.t))) f.push("No close-out step: define when the RCA is closed (e.g. on the customer's confirmation, after on-site verification).");
+  if(!st.some(r=>/technique|tool|method|5[\s-]*why|8D/i.test(r.t+" "+(r.i||"")))) f.push("No step says which problem-solving technique is used. Add 'Decide the problem-solving technique' with the options in the Interface column.");
+  const nores=st.map((r,i)=>!String(r.r||"").trim()&&(r.ty||"process")!=="start"?i+1:0).filter(Boolean);
+  if(nores.length) f.push(`Step${nores.length>1?"s":""} ${nores.join(", ")} ${nores.length>1?"have":"has"} no responsibility assigned: who owns ${nores.length>1?"them":"it"}?`);
+  return `<div style="font-weight:700;margin-bottom:4px">${esc(a.name||"")}</div>`+svg+
+    `<div class="kpis">${kpi(st.length,"Steps")}${kpi(st.filter(r=>r.ty==="decision").length,"Decisions")}${kpi(Object.keys(resp).length,"Roles involved")}</div>`+
+    (Object.keys(resp).length?miniTable([{k:"r",l:"Responsibility"},{k:"n",l:"Steps",n:1}],Object.entries(resp).map(([r,n])=>({r,n}))):"")+
+    (tl.length?`<div class="sugg" style="margin-top:10px">Tools named in this procedure: ${tl.map(x=>chipOf(x)).join("")}${/FMEA/.test(txt)?' <span style="color:var(--mute)">+ DFMEA/PFMEA (outside this toolkit)</span>':""}</div>`:"")+
+    (f.length?`<div class="find warn"><b>Check the procedure:</b><ul>${f.map(x=>`<li>${x}</li>`).join("")}</ul></div>`:`<div class="find good">The procedure has an owner for each step, a technique decision, a verification point and a close-out.</div>`);
+}
+const PSTEPS_COLS=[{k:"r",l:"Responsibility",w:120},{k:"t",l:"Step",w:190},{k:"ty",l:"Type",type:"select",opts:PT},{k:"no",l:"If No → step # (label) or text",w:150},{k:"i",l:"Interface / tools / records",w:170}];
+tool({id:"procedure", cat:"fw", icon:"☰", name:"RCA procedure flow",
+  short:"Write your organisation's RCA procedure as Responsibility · Flow chart · Interface, so everyone knows who does what and which tool is used.",
+  guide:{what:"A procedure flowchart in three columns: <b>Responsibility</b> (who), <b>Flow chart</b> (the steps and decisions) and <b>Interface</b> (other departments, records and the problem-solving tools used). It turns 'we do RCA' into a defined process with owners, a technique decision, approval and close-out.",
+    when:["Setting up or documenting how RCAs are triggered, run and closed.","Separate flows for different triggers: technical/design (customer complaints), process/product (internal non-conformity), and vendor management (supplier RCA).","Training new team leaders and function heads on their role."],
+    steps:["Name the procedure and its trigger.","List the steps in order, with who is responsible for each.","Add decisions (e.g. 'Is the root cause technical?', 'Verify report'), with where the No path goes: a step number to loop back to, or text such as 'Refer to RCA Procedure – Vendor Management'.","Mark the key RCA steps (record, complete, approve) so they stand out.","Fill the Interface column: departments involved, records (RCA report, CA/PA status log, DFMEA/PFMEA) and the tools (5-why, 8D, CEDAC, QC 7 tools)."],
+    tips:["Make 'Decide the problem-solving technique' an explicit step.","Close only on evidence: the customer's confirmation, or verification of the corrective action on site for vendors.","For vendor RCAs, reject and ask for resubmission if the report or the on-site CA verification fails.","Have QA audit the status log of open RCA reports."]},
+  related:["flowchart","fivewhy","8d"],
+  sampleNote:"Three samples: Technical / Design (Load sample), Process / Product, and the 5-why Vendor Management flow. "+COURSE,
+  resultLabel:"Responsibility · Flow chart · Interface",
+  altSamples:[
+    {label:"Process / Product", data:{name:"RCA procedure flow — Process / Product", kind:"process", steps:[
+      {t:"Process / product problem",ty:"start"},
+      {r:"Section head",t:"Record non-conformity",ty:"process"},
+      {t:"Decide the problem-solving technique",ty:"key",i:"5-why, 8D, CEDAC, PFMEA, QC 7 tools"},
+      {r:"Section head",t:"Assign team leader & champion",ty:"process"},
+      {r:"Team leader",t:"Take CA and implement",ty:"process"},
+      {r:"Function head",t:"Monitor and close-out",ty:"end"}]}},
+    {label:"Vendor Management", data:{name:"5-why procedure flow — Vendor Management", kind:"vendor", steps:[
+      {r:"Vendor Quality",t:"Receive report and/or non-conformance part",ty:"start",i:"Customer service / Production"},
+      {r:"Vendor Quality",t:"Verify non-conformance",ty:"decision",i:"Evaluate the non-conformance part"},
+      {r:"Vendor Quality",t:"Issue RCA report & update status log",ty:"process",i:"Generate RCA report and issue with or without samples to vendor. Update CA/PA report status log."},
+      {r:"Vendor",t:"Receive RCA report",ty:"process",i:"Evaluate the non-conformance, set up a team to look into the problem and plan corrective / preventive action."},
+      {r:"Vendor",t:"Submit the RCA report to VQ",ty:"process",i:"Compile the investigation (5-why) and submit the RCA report to Vendor Quality."},
+      {r:"Vendor Quality",t:"Verify report & update CA/PA report status log",ty:"decision",no:"4 Reject the RCA report: vendor re-evaluates and resubmits",i:"Verify the corrective action plan taken and update CA/PA report status log."},
+      {r:"Vendor Quality",t:"Close report; plan corrective action verification at supplier site",ty:"key",i:"Close RCA report documentation. Arrange / plan / schedule on-site corrective action verification."},
+      {r:"Vendor Quality",t:"Verify corrective action on site",ty:"decision",no:"4 Reject the RCA report"},
+      {r:"Vendor Quality",t:"Final closing; update CA/PA report status log",ty:"end"}]}}],
+  steps:[
+    {id:"name", q:"What is this procedure called?", type:"text", ph:"e.g. RCA procedure flow — Technical / Design"},
+    {id:"kind", q:"What triggers it?", type:"choice", opts:[["technical","Customer complaint (technical / design)"],["process","Internal process / product problem"],["vendor","Supplier non-conformance (vendor management)"],["other","Other"]]},
+    {id:"steps", q:"List the steps in order: who is responsible, the step, its type, and the interface.", type:"table", minRows:5,
+      help:"For a decision, put the No path as a step number to loop back to, optionally followed by a label (e.g. '4 Reject the RCA report'), or as text for a side box (e.g. 'Refer to RCA Procedure – Vendor Management').",
+      cols:PSTEPS_COLS}
+  ],
+  sample:{name:"RCA procedure flow — Technical / Design", kind:"technical", steps:[
+    {r:"Customer service",t:"Receive customer complaints",ty:"start",i:"Sales & service"},
+    {t:"Is the root cause technical?",ty:"decision",no:"Vendor: refer to RCA Procedure – Vendor Management"},
+    {r:"Responsible function head",t:"Assign team leader & champion",ty:"process"},
+    {r:"Team leader",t:"Record in RCA report / DFMEA report",ty:"key",i:"5-why, 8D, CEDAC, DFMEA report"},
+    {r:"Team leader",t:"Complete the RCA report",ty:"key",i:"5-why, 8D, CEDAC, DFMEA report"},
+    {r:"Responsible function head",t:"Approve RCA report",ty:"key"},
+    {r:"Customer service",t:"Follow-up & feed back to customer",ty:"process"},
+    {r:"Team leader",t:"Close out upon customer's confirmation",ty:"process"},
+    {r:"QA",t:"Audit the status of RCA reports as and when required",ty:"end"}]},
+  render:procRender
+});
+
 /* ===================== state ===================== */
 const KEY = "rcakit.v1";
 let DB = {}; try{ DB = JSON.parse(localStorage.getItem(KEY)||"{}")||{}; }catch(e){ DB = {}; }
@@ -1559,7 +1819,7 @@ function viewHome(){
     ["8d","8D","Eight disciplines",[[1,1,"D0–D3 · Prepare, team, describe, contain"],[2,1,"D4 · Root cause (occurrence & escape)"],[3,1,"D5–D6 · Choose, implement, validate fix"],[4,1,"D7–D8 · Prevent recurrence, close"]]],
     ["bs62740","BS EN 62740","RCA standard (IEC 62740)",[[1,1,"1 · Initiation  ·  2 · Establishing facts"],[2,1,"3 · Analysis  ·  4 · Validation"],[3,2,"5 · Presentation of results → actions handed to CAPA / 8D"]]]
   ];
-  const TC=[["flowchart","checksheet","pareto","histogram","controlchart","stratification"],["fishbone","fivewhy","fta","window","scatter","stratification"],["forcefield","window"],["controlchart","pareto","checksheet","histogram"]];
+  const TC=[["flowchart","checksheet","pareto","histogram","controlchart","stratification"],["fishbone","cmv","fivewhy","fta","window","scatter","stratification"],["weighting","forcefield","window"],["controlchart","pareto","checksheet","histogram"]];
   let ig=`<div class="ig"><div></div>${COLS.map((c,i)=>`<div class="ch c${i+1}">${i+1}. ${esc(c[0])}<small>${esc(c[1])}</small></div>`).join("")}`;
   FW.forEach(([id,n,sub,ph],r)=>{ ig+=`<div class="rl" data-open="${id}" style="grid-row:${r+2}"><div>${n}<small>${sub}</small></div></div>`;
     ph.forEach(([c,span,l])=>{ ig+=`<div class="ph" data-open="${id}" style="grid-row:${r+2};grid-column:${c+1} / span ${span}">${esc(l)}</div>`; }); });
@@ -1581,7 +1841,7 @@ function viewHome(){
   const CH=[["flowchart","Map the process and its handoffs"],["checksheet","Count defects at the source"],["pareto","Pick the biggest problem"],["stratification","Find which shift, line or lot"],["fishbone","List every possible cause"],["fivewhy","Drill one chain to the root"],["fta","…or map combined causes"],["window","…or classify a people/standard cause"],["forcefield","Plan the change"],["controlchart","Prove it stays fixed"]];
   const chain=`<div class="chain">${CH.map(([id,l],i)=>`${i?'<span class="ar">→</span>':""}<div class="step">${chipOf(id)}<small>${esc(l)}</small></div>`).join("")}</div>`;
 
-  const PICK=[["Where in the process is the defect created or missed?","flowchart"],["How often does each defect happen, and when?","checksheet"],["Which problem should we attack first?","pareto"],["Is the process centred and within spec?","histogram"],["Is the process stable, or did something change?","controlchart"],["Is the problem concentrated in one shift, machine or lot?","stratification"],["Are two variables related?","scatter"],["What could possibly be causing it?","fishbone"],["What is the chain from symptom to root cause?","fivewhy"],["Do several causes have to combine? Which combinations matter?","fta"],["Was the standard missing, not communicated, or not followed?","window"],["What will help or block the fix from being adopted?","forcefield"]];
+  const PICK=[["Who does what in our RCA process, and which tool is used?","procedure"],["Is the cause variation, a mistake, or complexity, and from which M?","cmv"],["Which of several solutions should we choose?","weighting"],["Where in the process is the defect created or missed?","flowchart"],["How often does each defect happen, and when?","checksheet"],["Which problem should we attack first?","pareto"],["Is the process centred and within spec?","histogram"],["Is the process stable, or did something change?","controlchart"],["Is the problem concentrated in one shift, machine or lot?","stratification"],["Are two variables related?","scatter"],["What could possibly be causing it?","fishbone"],["What is the chain from symptom to root cause?","fivewhy"],["Do several causes have to combine? Which combinations matter?","fta"],["Was the standard missing, not communicated, or not followed?","window"],["What will help or block the fix from being adopted?","forcefield"]];
   const pick=`<div class="pick">${PICK.map(([q,id])=>`<div><span>${esc(q)}</span>${chipOf(id)}</div>`).join("")}</div>`;
   const FWP=[["pdca","PDCA","Small, quick improvements and repeated test cycles."],["eas","EAS","Everyday shop-floor problems; easy for any team to follow."],["8d","8D","Customer complaints, field failures and escapes that need containment and a formal report."],["dmaic","DMAIC","Chronic, data-heavy process problems where the cause is unclear."],["bs62740","BS EN 62740","Serious incidents or audits that need a defensible investigation to a recognised standard; actions go to CAPA / 8D."]];
   const fwp=`<div class="fwpick">${FWP.map(([id,n,d])=>`<div data-open="${id}"><b>${n}</b>${esc(d)}</div>`).join("")}</div>`;
