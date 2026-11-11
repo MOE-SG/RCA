@@ -270,6 +270,45 @@ svg text{font-family:var(--sans)}
 .pqd{color:var(--ink2);font-size:12px;margin:1px 0 4px}
 .pq ol{margin:0;padding-left:24px}.pq li{margin:2px 0}.pq li small{color:var(--mute)}
 @media (max-width:820px){.pickl{grid-template-columns:1fr}}
+.wsb{display:flex;align-items:center;gap:7px;max-width:340px}
+.wsb .wst{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wsdot{width:9px;height:9px;border-radius:50%;background:#94a3b8;flex:none}
+.wsdot.inv{background:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.25)}
+dialog#wsd{border:0;border-radius:12px;padding:0;width:min(720px,94vw);max-height:90vh;box-shadow:0 20px 60px rgba(10,20,40,.35)}
+dialog#wsd::backdrop{background:rgba(15,25,45,.55)}
+dialog#wsd .fhd{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff}
+#wsBody{padding:12px 16px 16px}
+#wsBody h4{margin:16px 0 6px;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--mute)}
+.wsrow{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:9px;padding:9px 12px;margin-bottom:6px}
+.wsrow.on{border-color:var(--acc);background:var(--acc-bg)}
+.wsrow>div:first-child{flex:1;min-width:0}
+.wsmeta{font-size:12px;color:var(--mute);margin-top:2px}
+.wsact{display:flex;gap:4px;align-items:center;flex:none}
+.wscur{font-size:12px;font-weight:700;color:var(--acc);padding:0 8px}
+.wstag{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:#e2e8f0;color:#475569;border-radius:8px;padding:1px 7px;margin-left:4px}
+.wsbtns{margin-top:8px}
+.wsnew{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.wsnew label{font-size:12.5px;font-weight:600;color:var(--ink2);display:flex;flex-direction:column;gap:3px}
+.wsnew .w2{grid-column:1/-1}
+.wsnew input,.wsnew textarea{border:1px solid #c6cdd8;border-radius:6px;padding:7px 9px;font-weight:400}
+.wsnew textarea{min-height:60px;resize:vertical}
+.wshelp{margin-top:14px;font-size:12.5px;color:var(--ink2);background:#fffbeb;border:1px solid #f5d98b;border-radius:8px;padding:9px 12px}
+.invbar{display:flex;align-items:center;gap:10px;background:#fff8e6;border:1px solid #f5d98b;border-left:4px solid #f59e0b;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:13.5px}
+.invbar>div{flex:1;min-width:0}
+.invo{color:var(--mute);margin-left:10px;font-size:12.5px}
+.invhome{border-color:#f5d98b}
+.invhome .ivg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px 18px;font-size:13.3px}
+.invhome .ivg b{display:block;font-size:11.5px;color:var(--mute);text-transform:uppercase;letter-spacing:.05em}
+.invhome .ivt{display:flex;flex-wrap:wrap;gap:5px}
+.pulls{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 8px;font-size:12px;color:var(--mute)}
+.pullb{border:1.5px dashed #7c9fe0;background:#f2f6fe;color:#1d4ed8;border-radius:16px;padding:4px 11px;font-size:12.3px;font-weight:600;cursor:pointer}
+.pullb:hover{background:#e3ecfd;border-style:solid}
+@media (max-width:820px){.wsnew,.invhome .ivg{grid-template-columns:1fr}}
+@media print{.invbar{border:1px solid #999;background:#fff} .invbar .btn{display:none}}
+.ni .nn{display:flex;flex-direction:column;line-height:1.25}
+.nc{display:inline-block;align-self:flex-start;font:600 9.5px var(--sans);letter-spacing:.03em;color:#92400e;background:#fef3c7;border:1px solid #fcd34d;border-radius:7px;padding:0 5px;margin-top:2px;white-space:nowrap}
+.tag.nctag{background:#fef3c7;color:#92400e;border:1px solid #fcd34d}
+.ncnote{margin:14px 10px 0;font-size:11.5px;color:var(--mute);line-height:1.4}
 /* framework report */
 .fwrep{display:grid;gap:10px}
 .fwp{border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -299,7 +338,7 @@ dialog#full .svscroll svg{min-width:0}
   .side.open{transform:none} .menu{display:inline-block}
   .igwrap,.dsk{display:none} .igm,.mob{display:block}
   .tb{padding:5px 8px;font-size:12.5px} .brand small{display:none} .brand{font-size:13.5px;white-space:normal;line-height:1.15} .top{gap:6px;padding:8px 10px}
-  #bExport,#bImport{display:none} .sidefile{display:flex}
+  #bExport,#bImport{display:none} .wsb .wst{max-width:90px} .sidefile{display:flex}
   .panel{padding:14px 12px} .hero h1{font-size:21px}
   .thead .acts{margin-left:0;width:100%} .thead .acts .btn{flex:1 1 auto}
   .cats,.pick,.fwpick{grid-template-columns:1fr} main{padding:14px 12px 30px}
@@ -323,6 +362,7 @@ dialog#full .svscroll svg{min-width:0}
   <button class="tb menu" id="bMenu" aria-label="Menu">☰</button>
   <div class="brand" data-go="home"><div class="mk">RCA</div><div>Root Cause Analysis Toolkit<small>Frameworks · 7 QC tools · RCA methods</small></div></div>
   <div class="sp"></div>
+  <button class="tb wsb" id="bWs"></button>
   <button class="tb" id="bExport" title="Save all your entries to a file">Save all</button>
   <button class="tb" id="bImport" title="Load entries from a file">Open</button>
   <button class="tb" id="bPrint" title="Print or save as PDF">Print / PDF</button>
@@ -333,6 +373,7 @@ dialog#full .svscroll svg{min-width:0}
 </div>
 <input type="file" id="fileIn" accept=".json,application/json" hidden>
 <div id="toast"></div>
+<dialog id="wsd"><div class="fhd"><b>Workspace</b><button class="btn sm" data-wsclose>Close</button></div><div id="wsBody"></div></dialog>
 <dialog id="full"><div class="fhd"><b id="fullT"></b><button class="btn sm" data-act="closefull">Close</button></div><div id="fullB" class="out"></div></dialog>
 <script>
 "use strict";
@@ -910,7 +951,7 @@ tool({id:"controlchart", cat:"qc", icon:"〰", name:"Control chart",
 });
 
 /* ---------- Stratification ---------- */
-tool({id:"stratification", cat:"qc", icon:"≡", name:"Stratification",
+tool({id:"stratification", cat:"qc", notCourse:1, icon:"≡", name:"Stratification",
   short:"Split the data by source to see if the problem is concentrated in one group.",
   guide:{what:"Separating data into groups (strata) by shift, operator, machine, lot, supplier or location. A problem that looks random overall often sits in one group.",
     when:["Before solving the top Pareto bar.","When a histogram has two humps or a scatter plot has clusters.","When you suspect one shift, line, lot or supplier."],
@@ -1583,7 +1624,7 @@ const PQ={I:["Implement","Easy and high payoff: do these now.","#15803d","#e7f6e
 function pickSync(a,v){ const old=rows(v); return (a.ideas||[]).map(o=>Object.assign({}, old.find(r=>r.idea===o)||{}, {idea:o})); }
 function pickQ(p,e){ return p>=6 ? (e>=6?"C":"I") : (e>=6?"K":"P"); }
 function pickData(a){ return pickSync(a,a.rate).map((r,i)=>({n:i+1,idea:r.idea,p:num(r.p),e:num(r.e)})).filter(r=>Number.isFinite(r.p)&&Number.isFinite(r.e)).map(r=>Object.assign(r,{q:pickQ(r.p,r.e)})); }
-tool({id:"pickchart", cat:"sol", icon:"⊹", name:"PICK chart",
+tool({id:"pickchart", cat:"sol", notCourse:1, icon:"⊹", name:"PICK chart",
   short:"Sort improvement ideas by payoff and effort into Possible, Implement, Challenge and Kill.",
   guide:{what:"A 2 × 2 chart that places each idea by its <b>payoff</b> (benefit) and the <b>effort</b> needed to implement it. The four quadrants give the name: <b>P</b>ossible, <b>I</b>mplement, <b>C</b>hallenge, <b>K</b>ill.",
     when:["After brainstorming countermeasures, to sort many ideas quickly.","In the Improve phase of DMAIC, 8D D5 or EAS Solve.","In kaizen events and workshops, with sticky notes on a whiteboard grid.","To find quick wins (Implement) while planning bigger fixes (Challenge)."],
@@ -1640,11 +1681,166 @@ tool({id:"pickchart", cat:"sol", icon:"⊹", name:"PICK chart",
   }
 });
 
+/* ===================== Tool-to-tool links ("Use from …") =====================
+   Each pull reads a finished result from another tool in the SAME workspace (Practice or the
+   current investigation) and drops it into the current question. Nothing is linked automatically,
+   so the tools still work stand-alone for learning. */
+const ANS = id => (DB[id] && DB[id].started && DB[id].ans) || null;
+const nz = v => v!==undefined && v!==null && !(Array.isArray(v)&&!v.length) && String(v).trim()!=="";
+function addPull(tool, step, from, label, get){ const s=TOOLS[tool].steps.find(x=>x.id===step); if(!s) throw new Error(tool+"."+step); (s.pull=s.pull||[]).push({from,label,get}); }
+
+/* ---- source helpers ---- */
+function paretoTop(){ const a=ANS("pareto"); if(!a) return null; let it=rows(a.items).map(r=>({c:String(r.cat||"").trim(),v:num(r.val)})).filter(r=>r.c&&Number.isFinite(r.v)&&!/^other/i.test(r.c)).sort((x,y)=>y.v-x.v);
+  if(!it.length) return null; const tot=sum(rows(a.items).map(r=>num(r.val)).filter(Number.isFinite)); return {c:it[0].c, v:it[0].v, tot, title:a.title||"", unit:a.unit||"Count"}; }
+function stratTop(){ const a=ANS("stratification"); if(!a) return null; const d=rows(a.data).map(r=>({k:[r.g1,a.f2?r.g2:""].filter(Boolean).join(" / "),def:num(r.def)||0,b:num(r.built)})).filter(r=>r.k);
+  if(!d.length) return null; const rate=d.every(r=>r.b>0); d.forEach(r=>r.rt=rate?r.def/r.b:r.def); d.sort((x,y)=>y.rt-x.rt); const totD=sum(d.map(r=>r.def)), totB=sum(d.map(r=>r.b||0));
+  return {what:a.what||"", k:d[0].k, def:d[0].def, totD, txt:`${d[0].k}: ${d[0].def} of ${totD} defects${rate?` (${(d[0].rt*100).toFixed(1)}% vs ${(totD/totB*100).toFixed(1)}% overall)`:""}`}; }
+const problemOf = () => { const f=ANS("fivewhy"), fb=ANS("fishbone"), p=paretoTop(); return (f&&f.problem)||(fb&&fb.effect)||(p&&p.c)||null; };
+const fbAll = () => { const a=ANS("fishbone"); return a ? BONES.flatMap(([k,l])=>(a[k]||[]).map(c=>[l.replace(/ \(people\)/,""),c,k])) : []; };
+const fbLikely = () => { const a=ANS("fishbone"); return a&&(a.likely||[]).length ? a.likely : null; };
+const whyChain = () => { const a=ANS("fivewhy"); return a ? WHYS.map(w=>a[w]).filter(x=>String(x||"").trim()) : []; };
+const fwCM = () => { const a=ANS("fivewhy"); return a ? rows(a.cm).filter(filled) : []; };
+function allActions(){ const out=[], add=x=>{ x=String(x||"").trim(); if(x && !out.some(y=>y.toLowerCase()===x.toLowerCase())) out.push(x); };
+  fwCM().forEach(r=>add(r.act)); const w=ANS("window"); if(w) rows(w.cm).filter(filled).forEach(r=>add(r.a)); return out; }
+function pickChosen(){ const a=ANS("pickchart"); return a ? pickData(a).filter(r=>r.q==="I"||r.q==="C").map(r=>r.idea) : []; }
+function weightTop(){ const a=ANS("weighting"); if(!a) return null; const cr=iwCrit(a); let best=null;
+  iwSync(a,a.rate).forEach(r=>{ const t=sum(cr.map((c,i)=>{ const v=num(r["c"+i]); return Number.isFinite(v)&&Number.isFinite(c.w)?v*c.w:0; })); if(!best||t>best.t) best={o:r.opt,t}; });
+  return best&&best.t>0 ? best.o : null; }
+function windowSummary(){ const a=ANS("window"); if(!a) return null; const c=waCat(a); if(!c) return null; return `Window analysis: “${a.practice||"practice"}” is Cat. ${c}${c==="A"?" → D":""} (${WCAT[c].n}). ${WCAT[c].cm}`; }
+function cmvSummary(){ const a=ANS("cmv"); if(!a) return null; const all=[]; CMV.forEach(([k,n])=>rows(a["r"+k]).forEach(r=>{ if(String(r.c||"").trim()) all.push(n+": "+r.c); })); return all.length?all:null; }
+function histSummary(){ const a=ANS("histogram"); if(!a) return null; const d=parseNums(a.data); if(d.length<2) return null; const m=mean(d), s=sd(d), L=num(a.lsl), U=num(a.usl);
+  const cpk=Math.min(Number.isFinite(U)?(U-m)/(3*s):Infinity, Number.isFinite(L)?(m-L)/(3*s):Infinity);
+  return `${a.name||"Measurement"}: n = ${d.length}, mean ${fmtN(m)}${a.unit?" "+a.unit:""}, sd ${fmtN(s)}${Number.isFinite(cpk)?`, Cpk ${cpk.toFixed(2)}`:""}.`; }
+function ccSummary(){ const a=ANS("controlchart"); if(!a) return null; const d=parseNums(a.data); if(d.length<3) return null; let n=Math.round(num(a.base)); if(!(n>=2&&n<=d.length)) n=d.length;
+  const b=d.slice(0,n), mr=mean(b.slice(1).map((v,i)=>Math.abs(v-b[i]))), cl=mean(b), u=cl+2.66*mr, l=cl-2.66*mr, out=d.filter(v=>v>u||v<l).length;
+  return `${a.name||"Characteristic"} control chart: CL ${fmtN(cl)}, UCL ${fmtN(u)}, LCL ${fmtN(l)}; ${out} point(s) outside the limits.`; }
+const cmRows = (map) => fwCM().map(map);
+
+/* ---- 7 QC tools ---- */
+addPull("pareto","items","checksheet","Totals from Check sheet",()=>{ const a=ANS("checksheet"); if(!a||!(a.cats||[]).length) return null; const tl=syncTally(a,a.tally), sl=a.slots||[];
+  return tl.map(r=>({cat:r.cat,val:String(sum(sl.map((_,i)=>num(r["c"+i])||0)))})); });
+addPull("pareto","title","checksheet","Title from Check sheet",()=>{ const a=ANS("checksheet"); return a&&a.title; });
+addPull("stratification","what","pareto","Top Pareto category",()=>{ const p=paretoTop(); return p&&`${p.c} (${p.title||"Pareto"})`; });
+addPull("histogram","name","controlchart","Characteristic from Control chart",()=>{ const a=ANS("controlchart"); return a&&a.name; });
+addPull("controlchart","name","histogram","Characteristic from Histogram",()=>{ const a=ANS("histogram"); return a&&a.name; });
+addPull("fishbone","effect","pareto","Top Pareto category",()=>{ const p=paretoTop(); return p&&`${p.c}: ${fmtN(p.v)} of ${fmtN(p.tot)} (${pct(p.v/p.tot,0)})${p.title?" — "+p.title:""}`; });
+addPull("fishbone","effect","stratification","Stratification finding",()=>{ const s=stratTop(); return s&&`${s.what||"Problem"}, concentrated in ${s.txt}`; });
+addPull("scatter","xn","fishbone","A circled cause from Fishbone",()=>{ const l=fbLikely(); return l&&l[0]; });
+
+/* ---- root-cause methods ---- */
+addPull("fivewhy","problem","fishbone","Problem from Fishbone",()=>{ const a=ANS("fishbone"); return a&&a.effect; });
+addPull("fivewhy","problem","stratification","Stratification finding",()=>{ const s=stratTop(); return s&&`${s.what||"Problem"}: ${s.txt}`; });
+addPull("fivewhy","start","fishbone","Circled causes from Fishbone",()=>{ const l=fbLikely(); return l&&"Most likely causes (fishbone): "+l.join("; ")+"."; });
+addPull("fivewhy","w1","fishbone","A circled cause from Fishbone",()=>{ const l=fbLikely(); return l&&"Because "+l[0].charAt(0).toLowerCase()+l[0].slice(1)+"."; });
+addPull("window","problem","fivewhy","Problem from 5-Why",()=>{ const a=ANS("fivewhy"); return a&&a.problem; });
+addPull("window","problem","fishbone","Problem from Fishbone",()=>{ const a=ANS("fishbone"); return a&&a.effect; });
+addPull("fta","top","fishbone","Problem from Fishbone",()=>{ const a=ANS("fishbone"); return a&&short(a.effect,120); });
+addPull("cmv","problem","fishbone","Problem from Fishbone",()=>{ const a=ANS("fishbone"); return a&&a.effect; });
+const FB2M={man:"man",machine:"machine",material:"material",method:"method",measurement:"info"};
+["rV","rM","rC"].forEach(sid=>{
+  addPull("cmv",sid,"fishbone","Circled causes from Fishbone",()=>{ const l=fbLikely(); if(!l) return null; const all=fbAll(); return l.map(c=>{ const f=all.find(x=>x[1]===c); return {c, m:f?(FB2M[f[2]]||""):""}; }); });
+  addPull("cmv",sid,"fishbone","All Fishbone causes",()=>{ const all=fbAll(); return all.length?all.map(([l,c,k])=>({c,m:FB2M[k]||""})):null; });
+});
+
+/* ---- solution tools ---- */
+addPull("pickchart","topic","fivewhy","Problem from 5-Why",()=>{ const a=ANS("fivewhy"); return a&&short(a.problem,120); });
+addPull("pickchart","ideas","fivewhy","Countermeasures from 5-Why and Window",()=>{ const x=allActions(); return x.length?x:null; });
+addPull("weighting","opts","pickchart","Implement + Challenge ideas from PICK chart",()=>{ const x=pickChosen(); return x.length?x:null; });
+addPull("weighting","opts","fivewhy","Countermeasures from 5-Why",()=>{ const x=fwCM().map(r=>r.act).filter(Boolean); return x.length?x:null; });
+addPull("forcefield","change","weighting","Rank-1 option from Weighting matrix",()=>weightTop());
+addPull("forcefield","change","fivewhy","First countermeasure from 5-Why",()=>{ const r=fwCM()[0]; return r&&r.act; });
+
+/* ---- frameworks ---- */
+const P = (tool, step, list) => list.forEach(([from,label,get])=>addPull(tool,step,from,label,get));
+const PROB = [["fivewhy","Problem from 5-Why",()=>{ const a=ANS("fivewhy"); return a&&a.problem; }],["fishbone","Problem from Fishbone",()=>{ const a=ANS("fishbone"); return a&&a.effect; }]];
+const DATA = [["pareto","Pareto + stratification findings",()=>{ const p=paretoTop(), s=stratTop(); const x=[]; if(p) x.push(`Pareto: ${p.c} = ${fmtN(p.v)} of ${fmtN(p.tot)} (${pct(p.v/p.tot,0)}).`); if(s) x.push(`Stratification: ${s.txt}.`); return x.length?x.join(" "):null; }],
+  ["histogram","Histogram / Control chart summary",()=>{ const x=[histSummary(),ccSummary()].filter(Boolean); return x.length?x.join(" "):null; }]];
+const CAUSES = [["fishbone","Circled causes from Fishbone",()=>fbLikely()],["fishbone","All Fishbone causes",()=>{ const a=fbAll(); return a.length?a.map(x=>x[1]):null; }]];
+const ROOT = [["fivewhy","Root cause from 5-Why",()=>{ const a=ANS("fivewhy"); return a&&a.root; }]];
+const VERIFY = [["fivewhy","Verified evidence from 5-Why",()=>{ const a=ANS("fivewhy"); return a&&a.start; }]];
+const CMS = [["fivewhy","Countermeasures from 5-Why",()=>{ const x=cmRows(r=>({a:r.act,o:r.owner,d:r.due,s:"Open"})); return x.length?x:null; }]];
+P("eas","e_prob",PROB); P("eas","e_data",DATA); P("eas","a_causes",CAUSES); P("eas","a_root",ROOT); P("eas","a_verify",VERIFY); P("eas","s_cm",CMS);
+P("eas","s_result",[["controlchart","Control chart summary",()=>ccSummary()]]);
+P("pdca","p_prob",PROB); P("pdca","p_cause",ROOT); P("pdca","p_plan",CMS);
+P("pdca","c_result",[["controlchart","Control chart summary",()=>ccSummary()],["histogram","Histogram summary",()=>histSummary()]]);
+P("dmaic","d_prob",PROB); P("dmaic","m_base",[["histogram","Histogram / Control chart summary",DATA[1][2]]]); P("dmaic","a_x",CAUSES); P("dmaic","a_root",ROOT); P("dmaic","i_sol",CMS);
+P("8d","d2",PROB); P("8d","d4occ",ROOT); P("8d","d4esc",[["fivewhy","Escape cause from 5-Why",()=>{ const a=ANS("fivewhy"); return a&&a.escape; }]]); P("8d","d4ver",VERIFY);
+P("8d","d5",[["fivewhy","Countermeasures from 5-Why",()=>{ const x=cmRows(r=>({a:r.act,f:r.type==="Detect"?"Escape":"Occurrence",v:""})); return x.length?x:null; }]]);
+P("bs62740","i_event",PROB); P("bs62740","a_cf",[["fivewhy","Why-chain from 5-Why",()=>{ const w=whyChain(); return w.length?w.map(x=>{ const t=short(x,200); return t.charAt(0).toUpperCase()+t.slice(1); }):null; }],...CAUSES.slice(0,1)]);
+P("bs62740","a_root",ROOT); P("bs62740","a_hum",[["window","Window analysis result",()=>windowSummary()]]); P("bs62740","v_how",VERIFY);
+P("bs62740","p_rec",[["fivewhy","Countermeasures from 5-Why",()=>{ const a=ANS("fivewhy"); const x=cmRows(r=>({r:r.act,c:a&&a.root?short(a.root,60):"",t:r.owner||""})); return x.length?x:null; }]]);
+P("dmaic","a_x",[["cmv","Causes from 4M+I/CMV matrix",()=>cmvSummary()]]);
+
+/* ---- PCBA FA Workflow case file → 5-Why ---- */
+TOOLS.fivewhy.steps.find(s=>s.id==="start").filePull={label:"Import PCBA FA case file", accept:".json,application/json", read(o){
+  if(!o||o.schema!=="pcba-fa-case"||!o.stages) throw new Error("not a PCBA FA case file");
+  const g=(st,k)=>{ try{ return String(o.stages[st].data[k]||"").trim(); }catch(e){ return ""; } };
+  const s1=["pn","sn"].map(k=>g("S1",k)).filter(Boolean).join(" S/N "), sym=g("S1","symptom"), mech=g("S9","mech"), concl=g("GC","cause");
+  const out={start:[mech&&("Verified mechanism (FA Step 9): "+mech), concl&&("FA conclusion: "+concl)].filter(Boolean).join("\n")};
+  if(sym) out.problem=`${sym}${s1?` (PCBA P/N ${s1})`:""}`;
+  const w=rows(o.stages.S11&&o.stages.S11.data.why5).map(r=>String(r.a||"").trim()).filter(Boolean); w.slice(0,5).forEach((x,i)=>out[WHYS[i]]=/^because/i.test(x)?x:"Because "+x);
+  const root=g("S11","rcRoot"), esc_=g("S11","rcEscape"); if(root) out.root=root; if(esc_) out.escape=esc_;
+  if(!out.start && !out.problem) throw new Error("the case has no symptom or mechanism yet");
+  return out; }};
+
+/* ---- the investigation's own problem statement ---- */
+const invProblem = () => { const v=curInv(); return v&&v.meta.problem ? v.meta.problem : null; };
+[["fishbone","effect"],["fivewhy","problem"],["window","problem"],["cmv","problem"],["fta","top"],["pickchart","topic"],["eas","e_prob"],["pdca","p_prob"],["dmaic","d_prob"],["8d","d2"],["bs62740","i_event"],["stratification","what"],["checksheet","title"],["pareto","title"]]
+  .forEach(([t,s])=>{ const st=TOOLS[t].steps.find(x=>x.id===s); (st.pull=st.pull||[]).unshift({from:"inv",label:"Investigation problem statement",get:invProblem}); });
+const srcName = f => f==="inv" ? "the investigation" : TOOLS[f].name;
+
+/* ---- applying a pull to the current question ---- */
+function pullsFor(s){ return (s.pull||[]).map((p,i)=>{ let v=null; try{ v=p.get(); }catch(e){ v=null; } return nz(v)?{i,label:p.label,from:p.from,v}:null; }).filter(Boolean); }
+function pullBar(s){ const ps=pullsFor(s); const fp=s.filePull;
+  if(!ps.length && !fp) return "";
+  return `<div class="pulls"><span>Use from:</span>${ps.map(p=>`<button type="button" class="pullb" data-pull="${p.i}" title="From ${esc(srcName(p.from))}">⇣ ${esc(p.label)}</button>`).join("")}${fp?`<button type="button" class="pullb" data-fpull title="Reads the symptom, verified mechanism and any 5-Why from a case file saved in the PCBA FA Workflow app">⇣ ${esc(fp.label)}…</button>`:""}</div>`; }
+function applyPull(s, v){
+  const st=S(curTool), a=st.ans, cur=readInput(s,a);
+  let nv;
+  if(s.type==="table"){ const old=(cur||[]).filter(filled), add=Array.isArray(v)?v:[v]; nv=old.concat(add.map(r=>Object.assign({},r))); }
+  else if(s.type==="list"){ const old=cur||[], add=(Array.isArray(v)?v:[v]).map(String); nv=old.concat(add.filter(x=>!old.some(y=>y.toLowerCase()===x.toLowerCase()))); }
+  else { const txt=Array.isArray(v)?v.join("\n"):String(v); const o=String(cur||"").trim(); nv = (s.type==="textarea" && o && o!==txt) ? o+"\n"+txt : txt; }
+  st.ans[s.id]=nv; renderChat(); renderOut(); focusInbox();
+}
+document.addEventListener("click", e=>{
+  const el=e.target.closest("[data-pull],[data-fpull]"); if(!el||!curTool) return;
+  const st=S(curTool), s=TOOLS[curTool].steps.find(x=>x.id===st.cur); if(!s) return;
+  if(el.dataset.fpull!==undefined){ const inp=document.createElement("input"); inp.type="file"; inp.accept=s.filePull.accept;
+    inp.onchange=()=>{ const f=inp.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ const out=s.filePull.read(JSON.parse(r.result));
+        saveCurrent(false); Object.entries(out).forEach(([k,v])=>{ if(nz(v) && !nz(st.ans[k])) st.ans[k]=v; else if(k===s.id && nz(v) && String(st.ans[k]).indexOf(v)<0) st.ans[k]=String(st.ans[k]).trim()+"\n"+v; });
+        renderChat(); renderOut(); focusInbox(); toast("Imported from "+f.name+" (empty answers only)"); }
+      catch(err){ toast("Cannot import: "+err.message); } }; r.readAsText(f); };
+    inp.click(); return; }
+  const p=(s.pull||[])[+el.dataset.pull]; if(!p) return; let v=null; try{ v=p.get(); }catch(err){} if(!nz(v)){ toast("Nothing to use from "+srcName(p.from)+" yet"); return; }
+  applyPull(s,v); toast("Filled from "+srcName(p.from));
+});
+
+/* ---- investigation summary on the home page ---- */
+function invHome(){
+  const v=curInv(); if(!v) return "";
+  const used=toolsUsed(DB), m=v.meta, f=ANS("fivewhy"), w=weightTop(), pk=pickChosen();
+  const items=[["Problem", problemOf()||m.problem], ["Root cause (5-Why)", f&&f.root], ["Why it escaped", f&&f.escape], ["Window analysis", windowSummary()], ["Chosen countermeasure", w || (pk.length?pk.join("; "):null)]];
+  return `<div class="panel invhome"><h2>${esc(m.id)} · ${esc(m.title)}</h2><p class="sub">Owner: ${esc(m.owner||"—")} · created ${m.created?new Date(m.created).toLocaleDateString():"—"}${m.savedAt?` · last saved to file ${new Date(m.savedAt).toLocaleString()} by ${esc(m.savedBy||"?")}`:" · not saved to a file yet"}</p>
+    <div class="ivg">${items.map(([l,x])=>`<div><b>${l}</b>${x?esc(short(x,300)):'<span style="color:var(--mute)">—</span>'}</div>`).join("")}
+    <div><b>Tools used (${used.length})</b><div class="ivt">${used.length?used.map(id=>chipOf(id,DB[id].done?" ✓":"")).join(""):'<span style="color:var(--mute)">None yet: open a tool below or from the menu.</span>'}</div></div></div>
+    ${(m.history||[]).length?`<div class="wsmeta" style="margin-top:10px">File history: ${m.history.slice(-5).map(h=>`${esc(h.by)} ${new Date(h.at).toLocaleString()}`).join(" · ")}</div>`:""}
+    <div class="nextt"><button class="btn sm pri" onclick="document.getElementById('bExport').click()">Save file</button><button class="btn sm" data-wsmenu>Switch workspace</button><span>Each tool in this investigation starts empty. Use the “Use from” buttons to carry results from one tool to the next.</span></div></div>`;
+}
+
 /* ===================== state ===================== */
 const KEY = "rcakit.v1";
-let DB = {}; try{ DB = JSON.parse(localStorage.getItem(KEY)||"{}")||{}; }catch(e){ DB = {}; }
+/* Practice workspace = the original single store (unchanged key). Investigations live in their own store. */
+let PRACTICE = {}; try{ PRACTICE = JSON.parse(localStorage.getItem(KEY)||"{}")||{}; }catch(e){ PRACTICE = {}; }
+let INV = {}; try{ INV = JSON.parse(localStorage.getItem(KEY+".inv")||"{}")||{}; }catch(e){ INV = {}; }
 let UI = {}; try{ UI = JSON.parse(localStorage.getItem(KEY+".ui")||"{}")||{}; }catch(e){ UI = {}; }
-function persist(){ try{ localStorage.setItem(KEY, JSON.stringify(DB)); localStorage.setItem(KEY+".ui", JSON.stringify(UI)); }catch(e){} }
+if(!UI.ws || (UI.ws!=="practice" && !INV[UI.ws])) UI.ws="practice";
+let DB = UI.ws==="practice" ? PRACTICE : INV[UI.ws].data;
+const inInv = () => UI.ws!=="practice" && !!INV[UI.ws];
+const curInv = () => inInv() ? INV[UI.ws] : null;
+function persist(){ try{
+  if(inInv()){ INV[UI.ws].data=DB; INV[UI.ws].meta.updated=new Date().toISOString(); localStorage.setItem(KEY+".inv", JSON.stringify(INV)); }
+  else { PRACTICE=DB; localStorage.setItem(KEY, JSON.stringify(DB)); }
+  localStorage.setItem(KEY+".ui", JSON.stringify(UI)); }catch(e){} }
 const blank = () => ({ans:{}, seen:{}, cur:null, done:false, started:false});
 function S(id){ return DB[id] || (DB[id]=blank()); }
 let curTool = null, choiceTmp = undefined;
@@ -1755,7 +1951,7 @@ function renderChat(){
     const sug = s.tools && s.tools.length ? `<div class="sugg">Helpful tools: ${s.tools.map(x=>chipOf(x)).join("")}</div>` : "";
     h+=`<div class="msg bot"><div class="av">${i+1}</div><div class="bub">${ph}<b class="q">${esc(qText(s,a))}${s.optional?' <span style="font-weight:400;color:var(--mute);font-size:12px">(optional)</span>':""}</b>${isCur&&s.help?`<div class="help">${esc(typeof s.help==="function"?s.help(a):s.help)}</div>`:""}${isCur?sug:""}</div></div>`;
     if(isCur){
-      h+=`<div class="inbox" id="inbox" data-step="${s.id}">${inputHTML(s,a)}
+      h+=`<div class="inbox" id="inbox" data-step="${s.id}">${pullBar(s)}${inputHTML(s,a)}
         <div class="row"><span class="hint">${s.type==="text"||s.type==="number"?"Press Enter to continue":s.type==="choice"?"Pick one to continue":s.type==="decide"?"Choose Yes or No, give the reason, then Next":s.type==="pick"?"Tick the ones that apply, then Next":"Ctrl + Enter to continue"}</span>
         ${i>0?`<button class="btn ghost sm" data-act="back">← Back</button>`:""}
         ${s.optional?`<button class="btn sm" data-act="skip">Skip</button>`:""}
@@ -1872,9 +2068,9 @@ document.addEventListener("paste", e=>{
 function viewTool(id){
   curTool=id; const t=TOOLS[id], c=CATS[t.cat], st=S(id), g=t.guide;
   const gOpen = UI["g_"+id]===undefined ? true : UI["g_"+id];
-  $("#view").innerHTML=`
+  $("#view").innerHTML=invBanner()+`
   <div class="thead"><div class="big" style="background:${c.bg};color:${c.color}">${esc(t.icon)}</div>
-    <div style="flex:1;min-width:240px"><div><span class="tag" style="background:${c.bg};color:${c.color}">${esc(c.short)}</span></div><h1>${esc(t.name)}</h1><div class="meta">${esc(t.short)}</div></div>
+    <div style="flex:1;min-width:240px"><div><span class="tag" style="background:${c.bg};color:${c.color}">${esc(c.short)}</span>${t.notCourse?'<span class="tag nctag">Not in training course · added for reference</span>':""}</div><h1>${esc(t.name)}</h1><div class="meta">${esc(t.short)}</div></div>
     <div class="acts"><button class="btn" data-act="sample">Load sample</button>${(t.altSamples||[]).map((x,i)=>`<button class="btn" data-alt="${i}">Load ${esc(x.label)}</button>`).join("")}<button class="btn" data-act="restart">Start over</button><button class="btn" data-act="print">Print / PDF</button></div></div>
   <div class="tgrid">
     <div>
@@ -1932,7 +2128,7 @@ function viewHome(){
   const FWP=[["pdca","PDCA","Small, quick improvements and repeated test cycles."],["eas","EAS","Everyday shop-floor problems; easy for any team to follow."],["8d","8D","Customer complaints, field failures and escapes that need containment and a formal report."],["dmaic","DMAIC","Chronic, data-heavy process problems where the cause is unclear."],["bs62740","BS EN 62740","Serious incidents or audits that need a defensible investigation to a recognised standard; actions go to CAPA / 8D."]];
   const fwp=`<div class="fwpick">${FWP.map(([id,n,d])=>`<div data-open="${id}"><b>${n}</b>${esc(d)}</div>`).join("")}</div>`;
 
-  $("#view").innerHTML=`
+  $("#view").innerHTML=invBanner()+invHome()+`
   <div class="hero"><h1>Root Cause Analysis Toolkit</h1><p>Every problem-solving framework follows the same four stages. The <b>framework</b> gives you the roadmap; the <b>7 QC tools</b> expose the problem with data; the <b>root-cause methods</b> find why; and the <b>change tools</b> make the fix stick. Each tool asks you one question at a time and comes with a worked sample case: cracked J3 connector joints on a logging-tool PCBA.</p><div class="hcred"><span>Developed by <b>Soe Moe</b> · <a href="mailto:soe.moe@halliburton.com">soe.moe@halliburton.com</a></span><span>Course conductor: <b>Chang Keen Weng</b> (ACT, QC Tools)</span></div></div>
   <div class="panel"><h2>How the frameworks and tools fit together</h2><p class="sub"><span class="dsk">Read across: each framework's phases line up with the same four stages. Read down: the tools that do the work in each stage.</span><span class="mob">Every framework passes through the same four stages. Under each stage: what each framework calls it, and the tools that do the work.</span></p><div class="igwrap">${ig}</div>${igm}${legend}</div>
   <div class="panel"><h2>Four categories</h2><p class="sub">Categorize by the question the tool answers.</p><div class="cats">${cats}</div></div>
@@ -1948,9 +2144,10 @@ function renderSide(){
     s+=`<div class="ncat" style="color:${c.color}"><i style="background:${c.color}"></i>${esc(c.name)}</div>`;
     TOOL_ORDER.filter(id=>TOOLS[id].cat===k).forEach(id=>{ const t=TOOLS[id], st=DB[id];
       const p=st&&st.started?stepsDone(t,st):null; const stx=!p?"":st.done?'<span class="st done">✓</span>':`<span class="st">${p.n}/${p.of}</span>`;
-      s+=`<div class="ni${h==="tool/"+id?" on":""}" data-open="${id}"><span class="ic" style="background:${c.bg};color:${c.color}">${esc(t.icon)}</span>${esc(t.name)}${stx}</div>`; });
+      s+=`<div class="ni${h==="tool/"+id?" on":""}" data-open="${id}"><span class="ic" style="background:${c.bg};color:${c.color}">${esc(t.icon)}</span><span class="nn">${esc(t.name)}${t.notCourse?'<span class="nc" title="Not part of the QC Tools training course: added for reference">not in course</span>':""}</span>${stx}</div>`; });
   });
-  s+=`<div class="sidefile"><button class="btn sm" onclick="document.getElementById('bExport').click()">Save all</button><button class="btn sm" onclick="document.getElementById('bImport').click()">Open file</button></div>`;
+  s+=`<div class="sidefile"><button class="btn sm" data-wsmenu>Workspace</button><button class="btn sm" onclick="document.getElementById('bExport').click()">${inInv()?"Save file":"Save all"}</button><button class="btn sm" onclick="document.getElementById('bImport').click()">Open file</button></div>`;
+  s+=`<div class="ncnote"><span class="nc">not in course</span> = not part of the QC Tools training course; added for reference.</div>`;
   $("#side").innerHTML=s;
 }
 function go(h){ location.hash = h ? "#/"+h : "#/"; }
@@ -1966,22 +2163,92 @@ addEventListener("hashchange", route);
 /* ===================== top bar ===================== */
 $("#bMenu").onclick=()=>$("#side").classList.toggle("open");
 $("#bPrint").onclick=()=>window.print();
+function download(name, obj){ const blob=new Blob([JSON.stringify(obj,null,1)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); }
+const safeName = s => String(s||"").replace(/[^\w\-]+/g,"_").replace(/_+/g,"_").slice(0,50);
+function saveInvFile(){
+  const v=curInv(); if(!v) return;
+  let who=UI.user; if(!who){ who=(prompt("Your name (recorded in the file's edit history):","")||"").trim(); if(who){ UI.user=who; } }
+  v.meta.history=(v.meta.history||[]); v.meta.history.push({by:who||"—", at:new Date().toISOString()});
+  v.meta.savedBy=who||"—"; v.meta.savedAt=new Date().toISOString(); persist();
+  download(`${v.meta.id}_${safeName(v.meta.title)}.json`, {app:"rca-toolkit", kind:"investigation", version:1, meta:v.meta, data:v.data});
+  toast("Investigation saved to a file. Put it back in the shared Teams / SharePoint folder."); renderWsBtn();
+}
 $("#bExport").onclick=()=>{
-  const blob=new Blob([JSON.stringify({app:"rca-toolkit",version:1,saved:new Date().toISOString(),data:DB},null,1)],{type:"application/json"});
-  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="RCA_toolkit_"+new Date().toISOString().slice(0,10)+".json"; document.body.appendChild(a); a.click();
-  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); toast("Saved all tools to a file");
+  if(inInv()){ saveInvFile(); return; }
+  download("RCA_toolkit_practice_"+new Date().toISOString().slice(0,10)+".json", {app:"rca-toolkit",kind:"practice",version:1,saved:new Date().toISOString(),data:DB});
+  toast("Saved all practice entries to a file");
 };
 $("#bImport").onclick=()=>$("#fileIn").click();
+function openInvObj(o, fname){
+  const id=o.meta&&o.meta.id; if(!id) throw new Error("no investigation ID");
+  if(INV[id]){ const mine=INV[id].meta.updated||"", theirs=(o.meta.savedAt||o.meta.updated||"");
+    if(!confirm(`${id} is already on this computer.\n\nReplace it with the version in this file (saved ${theirs?new Date(theirs).toLocaleString():"?"} by ${o.meta.savedBy||"?"})?${mine>theirs?"\n\nNote: your copy here was changed more recently.":""}`)) return; }
+  INV[id]={meta:o.meta, data:o.data||{}}; switchWs(id); toast("Opened investigation "+id+(fname?" from "+fname:""));
+}
 $("#fileIn").onchange=e=>{ const f=e.target.files[0]; e.target.value=""; if(!f) return;
   const r=new FileReader(); r.onload=()=>{ try{ const o=JSON.parse(r.result); if(o.app!=="rca-toolkit"||!o.data) throw new Error("not a toolkit file");
-    if(!confirm("Replace all current entries with the ones in this file?")) return; DB=o.data; persist(); route(); toast("Opened "+f.name); }
+    if(o.kind==="investigation"){ openInvObj(o,f.name); return; }
+    if(!confirm("This is a practice file. Replace all your practice entries with the ones in this file?")) return;
+    DB=o.data; UI.ws="practice"; persist(); renderWsBtn(); route(); toast("Opened "+f.name+" into Practice"); }
     catch(err){ toast("Cannot open: "+err.message); } }; r.readAsText(f); };
 
-/* tool-specific buttons inside results */
+/* ===================== workspaces ===================== */
+function switchWs(id){
+  persist();
+  if(id!=="practice" && !INV[id]) id="practice";
+  UI.ws=id; DB = id==="practice" ? PRACTICE : INV[id].data;
+  persist(); renderWsBtn(); const d=$("#wsd"); if(d.open) d.close(); route();
+}
+function newInvId(){ const d=new Date(), p=n=>String(n).padStart(2,"0"); let id=`INV-${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}`; let k=2; const b=id; while(INV[id]) id=b+"-"+(k++); return id; }
+function renderWsBtn(){
+  const v=curInv(), b=$("#bWs");
+  b.innerHTML = v ? `<span class="wsdot inv"></span><span class="wst">${esc(v.meta.id)} · ${esc(v.meta.title)}</span>` : `<span class="wsdot"></span><span class="wst">Practice</span>`;
+  b.title = v ? "Investigation workspace: click to switch" : "Practice workspace (learning, with samples): click to start or open an investigation";
+  $("#bExport").textContent = v ? "Save file" : "Save all";
+  $("#bExport").title = v ? "Save this investigation to a file to share in Teams / SharePoint" : "Save all practice entries to a file";
+}
+function toolsUsed(data){ return TOOL_ORDER.filter(id=>data[id]&&data[id].started&&Object.keys(data[id].seen||{}).length); }
+function renderWsDialog(){
+  const list=Object.values(INV).sort((x,y)=>(y.meta.updated||"").localeCompare(x.meta.updated||""));
+  const cur=UI.ws;
+  $("#wsBody").innerHTML=`
+   <div class="wsrow${cur==="practice"?" on":""}"><div><b>Practice</b> <span class="wstag">learning</span><div class="wsmeta">Try the tools freely and load the samples. This is the page as it has always been.</div></div>
+     <div class="wsact">${cur==="practice"?'<span class="wscur">Current</span>':'<button class="btn sm" data-wsopen="practice">Switch</button>'}</div></div>
+   <h4>Investigations on this computer</h4>
+   ${list.length?list.map(v=>{ const m=v.meta, n=toolsUsed(v.data).length; return `<div class="wsrow${cur===m.id?" on":""}"><div><b>${esc(m.id)}</b> · ${esc(m.title)}<div class="wsmeta">Owner: ${esc(m.owner||"—")} · ${n} tool${n===1?"":"s"} used · changed ${m.updated?new Date(m.updated).toLocaleString():"—"}${m.savedAt?` · last saved to file by ${esc(m.savedBy||"?")}`:" · not saved to a file yet"}</div></div>
+     <div class="wsact">${cur===m.id?'<span class="wscur">Current</span>':`<button class="btn sm" data-wsopen="${esc(m.id)}">Open</button>`}<button class="btn sm ghost" data-wsdel="${esc(m.id)}" title="Remove from this computer">Remove</button></div></div>`; }).join(""):`<div class="wsmeta" style="padding:6px 2px">None yet.</div>`}
+   <div class="wsbtns"><button class="btn" data-wsfile>Open investigation file…</button></div>
+   <h4>Start a new investigation</h4>
+   <div class="wsnew"><label>Title<input id="wsTitle" placeholder="e.g. J3 cracked solder joints, week 44"></label>
+     <label>Owner / your name<input id="wsOwner" value="${esc(UI.user||"")}" placeholder="e.g. Soe Moe"></label>
+     <label class="w2">Problem statement (optional)<textarea id="wsProb" placeholder="What, where, when, how many"></textarea></label>
+     <div class="w2"><button class="btn pri" data-wsnew>Create and open</button></div></div>
+   <div class="wshelp"><b>Sharing with your team:</b> click <b>Save file</b> and put the file in your Teams channel or SharePoint folder. A teammate opens it with <b>Open</b>, adds their part, and saves it back to the same place. SharePoint keeps every version. Agree who is editing at any one time, because two people saving at once will overwrite each other.</div>`;
+}
+document.addEventListener("click", e=>{
+  const el=e.target.closest("#bWs,[data-wsopen],[data-wsdel],[data-wsnew],[data-wsfile],[data-wsclose],[data-wsmenu]"); if(!el) return;
+  if(el.id==="bWs"||el.dataset.wsmenu!==undefined){ renderWsDialog(); $("#wsd").showModal(); return; }
+  if(el.dataset.wsclose!==undefined){ $("#wsd").close(); return; }
+  if(el.dataset.wsopen){ switchWs(el.dataset.wsopen); return; }
+  if(el.dataset.wsfile!==undefined){ $("#wsd").close(); $("#fileIn").click(); return; }
+  if(el.dataset.wsdel){ const id=el.dataset.wsdel; if(!confirm(`Remove ${id} from this computer?\n\nSave it to a file first if you need it. Files already saved are not affected.`)) return;
+    delete INV[id]; if(UI.ws===id){ UI.ws="practice"; DB=PRACTICE; } persist(); renderWsBtn(); renderWsDialog(); route(); return; }
+  if(el.dataset.wsnew!==undefined){ const t=$("#wsTitle").value.trim(), o=$("#wsOwner").value.trim(), pr=$("#wsProb").value.trim();
+    if(!t){ $("#wsTitle").focus(); toast("Give the investigation a title"); return; }
+    if(o) UI.user=o; const id=newInvId(), now=new Date().toISOString();
+    INV[id]={meta:{id,title:t,owner:o,problem:pr,created:now,updated:now,history:[]}, data:{}}; if(location.hash.replace(/^#\/?/,"")) location.hash="#/"; switchWs(id); toast("Investigation "+id+" created"); return; }
+});
+function invBanner(){
+  const v=curInv(); if(!v) return "";
+  return `<div class="invbar"><span class="wsdot inv"></span><div><b>${esc(v.meta.id)}</b> · ${esc(v.meta.title)}<span class="invo">Owner: ${esc(v.meta.owner||"—")}</span></div><button class="btn sm" data-wsmenu>Switch</button></div>`;
+}
+
 function sendTo(id, ans){ const t=TOOLS[id]; DB[id]={ans, seen:{}, cur:null, done:true, started:true}; vis(t,ans).forEach(s=>DB[id].seen[s.id]=true);
   const nxt=vis(t,ans).find(s=>isEmptyVal(s,ans[s.id],ans)&&!s.optional); if(nxt){ DB[id].cur=nxt.id; DB[id].done=false; delete DB[id].seen[nxt.id]; }
   persist(); go("tool/"+id); }
 
+renderWsBtn();
 route();
 
 </script>
