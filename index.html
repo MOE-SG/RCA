@@ -257,6 +257,19 @@ svg text{font-family:var(--sans)}
 .iwm td.rk{font-weight:800;background:#f3d3c4;color:#7c2d12;font-size:14px}
 .iwm td.rk.top{background:#fbbf9b}
 .iwm th[rowspan]{background:#f1f4f8}
+.picks{display:flex;flex-direction:column;gap:4px;max-height:300px;overflow:auto}
+.pk{display:flex;align-items:center;gap:8px;border:1.5px solid #d4dae3;border-radius:7px;padding:6px 10px;cursor:pointer;background:#fff}
+.pk:hover{border-color:var(--acc)}
+.pk:has(input:checked){border-color:#dc2626;background:#fff1f1;color:#991b1b;font-weight:600}
+.pk small{margin-left:auto;color:var(--mute);font-weight:400;font-size:11px}
+.pk input{accent-color:#dc2626;width:16px;height:16px}
+.etbl td.rn{width:34px;text-align:center;color:#334155;background:#eef2f7;font:700 12px var(--mono)}
+.pickl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:4px}
+.pq{border:1.5px solid;border-radius:9px;padding:8px 10px;font-size:12.8px}
+.pqh{font-weight:800;font-size:14px}.pqh span{font-weight:600;opacity:.8}
+.pqd{color:var(--ink2);font-size:12px;margin:1px 0 4px}
+.pq ol{margin:0;padding-left:24px}.pq li{margin:2px 0}.pq li small{color:var(--mute)}
+@media (max-width:820px){.pickl{grid-template-columns:1fr}}
 /* framework report */
 .fwrep{display:grid;gap:10px}
 .fwp{border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -635,7 +648,7 @@ tool({id:"flowchart", cat:"qc", icon:"⇩", name:"Flowchart",
     {id:"name", q:"Which process are you mapping?", type:"text", ph:"e.g. J3 harness mating at cable station"},
     {id:"steps", q:"List the steps in order. For each Decision, give the step number the 'No' path goes to.", type:"table", minRows:5,
       help:"Mark where the defect can be created and where it is detected. Start/End steps are optional but help readers.",
-      cols:[{k:"text",l:"Step description",w:220},{k:"type",l:"Type",type:"select",opts:FC_TYPES},{k:"no",l:"If No → step #",type:"number",w:70},{k:"mark",l:"Defect",type:"select",opts:FC_MARK}]},
+      cols:[{k:"_n",l:"#",rownum:1},{k:"text",l:"Step description",w:220},{k:"type",l:"Type",type:"select",opts:FC_TYPES},{k:"no",l:"If No → step #",type:"number",w:70,stepref:1},{k:"mark",l:"Defect",type:"select",opts:FC_MARK}]},
     {id:"note", q:"Anything that differs from the written work instruction?", type:"textarea", optional:1, ph:"e.g. Night shift mates the cable on the bench mat, not in the fixture."}
   ],
   sample:{name:"J3 harness mating at cable station", steps:[
@@ -954,7 +967,8 @@ tool({id:"fishbone", cat:"qc", icon:"⋘", name:"Fishbone (Ishikawa)",
   steps:[
     {id:"effect", q:"What is the problem (the fish's head)? Be specific.", type:"textarea", ph:"e.g. Cracked solder joints at J3 connector found at final test"},
     ...BONES.map(([k,l,h])=>({id:k, q:`Possible causes under ${l}? One per line.`, type:"list", optional:1, help:h})),
-    {id:"likely", q:"Which 1–3 causes are most likely? Copy them as written above.", type:"list", optional:1, help:"These get circled on the diagram. Base the choice on data where you can."}
+    {id:"likely", q:"Which 1–3 causes are most likely? Tick them.", type:"pick", optional:1, help:"They get circled in red on the diagram. Base the choice on data where you can. You can also click any cause on the diagram to circle or un-circle it.",
+      opts:a=>BONES.flatMap(([k,l])=>(a[k]||[]).map(c=>[l.replace(/ \(people\)/,""),c]))}
   ],
   sample:{effect:"Cracked solder joints at J3 connector found at final test",
     man:["Operator not trained on fixture","New night-shift operator transferred from another line","Rushing to meet takt"],
@@ -977,14 +991,15 @@ tool({id:"fishbone", cat:"qc", icon:"⋘", name:"Fishbone (Ishikawa)",
       shown.forEach((c,j)=>{ const t=(j+1)/(n+1), px=tx+t*(at-tx), py=ty+t*(sy-ty), L=like.includes(c.toLowerCase().trim());
         g+=`<line x1="${px-46}" y1="${py}" x2="${px}" y2="${py}" stroke="#94a3b8" stroke-width="1.2"/>`;
         const tl=clip(wrap(c,23),2), wmax=Math.max(...tl.map(x=>x.length))*7, y0=py-3-(tl.length-1)*14;
+        g+=`<g data-likely="${esc(c)}" style="cursor:pointer"><title>${L?"Click to un-circle":"Click to circle as most likely"}</title><rect x="${px-54-wmax}" y="${y0-14}" width="${wmax+12}" height="${tl.length*14+8}" fill="transparent"/>`;
         if(L) g+=`<rect x="${px-54-wmax}" y="${y0-14}" width="${wmax+12}" height="${tl.length*14+8}" rx="8" fill="#fff1f1" stroke="#dc2626" stroke-width="1.8"/>`;
-        g+=TL(px-50,y0,tl,14,`text-anchor="end" font-size="12.5" ${L?'font-weight="700" fill="#dc2626"':'fill="#1e293b"'}`); });
+        g+=TL(px-50,y0,tl,14,`text-anchor="end" font-size="12.5" ${L?'font-weight="700" fill="#dc2626"':'fill="#1e293b"'}`)+`</g>`; });
       if(cs.length>6) g+=T(at-20,top?sy-12:sy+20,`+${cs.length-6} more`,'text-anchor="end" font-size="10.5" fill="#64748b"');
     });
     const total=sum(BONES.map(([k])=>(a[k]||[]).length)), empty=BONES.filter(([k])=>!(a[k]||[]).length).map(b=>b[1]);
     return `<div class="svscroll" style="--minw:720px"><svg viewBox="0 0 ${W} ${H}" class="chart" xmlns="http://www.w3.org/2000/svg">${g}</svg></div>
       <div class="kpis">${kpi(total,"Possible causes")}${kpi((a.likely||[]).length,"Most likely")}${kpi(6-empty.length+" / 6","Categories used")}</div>
-      ${(a.likely||[]).length?`<div class="find warn"><b>Most likely causes (circled):</b><ul>${a.likely.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>Verify each with data, then drill the confirmed one down with 5-Why.</div>`:""}
+      ${(a.likely||[]).length?`<div class="find warn"><b>Most likely causes (circled):</b><ul>${a.likely.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>Verify each with data, then drill the confirmed one down with 5-Why.${a.likely.length>3?" <b>That's more than 3:</b> narrow it to the causes with the strongest evidence.":""}</div>`:""}
       ${empty.length?`<div class="find">No causes yet under: ${empty.map(esc).join(", ")}. Worth a second look.</div>`:""}`;
   }
 });
@@ -1515,7 +1530,7 @@ function procRender(a){
     (tl.length?`<div class="sugg" style="margin-top:10px">Tools named in this procedure: ${tl.map(x=>chipOf(x)).join("")}${/FMEA/.test(txt)?' <span style="color:var(--mute)">+ DFMEA/PFMEA (outside this toolkit)</span>':""}</div>`:"")+
     (f.length?`<div class="find warn"><b>Check the procedure:</b><ul>${f.map(x=>`<li>${x}</li>`).join("")}</ul></div>`:`<div class="find good">The procedure has an owner for each step, a technique decision, a verification point and a close-out.</div>`);
 }
-const PSTEPS_COLS=[{k:"r",l:"Responsibility",w:120},{k:"t",l:"Step",w:190},{k:"ty",l:"Type",type:"select",opts:PT},{k:"no",l:"If No → step # (label) or text",w:150},{k:"i",l:"Interface / tools / records",w:170}];
+const PSTEPS_COLS=[{k:"_n",l:"#",rownum:1},{k:"r",l:"Responsibility",w:120},{k:"t",l:"Step",w:190},{k:"ty",l:"Type",type:"select",opts:PT},{k:"no",l:"If No → step # (label) or text",w:150,stepref:1},{k:"i",l:"Interface / tools / records",w:170}];
 tool({id:"procedure", cat:"fw", icon:"☰", name:"RCA procedure flow",
   short:"Write your organisation's RCA procedure as Responsibility · Flow chart · Interface, so everyone knows who does what and which tool is used.",
   guide:{what:"A procedure flowchart in three columns: <b>Responsibility</b> (who), <b>Flow chart</b> (the steps and decisions) and <b>Interface</b> (other departments, records and the problem-solving tools used). It turns 'we do RCA' into a defined process with owners, a technique decision, approval and close-out.",
@@ -1563,6 +1578,68 @@ tool({id:"procedure", cat:"fw", icon:"☰", name:"RCA procedure flow",
   render:procRender
 });
 
+/* ---------- PICK chart ---------- */
+const PQ={I:["Implement","Easy and high payoff: do these now.","#15803d","#e7f6ec"],C:["Challenge","High payoff but hard: plan as a project with an owner and timeline.","#b45309","#fdf3e3"],P:["Possible","Easy but low payoff: do them if there is spare capacity.","#2563eb","#eaf1fe"],K:["Kill","Hard and low payoff: drop them.","#b91c1c","#fdeeee"]};
+function pickSync(a,v){ const old=rows(v); return (a.ideas||[]).map(o=>Object.assign({}, old.find(r=>r.idea===o)||{}, {idea:o})); }
+function pickQ(p,e){ return p>=6 ? (e>=6?"C":"I") : (e>=6?"K":"P"); }
+function pickData(a){ return pickSync(a,a.rate).map((r,i)=>({n:i+1,idea:r.idea,p:num(r.p),e:num(r.e)})).filter(r=>Number.isFinite(r.p)&&Number.isFinite(r.e)).map(r=>Object.assign(r,{q:pickQ(r.p,r.e)})); }
+tool({id:"pickchart", cat:"sol", icon:"⊹", name:"PICK chart",
+  short:"Sort improvement ideas by payoff and effort into Possible, Implement, Challenge and Kill.",
+  guide:{what:"A 2 × 2 chart that places each idea by its <b>payoff</b> (benefit) and the <b>effort</b> needed to implement it. The four quadrants give the name: <b>P</b>ossible, <b>I</b>mplement, <b>C</b>hallenge, <b>K</b>ill.",
+    when:["After brainstorming countermeasures, to sort many ideas quickly.","In the Improve phase of DMAIC, 8D D5 or EAS Solve.","In kaizen events and workshops, with sticky notes on a whiteboard grid.","To find quick wins (Implement) while planning bigger fixes (Challenge)."],
+    steps:["State the problem or goal the ideas address.","List the ideas.","Rate each idea's payoff (1–10) and effort (1–10, 10 = very hard) as a team.","Read the quadrants: Implement now, plan Challenge as projects, keep Possible for spare capacity, drop Kill.","If you must choose between the Implement and Challenge ideas, score them in the Importance weighting matrix."],
+    tips:["Rate as a team and agree what 'high payoff' means (e.g. effect on the defect rate) before scoring.","Ideas near the centre lines are borderline: discuss them rather than trusting the number.","Kill doesn't mean the idea was bad, only that it isn't worth it now."]},
+  related:["weighting","forcefield","fishbone"],
+  sampleNote:"Ten countermeasure ideas for the J3 cracked joints, sorted.",
+  resultLabel:"PICK chart",
+  next:["weighting","forcefield"],
+  actions:{ toWeighting(a){ const d=pickData(a).filter(r=>r.q==="I"||r.q==="C");
+    if(!d.length){ toast("No Implement or Challenge ideas to send"); return; }
+    sendTo("weighting",{decision:a.topic?"Choose the countermeasures: "+a.topic:"Choose the countermeasures",
+      crit:[{n:"Effectiveness",w:"0.30"},{n:"Sustainability",w:"0.20"},{n:"Cost",w:"0.20"},{n:"Time to implement",w:"0.20"},{n:"Safety",w:"0.10"}], opts:d.map(r=>r.idea)});
+    toast("Implement and Challenge ideas sent to the weighting matrix"); } },
+  steps:[
+    {id:"topic", q:"What problem or goal are the ideas for?", type:"text", ph:"e.g. Eliminate J3 cracked solder joints"},
+    {id:"ideas", q:"List the improvement ideas, one per line.", type:"list", help:"Include every idea from the brainstorm, even ones you doubt; the chart will sort them."},
+    {id:"rate", q:"Rate each idea: payoff 1–10 (10 = big benefit) and effort 1–10 (10 = very hard).", type:"table", fixed:1, sync:pickSync,
+      help:"6 or more counts as high. Agree as a team what each end of the scale means.",
+      cols:[{k:"_n",l:"#",rownum:1},{k:"idea",l:"Idea",ro:1},{k:"p",l:"Payoff",type:"number",w:60},{k:"e",l:"Effort",type:"number",w:60}]},
+    {id:"note", q:"What is the decision or next step?", type:"textarea", optional:1}
+  ],
+  sample:{topic:"Eliminate J3 cracked solder joints",
+    ideas:["Interlock fixture at all cable benches","Shadow board and shift-start tool check","Add photo to WI step 14","Training sign-off in line-transfer checklist","Retrain all operators","Redesign to lower-retention connector","Add J3 wiggle test at final test","X-ray every J3 joint","Extra supervisor on night shift","Handling poster at each bench"],
+    rate:[{idea:"Interlock fixture at all cable benches",p:"9",e:"6"},{idea:"Shadow board and shift-start tool check",p:"7",e:"2"},{idea:"Add photo to WI step 14",p:"6",e:"1"},{idea:"Training sign-off in line-transfer checklist",p:"8",e:"3"},{idea:"Retrain all operators",p:"4",e:"3"},{idea:"Redesign to lower-retention connector",p:"7",e:"9"},{idea:"Add J3 wiggle test at final test",p:"7",e:"4"},{idea:"X-ray every J3 joint",p:"3",e:"8"},{idea:"Extra supervisor on night shift",p:"4",e:"7"},{idea:"Handling poster at each bench",p:"2",e:"1"}],
+    note:"Start the four Implement items this week; plan the interlock fixture and connector redesign as projects."},
+  render(a){
+    if(!(a.ideas||[]).length) return String(a.topic||"").trim()?EMPTY("Add the ideas to sort."):EMPTY();
+    const d=pickData(a), bad=d.filter(r=>r.p<1||r.p>10||r.e<1||r.e>10);
+    const W=620,H=520,L=60,R=16,Tp=16,B=56,pw=W-L-R,ph=H-Tp-B, sx=v=>L+(Math.max(1,Math.min(10,v))-0.5)/10*pw, sy=v=>Tp+ph-(Math.max(1,Math.min(10,v))-0.5)/10*ph;
+    const mx=L+pw/2, my=Tp+ph/2;
+    let g="";
+    [["I",L,Tp],["C",mx,Tp],["P",L,my],["K",mx,my]].forEach(([k,x,y])=>{ const q=PQ[k];
+      g+=`<rect x="${x}" y="${y}" width="${pw/2}" height="${ph/2}" fill="${q[3]}"/>`+T(x+12,y+26,q[0].toUpperCase(),`font-size="18" font-weight="800" fill="${q[2]}" opacity=".85"`); });
+    g+=`<line x1="${mx}" x2="${mx}" y1="${Tp}" y2="${Tp+ph}" stroke="#64748b" stroke-width="1.5" stroke-dasharray="6 4"/><line x1="${L}" x2="${L+pw}" y1="${my}" y2="${my}" stroke="#64748b" stroke-width="1.5" stroke-dasharray="6 4"/>`;
+    g+=`<rect x="${L}" y="${Tp}" width="${pw}" height="${ph}" fill="none" stroke="#94a3b8"/>`;
+    for(let v=1;v<=10;v++){ g+=T(sx(v),Tp+ph+16,v,'text-anchor="middle" class="tk"')+T(L-8,sy(v)+4,v,'text-anchor="end" class="tk"'); }
+    g+=T(L+pw/2,H-8,"Effort  →  (1 easy · 10 very hard)",'text-anchor="middle" class="al"')+T(16,Tp+ph/2,"Payoff  →",`text-anchor="middle" class="al" transform="rotate(-90 16 ${Tp+ph/2})"`);
+    const seen={};
+    d.forEach(r=>{ const k=Math.round(r.p)+"|"+Math.round(r.e), j=seen[k]=(seen[k]||0)+1, ang=(j-1)*2.1, rad=j>1?13:0;
+      const x=sx(r.e)+Math.cos(ang)*rad, y=sy(r.p)+Math.sin(ang)*rad, c=PQ[r.q][2];
+      g+=`<g><title>${esc(r.n+". "+r.idea+" (payoff "+r.p+", effort "+r.e+")")}</title><circle cx="${x}" cy="${y}" r="12" fill="${c}" stroke="#fff" stroke-width="2"/>`+T(x,y+4,r.n,'text-anchor="middle" font-size="11.5" font-weight="800" fill="#fff"')+`</g>`; });
+    let h=`<div style="font-weight:700;margin-bottom:4px">${esc(a.topic||"")}</div><svg viewBox="0 0 ${W} ${H}" class="chart" xmlns="http://www.w3.org/2000/svg">${g}</svg>`;
+    if(!d.length) return h+EMPTY("Rate payoff and effort to place the ideas.");
+    h+=`<div class="kpis">${["I","C","P","K"].map(k=>kpi(d.filter(r=>r.q===k).length,PQ[k][0])).join("")}</div>`;
+    h+=`<div class="pickl">`+["I","C","P","K"].map(k=>{ const rr=d.filter(r=>r.q===k).sort((x,y)=>y.p-x.p||x.e-y.e), q=PQ[k];
+      return `<div class="pq" style="border-color:${q[2]};background:${q[3]}"><div class="pqh" style="color:${q[2]}">${q[0]} <span>(${rr.length})</span></div><div class="pqd">${q[1]}</div>${rr.length?`<ol>${rr.map(r=>`<li value="${r.n}">${esc(r.idea)} <small>P${fmtN(r.p)} · E${fmtN(r.e)}</small></li>`).join("")}</ol>`:`<div class="pqd" style="font-style:italic">None</div>`}</div>`; }).join("")+`</div>`;
+    const border=d.filter(r=>r.p===5||r.p===6||r.e===5||r.e===6);
+    if(border.length) h+=`<div class="find">Borderline (on or next to a centre line): ${border.map(r=>"#"+r.n).join(", ")}. Discuss these rather than relying on the score.</div>`;
+    if(bad.length) h+=`<div class="find warn">Ratings outside 1–10 for ${bad.map(r=>"#"+r.n).join(", ")}.</div>`;
+    if(a.note) h+=`<div class="find"><b>Decision:</b> ${esc(a.note)}</div>`;
+    h+=`<div class="nextt"><button class="btn sm pri" data-tact="toWeighting">Send Implement + Challenge ideas to the weighting matrix →</button></div>`;
+    return h;
+  }
+});
+
 /* ===================== state ===================== */
 const KEY = "rcakit.v1";
 let DB = {}; try{ DB = JSON.parse(localStorage.getItem(KEY)||"{}")||{}; }catch(e){ DB = {}; }
@@ -1586,8 +1663,8 @@ function isEmptyVal(s,v,a){
   if(v===undefined||v===null) return true;
   if(s.type==="number") return !Number.isFinite(v);
   if(s.type==="decide") return !v || !v.a;
-  if(s.type==="list"||s.type==="numbers") return !v.length;
-  if(s.type==="table"){ const cols=colsOf(s,a).filter(c=>!c.ro).map(c=>c.k); return !v.some(r=>cols.some(k=>String(r[k]??"").trim()!=="")); }
+  if(s.type==="list"||s.type==="numbers"||s.type==="pick") return !v.length;
+  if(s.type==="table"){ const cols=colsOf(s,a).filter(c=>!c.ro&&!c.rownum).map(c=>c.k); return !v.some(r=>cols.some(k=>String(r[k]??"").trim()!=="")); }
   return String(v).trim()==="";
 }
 function stepsDone(t,st){ const v=vis(t,st.ans); return {n:v.filter(s=>st.seen[s.id]).length, of:v.length}; }
@@ -1598,14 +1675,14 @@ function fmtAns(s,v,a){
   switch(s.type){
     case "choice": { const o=optsOf(s,a).find(x=>x[0]===v); return esc(o?o[1]:v); }
     case "decide": return `<b>${v.a==="yes"?"YES":"NO"}</b>${v.b?` — because: ${esc(v.b)}`:""}`;
-    case "list": return `<ul>${v.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
+    case "list": case "pick": return `<ul>${v.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
     case "numbers": return `${v.length} values: ${esc(v.slice(0,10).join(", "))}${v.length>10?" …":""}`;
     case "table": {
-      const cols=colsOf(s,a), keep=cols.filter(c=>v.some(r=>String(r[c.k]??"").trim()!==""));
+      const cols=colsOf(s,a), keep=cols.filter(c=>c.rownum||v.some(r=>String(r[c.k]??"").trim()!==""));
       const rr=v.filter(r=>keep.some(c=>!c.ro&&String(r[c.k]??"").trim()!==""));
       if(!rr.length) return `<i style="opacity:.7">No rows</i>`;
       const show=rr.slice(0,8);
-      return `<div class="tscroll"><table class="mt"><tr>${keep.map(c=>`<th>${esc(c.l)}</th>`).join("")}</tr>${show.map(r=>`<tr>${keep.map(c=>`<td>${esc(c.type==="select"&&c.opts?((c.opts.map(o=>Array.isArray(o)?o:[o,o]).find(o=>o[0]===r[c.k])||[0,r[c.k]])[1]):r[c.k])}</td>`).join("")}</tr>`).join("")}</table></div>${rr.length>8?`<div style="font-size:11.5px;opacity:.75">+ ${rr.length-8} more rows</div>`:""}`;
+      return `<div class="tscroll"><table class="mt"><tr>${keep.map(c=>`<th>${esc(c.l)}</th>`).join("")}</tr>${show.map((r,ri)=>`<tr>${keep.map(c=>c.rownum?`<td><b>${v.indexOf(r)+1}</b></td>`:`<td>${esc(c.type==="select"&&c.opts?((c.opts.map(o=>Array.isArray(o)?o:[o,o]).find(o=>o[0]===r[c.k])||[0,r[c.k]])[1]):r[c.k])}</td>`).join("")}</tr>`).join("")}</table></div>${rr.length>8?`<div style="font-size:11.5px;opacity:.75">+ ${rr.length-8} more rows</div>`:""}`;
     }
     default: return esc(v).replace(/\n/g,"<br>");
   }
@@ -1618,6 +1695,8 @@ function inputHTML(s,a){
     case "text": return `<input class="inp" data-in${ph} value="${esc(v??"")}">`;
     case "number": return `<input class="inp" type="number" step="any" data-in${ph} value="${Number.isFinite(v)?v:""}">`;
     case "textarea": return `<textarea data-in${ph}>${esc(v??"")}</textarea>`;
+    case "pick": { const ops=s.opts(a), sel=new Set(v||[]); if(!ops.length) return `<div class="hint">Nothing to pick yet: go back and add some first.</div>`;
+      return `<div class="picks">${ops.map(([grp,o])=>`<label class="pk${sel.has(o)?" on":""}"><input type="checkbox" data-pk value="${esc(o)}"${sel.has(o)?" checked":""}><span>${esc(o)}</span>${grp?`<small>${esc(grp)}</small>`:""}</label>`).join("")}</div>`; }
     case "list": return `<textarea data-in${ph||' placeholder="One item per line"'}>${esc((v||[]).join("\n"))}</textarea>`;
     case "numbers": return `<textarea data-in${ph||' placeholder="e.g. 5.01 5.03 4.99 …"'}>${esc((v||[]).join("  "))}</textarea>`;
     case "decide": { choiceTmp=v&&v.a; return `<div class="choices">${[["yes",s.yes||"Yes"],["no",s.no||"No"]].map(([k,l])=>`<button type="button" class="choice${choiceTmp===k?" on":""}" data-dc="${k}">${esc(l)}</button>`).join("")}</div><textarea data-in style="margin-top:8px;min-height:64px" placeholder="${esc(s.ph||"Because… (the evidence for your answer)")}">${esc(v&&v.b||"")}</textarea>`; }
@@ -1626,6 +1705,7 @@ function inputHTML(s,a){
       const cols=colsOf(s,a);
       let h=`<div class="tscroll"><table class="etbl" data-tbl><tr>${cols.map(c=>`<th>${esc(c.l)}</th>`).join("")}${s.fixed?"":"<th></th>"}</tr>`;
       v.forEach((r,i)=>{ h+=`<tr data-r="${i}">`+cols.map(c=>{
+          if(c.rownum) return `<td class="ro rn">${i+1}</td>`;
           const cv=r[c.k]??"";
           if(c.ro) return `<td class="ro" data-c="${c.k}" data-v="${esc(cv)}">${esc(cv)}</td>`;
           if(c.type==="select") return `<td><select data-c="${c.k}">${c.opts.map(o=>Array.isArray(o)?o:[o,o]).map(([k,l])=>`<option value="${esc(k)}"${String(cv)===String(k)?" selected":""}>${esc(l)}</option>`).join("")}</select></td>`;
@@ -1647,8 +1727,10 @@ function readInput(s,a){
     box.querySelectorAll("tr[data-r]").forEach(tr=>{ const r={};
       cols.forEach(c=>{ const el=tr.querySelector(`[data-c="${c.k}"]`); if(!el) return; r[c.k]= c.ro ? el.dataset.v : el.value.trim(); });
       out.push(r); });
-    return s.fixed ? out : out.filter(r=>cols.some(c=>!c.ro && String(r[c.k]??"").trim()!==""));
+    const ed=cols.filter(c=>!c.ro&&!c.rownum), txt=ed.filter(c=>c.type!=="select"), chk=txt.length?txt:ed;
+    return s.fixed ? out : out.filter(r=>chk.some(c=>String(r[c.k]??"").trim()!==""));
   }
+  if(s.type==="pick") return [...box.querySelectorAll("[data-pk]:checked")].map(x=>x.value);
   const el=box.querySelector("[data-in]"); if(!el) return undefined;
   const raw=el.value;
   if(s.type==="number") return num(raw);
@@ -1674,7 +1756,7 @@ function renderChat(){
     h+=`<div class="msg bot"><div class="av">${i+1}</div><div class="bub">${ph}<b class="q">${esc(qText(s,a))}${s.optional?' <span style="font-weight:400;color:var(--mute);font-size:12px">(optional)</span>':""}</b>${isCur&&s.help?`<div class="help">${esc(typeof s.help==="function"?s.help(a):s.help)}</div>`:""}${isCur?sug:""}</div></div>`;
     if(isCur){
       h+=`<div class="inbox" id="inbox" data-step="${s.id}">${inputHTML(s,a)}
-        <div class="row"><span class="hint">${s.type==="text"||s.type==="number"?"Press Enter to continue":s.type==="choice"?"Pick one to continue":s.type==="decide"?"Choose Yes or No, give the reason, then Next":"Ctrl + Enter to continue"}</span>
+        <div class="row"><span class="hint">${s.type==="text"||s.type==="number"?"Press Enter to continue":s.type==="choice"?"Pick one to continue":s.type==="decide"?"Choose Yes or No, give the reason, then Next":s.type==="pick"?"Tick the ones that apply, then Next":"Ctrl + Enter to continue"}</span>
         ${i>0?`<button class="btn ghost sm" data-act="back">← Back</button>`:""}
         ${s.optional?`<button class="btn sm" data-act="skip">Skip</button>`:""}
         ${s.type!=="choice"||a[s.id]!==undefined?`<button class="btn pri sm" data-act="next">${i===steps.length-1?"Finish":"Next →"}</button>`:""}</div></div>`;
@@ -1731,7 +1813,9 @@ function loadSample(alt){
 
 /* chat events */
 document.addEventListener("click", e=>{
-  const el=e.target.closest("[data-act],[data-edit],[data-ch],[data-addrow],[data-delrow],[data-open],[data-go],[data-tact],[data-dc],[data-alt]");
+  const el=e.target.closest("[data-act],[data-edit],[data-ch],[data-addrow],[data-delrow],[data-open],[data-go],[data-tact],[data-dc],[data-alt],[data-likely]");
+  if(el && el.dataset.likely!==undefined && curTool==="fishbone"){ const st=S(curTool), c=el.dataset.likely; let L=(st.ans.likely||[]).slice(); const i=L.findIndex(x=>x.toLowerCase().trim()===c.toLowerCase().trim()); if(i>=0) L.splice(i,1); else L.push(c);
+    if(L.length) st.ans.likely=L; else delete st.ans.likely; st.seen.likely=true; persist(); renderChat(); renderOut(); toast(i>=0?"Un-circled: "+c:"Circled as most likely: "+c); return; }
   if(el && el.dataset.dc){ choiceTmp=el.dataset.dc; $$("#inbox [data-dc]").forEach(b=>b.classList.toggle("on",b===el)); const st=S(curTool), s=TOOLS[curTool].steps.find(x=>x.id===st.cur); const tmp=Object.assign({},st.ans); tmp[s.id]=readInput(s,tmp); renderOut(tmp); return; }
   if(el && el.dataset.alt!==undefined){ loadSample(+el.dataset.alt); return; }
   if(!el) return;
@@ -1743,7 +1827,9 @@ document.addEventListener("click", e=>{
   if(el.dataset.addrow!==undefined){ const st=S(curTool), t=TOOLS[curTool], s=t.steps.find(x=>x.id===st.cur); const v=readInput(s,st.ans); v.push({}); st.ans[s.id]=v; renderChat(); focusLastRow(); return; }
   if(el.dataset.delrow!==undefined){ const st=S(curTool), t=TOOLS[curTool], s=t.steps.find(x=>x.id===st.cur);
     const all=[]; const cols=colsOf(s,st.ans); $$("#inbox tr[data-r]").forEach(tr=>{ const r={}; cols.forEach(c=>{ const x=tr.querySelector(`[data-c="${c.k}"]`); if(x) r[c.k]=c.ro?x.dataset.v:x.value; }); all.push(r); });
-    all.splice(+el.dataset.delrow,1); st.ans[s.id]=all; renderChat(); renderOut(); return; }
+    const di=+el.dataset.delrow; all.splice(di,1);
+    cols.filter(c=>c.stepref).forEach(c=>all.forEach(r=>{ const m=String(r[c.k]??"").trim().match(/^(\d+)(.*)$/); if(!m) return; const n=+m[1];
+      if(n===di+1) r[c.k]=""; else if(n>di+1) r[c.k]=String(n-1)+m[2]; })); st.ans[s.id]=all; renderChat(); renderOut(); return; }
   if(el.dataset.act){ const a=el.dataset.act;
     if(["begin","sample","next","skip","back"].includes(a)) chatAct(a);
     else if(a==="restart"){ if(!confirm("Clear all answers for this tool and start again?")) return; DB[curTool]=blank(); persist(); viewTool(curTool); renderSide(); }
@@ -1771,7 +1857,7 @@ document.addEventListener("paste", e=>{
   const inp=e.target; if(!inp.closest || !inp.closest("#inbox [data-tbl]") || inp.tagName!=="INPUT") return;
   const txt=(e.clipboardData||window.clipboardData).getData("text"); if(!/[\t\n]/.test(txt.trim())) return;
   e.preventDefault();
-  const st=S(curTool), t=TOOLS[curTool], s=t.steps.find(x=>x.id===st.cur), cols=colsOf(s,st.ans), editable=cols.filter(c=>!c.ro);
+  const st=S(curTool), t=TOOLS[curTool], s=t.steps.find(x=>x.id===st.cur), cols=colsOf(s,st.ans), editable=cols.filter(c=>!c.ro&&!c.rownum);
   const tr=inp.closest("tr"), r0=+tr.dataset.r, c0=editable.findIndex(c=>c.k===inp.dataset.c);
   const all=[]; $$("#inbox tr[data-r]").forEach(row=>{ const r={}; cols.forEach(c=>{ const x=row.querySelector(`[data-c="${c.k}"]`); if(x) r[c.k]=c.ro?x.dataset.v:x.value; }); all.push(r); });
   txt.replace(/\r/g,"").split("\n").filter(l=>l.trim()!=="").forEach((line,i)=>{
@@ -1819,7 +1905,7 @@ function viewHome(){
     ["8d","8D","Eight disciplines",[[1,1,"D0–D3 · Prepare, team, describe, contain"],[2,1,"D4 · Root cause (occurrence & escape)"],[3,1,"D5–D6 · Choose, implement, validate fix"],[4,1,"D7–D8 · Prevent recurrence, close"]]],
     ["bs62740","BS EN 62740","RCA standard (IEC 62740)",[[1,1,"1 · Initiation  ·  2 · Establishing facts"],[2,1,"3 · Analysis  ·  4 · Validation"],[3,2,"5 · Presentation of results → actions handed to CAPA / 8D"]]]
   ];
-  const TC=[["flowchart","checksheet","pareto","histogram","controlchart","stratification"],["fishbone","cmv","fivewhy","fta","window","scatter","stratification"],["weighting","forcefield","window"],["controlchart","pareto","checksheet","histogram"]];
+  const TC=[["flowchart","checksheet","pareto","histogram","controlchart","stratification"],["fishbone","cmv","fivewhy","fta","window","scatter","stratification"],["pickchart","weighting","forcefield","window"],["controlchart","pareto","checksheet","histogram"]];
   let ig=`<div class="ig"><div></div>${COLS.map((c,i)=>`<div class="ch c${i+1}">${i+1}. ${esc(c[0])}<small>${esc(c[1])}</small></div>`).join("")}`;
   FW.forEach(([id,n,sub,ph],r)=>{ ig+=`<div class="rl" data-open="${id}" style="grid-row:${r+2}"><div>${n}<small>${sub}</small></div></div>`;
     ph.forEach(([c,span,l])=>{ ig+=`<div class="ph" data-open="${id}" style="grid-row:${r+2};grid-column:${c+1} / span ${span}">${esc(l)}</div>`; }); });
@@ -1841,7 +1927,7 @@ function viewHome(){
   const CH=[["flowchart","Map the process and its handoffs"],["checksheet","Count defects at the source"],["pareto","Pick the biggest problem"],["stratification","Find which shift, line or lot"],["fishbone","List every possible cause"],["fivewhy","Drill one chain to the root"],["fta","…or map combined causes"],["window","…or classify a people/standard cause"],["forcefield","Plan the change"],["controlchart","Prove it stays fixed"]];
   const chain=`<div class="chain">${CH.map(([id,l],i)=>`${i?'<span class="ar">→</span>':""}<div class="step">${chipOf(id)}<small>${esc(l)}</small></div>`).join("")}</div>`;
 
-  const PICK=[["Who does what in our RCA process, and which tool is used?","procedure"],["Is the cause variation, a mistake, or complexity, and from which M?","cmv"],["Which of several solutions should we choose?","weighting"],["Where in the process is the defect created or missed?","flowchart"],["How often does each defect happen, and when?","checksheet"],["Which problem should we attack first?","pareto"],["Is the process centred and within spec?","histogram"],["Is the process stable, or did something change?","controlchart"],["Is the problem concentrated in one shift, machine or lot?","stratification"],["Are two variables related?","scatter"],["What could possibly be causing it?","fishbone"],["What is the chain from symptom to root cause?","fivewhy"],["Do several causes have to combine? Which combinations matter?","fta"],["Was the standard missing, not communicated, or not followed?","window"],["What will help or block the fix from being adopted?","forcefield"]];
+  const PICK=[["Who does what in our RCA process, and which tool is used?","procedure"],["Is the cause variation, a mistake, or complexity, and from which M?","cmv"],["Which fix ideas are quick wins, and which should we drop?","pickchart"],["Which of several solutions should we choose?","weighting"],["Where in the process is the defect created or missed?","flowchart"],["How often does each defect happen, and when?","checksheet"],["Which problem should we attack first?","pareto"],["Is the process centred and within spec?","histogram"],["Is the process stable, or did something change?","controlchart"],["Is the problem concentrated in one shift, machine or lot?","stratification"],["Are two variables related?","scatter"],["What could possibly be causing it?","fishbone"],["What is the chain from symptom to root cause?","fivewhy"],["Do several causes have to combine? Which combinations matter?","fta"],["Was the standard missing, not communicated, or not followed?","window"],["What will help or block the fix from being adopted?","forcefield"]];
   const pick=`<div class="pick">${PICK.map(([q,id])=>`<div><span>${esc(q)}</span>${chipOf(id)}</div>`).join("")}</div>`;
   const FWP=[["pdca","PDCA","Small, quick improvements and repeated test cycles."],["eas","EAS","Everyday shop-floor problems; easy for any team to follow."],["8d","8D","Customer complaints, field failures and escapes that need containment and a formal report."],["dmaic","DMAIC","Chronic, data-heavy process problems where the cause is unclear."],["bs62740","BS EN 62740","Serious incidents or audits that need a defensible investigation to a recognised standard; actions go to CAPA / 8D."]];
   const fwp=`<div class="fwpick">${FWP.map(([id,n,d])=>`<div data-open="${id}"><b>${n}</b>${esc(d)}</div>`).join("")}</div>`;
