@@ -324,6 +324,47 @@ dialog#pd .fhd{padding:10px 16px;border-bottom:1px solid var(--line)}
   body.p-noguide #guide{display:none!important}
   body.p-tool.p-noqa.p-noguide .thead .meta{display:block}
 }
+.htabs{display:flex;gap:6px;margin-bottom:14px;border-bottom:1px solid var(--line)}
+.htab{border:0;background:none;padding:9px 14px;font-weight:600;color:var(--mute);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
+.htab.on{color:var(--ink);border-bottom-color:var(--acc)}
+.htab span{display:inline-block;min-width:20px;background:#e2e8f0;border-radius:9px;font-size:11.5px;padding:0 6px;margin-left:4px;color:#334155}
+.rtool{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 14px}
+.rtoc{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12.5px;margin-left:6px}
+.rtoc a{color:var(--acc);text-decoration:none}.rtoc a:hover{text-decoration:underline}
+.rsec{background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:16px;overflow:hidden}
+.rhead{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line2);background:#fafbfd}
+.rhead .ic{width:30px;height:30px;border-radius:7px;display:grid;place-items:center;font-weight:700;font-size:13px;flex:none}
+.rhead .rt{flex:1;min-width:0}.rhead .rt b{font-size:15.5px}.rhead .rt span{margin-left:8px;font-size:11.5px;color:var(--mute);text-transform:uppercase;letter-spacing:.05em}
+.rst{font-size:12px;font-weight:700;color:#b45309;background:#fdf3e5;border-radius:10px;padding:2px 9px;white-space:nowrap}
+.rst.d{color:var(--ok);background:var(--ok-bg)}
+.rbody{padding:12px 16px 6px}
+.rbody .nextt{display:none}
+.rqa{border-top:1px solid var(--line2)}
+.rqa summary{cursor:pointer;padding:8px 16px;font-size:12.5px;font-weight:600;color:var(--mute)}
+.rqab{padding:0 16px 12px}
+.qa1{padding:5px 0;border-bottom:1px dashed var(--line2);font-size:13px}
+.qa1 b{font-weight:600}.qav{color:#14315f;margin-top:2px}
+.qav ul{margin:0;padding-left:18px}
+.ponly{display:none}
+dialog#pdr{border:0;border-radius:12px;padding:0;width:min(460px,92vw);max-height:90vh;box-shadow:0 20px 60px rgba(10,20,40,.35)}
+dialog#pdr::backdrop{background:rgba(15,25,45,.55)}
+dialog#pdr .fhd{padding:10px 16px;border-bottom:1px solid var(--line)}
+.pdh{display:flex;justify-content:space-between;font-size:12.5px;margin-top:6px}.pdh a{color:var(--acc)}
+.pdl{display:flex;flex-direction:column;gap:4px;max-height:260px;overflow:auto}
+.pdo.pdi{padding:5px 10px}
+@media (max-width:820px){.rhead{flex-wrap:wrap}.rtoc{display:none}}
+@media print{
+  .htabs,.rtool,.rhead .btn,.invhome .nextt{display:none!important}
+  .p-skip{display:none!important}
+  body.p-noqa .rqa{display:none!important}
+  body.p-nosum .invhome{display:none!important}
+  .rqa summary{display:none}
+  .rsec{border:1px solid #bbb;border-radius:0;margin-bottom:8mm;overflow:visible}
+  .rhead{break-after:avoid;background:#f3f4f6}
+  .rbody .find,.rbody table,.rbody svg{break-inside:avoid}
+  .ponly{display:block;font-size:9pt;color:#555;margin:0 0 3mm}
+  body.p-report .invbar .btn{display:none}
+}
 /* framework report */
 .fwrep{display:grid;gap:10px}
 .fwp{border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -388,6 +429,13 @@ dialog#full .svscroll svg{min-width:0}
 </div>
 <input type="file" id="fileIn" accept=".json,application/json" hidden>
 <div id="toast"></div>
+<dialog id="pdr"><div class="fhd"><b>Print / PDF report</b></div><div class="pdb">
+  <label class="pdo" id="pdrSumRow"><input type="checkbox" id="pdrSum" checked> <span><b>Investigation summary</b><small>Problem, root cause, escape, chosen countermeasure</small></span></label>
+  <label class="pdo"><input type="checkbox" id="pdrQA"> <span><b>Questions and answers</b><small>Add each analysis's questions and your answers</small></span></label>
+  <div class="pdh"><b>Analyses to include</b><span><a href="#" data-rpall="1">All</a> · <a href="#" data-rpall="0">None</a></span></div>
+  <div id="pdrList" class="pdl"></div>
+  <div class="pdbtn"><button class="btn" data-rpcancel>Cancel</button><button class="btn pri" data-rpgo>Print</button></div>
+  <div class="wsmeta">Tip: choose “Save as PDF” as the printer to make a PDF.</div></div></dialog>
 <dialog id="pd"><div class="fhd"><b>Print / PDF</b></div><div class="pdb">
   <label class="pdo on"><input type="checkbox" checked disabled> <span><b>Result</b><small>Chart, diagram and findings — always printed</small></span></label>
   <label class="pdo"><input type="checkbox" id="pQA"> <span><b>Questions and answers</b><small>The step-by-step questions with your answers</small></span></label>
@@ -1848,6 +1896,78 @@ function invHome(){
     <div class="nextt"><button class="btn sm pri" onclick="document.getElementById('bExport').click()">Save file</button><button class="btn sm" data-wsmenu>Switch workspace</button><span>Each tool in this investigation starts empty. Use the “Use from” buttons to carry results from one tool to the next.</span></div></div>`;
 }
 
+/* ===================== Analyses report (overview of all analyses in a workspace) ===================== */
+const CAT_ORDER=["qc","rc","sol","fw"];
+const reportOrder = () => CAT_ORDER.flatMap(c=>TOOL_ORDER.filter(id=>TOOLS[id].cat===c));
+function usedOrdered(){ const u=new Set(toolsUsed(DB)); return reportOrder().filter(id=>u.has(id)); }
+function homeTabs(tab){
+  if(inInv()) return "";
+  const n=usedOrdered().length;
+  return `<div class="htabs"><button class="htab${tab==="report"?" on":""}" data-htab="report">My analyses <span>${n}</span></button><button class="htab${tab==="guide"?" on":""}" data-htab="guide">Tools &amp; infographic</button></div>`;
+}
+function qaHTML(t,st){
+  const a=st.ans, steps=vis(t,a).filter(s=>st.seen[s.id]);
+  if(!steps.length) return `<div class="wsmeta">No answers yet.</div>`;
+  return steps.map((s,i)=>`<div class="qa1"><b>${i+1}. ${esc(qText(s,a))}</b><div class="qav">${fmtAns(s,a[s.id],a)}</div></div>`).join("");
+}
+function reportSection(id){
+  const t=TOOLS[id], st=DB[id], c=CATS[t.cat], p=stepsDone(t,st);
+  let body; try{ body=t.render(st.ans); }catch(e){ body=EMPTY("This result can't be drawn: "+esc(e.message)); }
+  return `<section class="rsec" data-rid="${id}">
+    <div class="rhead"><span class="ic" style="background:${c.bg};color:${c.color}">${esc(t.icon)}</span>
+      <div class="rt"><b>${esc(t.name)}</b><span>${esc(c.short)}</span></div>
+      <span class="rst${st.done?" d":""}">${st.done?"✓ Done":`In progress · ${p.n} of ${p.of}`}</span>
+      <button class="btn sm" data-open="${id}">${st.done?"Open":"Continue"}</button></div>
+    <div class="rbody">${body}</div>
+    <details class="rqa"><summary>Questions and answers</summary><div class="rqab">${qaHTML(t,st)}</div></details></section>`;
+}
+function reportHTML(){
+  const used=usedOrdered(), done=used.filter(id=>DB[id].done).length;
+  let h = inInv() ? invHome() : `<div class="panel rephead"><h2>My practice analyses</h2><p class="sub">Results of every tool you have worked on in Practice${used.length?`: ${done} done, ${used.length-done} in progress`:""}. Click <b>Open</b> to continue one.</p></div>`;
+  h+=`<div class="ponly rpdate"></div>`;
+  if(!used.length){
+    return h+`<div class="panel"><h2>No analyses yet</h2><p class="sub">Open a tool from the menu and answer its questions, or load a sample. Your results will appear here as one report.</p>${Object.entries(CATS).map(([k,c])=>`<div class="ncat" style="color:${c.color};margin:10px 0 4px"><i style="background:${c.color}"></i>${esc(c.name)}</div><div class="chips" style="display:flex;flex-wrap:wrap;gap:5px">${TOOL_ORDER.filter(id=>TOOLS[id].cat===k).map(id=>chipOf(id)).join("")}</div>`).join("")}</div>`;
+  }
+  h+=`<div class="rtool"><button class="btn pri" data-rprint>Print / PDF report</button><button class="btn" data-rqa="1">Show all answers</button><button class="btn" data-rqa="0">Hide all answers</button>
+    <span class="rtoc">${used.map(id=>`<a href="#" data-jump="${id}">${esc(TOOLS[id].name)}${DB[id].done?"":" …"}</a>`).join("")}</span></div>`;
+  return h+used.map(reportSection).join("");
+}
+
+/* report printing */
+let rpState=null;
+function openReportPrint(){
+  const used=usedOrdered();
+  $("#pdrList").innerHTML=used.map(id=>`<label class="pdo pdi"><input type="checkbox" data-rsel="${id}" checked> <span>${esc(TOOLS[id].name)}<small>${DB[id].done?"Done":"In progress"}</small></span></label>`).join("");
+  $("#pdrQA").checked=!!UI.prQA; $("#pdrSum").checked=UI.prSum!==false; $("#pdrSumRow").hidden=!inInv();
+  $("#pdr").showModal();
+}
+function printReport(){
+  UI.prQA=$("#pdrQA").checked; UI.prSum=$("#pdrSum").checked; persist();
+  const sel=new Set([...document.querySelectorAll("[data-rsel]:checked")].map(x=>x.dataset.rsel));
+  if(!sel.size){ toast("Pick at least one analysis to print"); return; }
+  $("#pdr").close();
+  const rq=[...document.querySelectorAll(".rqa")]; rpState={open:rq.map(d=>d.open)};
+  document.querySelectorAll(".rsec").forEach(s=>s.classList.toggle("p-skip",!sel.has(s.dataset.rid)));
+  if(UI.prQA) rq.forEach(d=>d.open=true);
+  document.body.classList.add("p-report"); document.body.classList.toggle("p-noqa",!UI.prQA); document.body.classList.toggle("p-nosum",inInv()&&!UI.prSum);
+  const pd=$(".rpdate"); if(pd) pd.textContent="Printed "+new Date().toLocaleString()+" · "+sel.size+" analys"+(sel.size===1?"is":"es");
+  setTimeout(()=>window.print(),60);
+}
+addEventListener("afterprint",()=>{ if(!rpState) return;
+  document.body.classList.remove("p-report","p-noqa","p-nosum"); document.querySelectorAll(".p-skip").forEach(s=>s.classList.remove("p-skip"));
+  [...document.querySelectorAll(".rqa")].forEach((d,i)=>{ if(rpState.open[i]!==undefined) d.open=rpState.open[i]; }); rpState=null; });
+
+document.addEventListener("click", e=>{
+  const el=e.target.closest("[data-htab],[data-rprint],[data-rqa],[data-jump],[data-rpgo],[data-rpcancel],[data-rpall]"); if(!el) return;
+  if(el.dataset.htab){ UI.homeTab=el.dataset.htab; persist(); viewHome(); return; }
+  if(el.dataset.rprint!==undefined){ openReportPrint(); return; }
+  if(el.dataset.rqa!==undefined){ document.querySelectorAll(".rqa").forEach(d=>d.open=el.dataset.rqa==="1"); return; }
+  if(el.dataset.jump){ e.preventDefault(); const s=document.querySelector(`.rsec[data-rid="${el.dataset.jump}"]`); if(s) s.scrollIntoView({behavior:"smooth",block:"start"}); return; }
+  if(el.dataset.rpall!==undefined){ const on=el.dataset.rpall==="1"; document.querySelectorAll("[data-rsel]").forEach(x=>x.checked=on); return; }
+  if(el.dataset.rpcancel!==undefined){ $("#pdr").close(); return; }
+  if(el.dataset.rpgo!==undefined){ printReport(); return; }
+});
+
 /* ===================== state ===================== */
 const KEY = "rcakit.v1";
 /* Practice workspace = the original single store (unchanged key). Investigations live in their own store. */
@@ -2068,7 +2188,7 @@ document.addEventListener("keydown", e=>{
 let liveT=null;
 document.addEventListener("input", e=>{
   if(!e.target.closest || !e.target.closest("#inbox")) return;
-  clearTimeout(liveT); liveT=setTimeout(()=>{ const st=S(curTool), t=TOOLS[curTool], s=t.steps.find(x=>x.id===st.cur); if(!s) return;
+  clearTimeout(liveT); const tid=curTool; liveT=setTimeout(()=>{ if(!curTool||curTool!==tid||!$("#inbox")) return; const st=S(curTool), t=TOOLS[curTool], s=t.steps.find(x=>x.id===st.cur); if(!s) return;
     const tmp=Object.assign({}, st.ans); const v=readInput(s,tmp); if(!isEmptyVal(s,v,tmp)) tmp[s.id]=v; renderOut(tmp); },220);
 });
 /* paste a block from Excel into a table */
@@ -2151,7 +2271,9 @@ function viewHome(){
   const FWP=[["pdca","PDCA","Small, quick improvements and repeated test cycles."],["eas","EAS","Everyday shop-floor problems; easy for any team to follow."],["8d","8D","Customer complaints, field failures and escapes that need containment and a formal report."],["dmaic","DMAIC","Chronic, data-heavy process problems where the cause is unclear."],["bs62740","BS EN 62740","Serious incidents or audits that need a defensible investigation to a recognised standard; actions go to CAPA / 8D."]];
   const fwp=`<div class="fwpick">${FWP.map(([id,n,d])=>`<div data-open="${id}"><b>${n}</b>${esc(d)}</div>`).join("")}</div>`;
 
-  $("#view").innerHTML=invBanner()+invHome()+`
+  const tab = inInv() ? "report" : (UI.homeTab || (usedOrdered().length ? "report" : "guide"));
+  if(tab==="report"){ $("#view").innerHTML=invBanner()+homeTabs(tab)+reportHTML(); return; }
+  $("#view").innerHTML=homeTabs(tab)+`
   <div class="hero"><h1>Root Cause Analysis Toolkit</h1><p>Every problem-solving framework follows the same four stages. The <b>framework</b> gives you the roadmap; the <b>7 QC tools</b> expose the problem with data; the <b>root-cause methods</b> find why; and the <b>change tools</b> make the fix stick. Each tool asks you one question at a time and comes with a worked sample case: cracked J3 connector joints on a logging-tool PCBA.</p><div class="hcred"><span>Developed by <b>Soe Moe</b> · <a href="mailto:soe.moe@halliburton.com">soe.moe@halliburton.com</a></span><span>Course conductor: <b>Chang Keen Weng</b> (ACT, QC Tools)</span></div></div>
   <div class="panel"><h2>How the frameworks and tools fit together</h2><p class="sub"><span class="dsk">Read across: each framework's phases line up with the same four stages. Read down: the tools that do the work in each stage.</span><span class="mob">Every framework passes through the same four stages. Under each stage: what each framework calls it, and the tools that do the work.</span></p><div class="igwrap">${ig}</div>${igm}${legend}</div>
   <div class="panel"><h2>Four categories</h2><p class="sub">Categorize by the question the tool answers.</p><div class="cats">${cats}</div></div>
@@ -2162,7 +2284,7 @@ function viewHome(){
 
 function renderSide(){
   const h=location.hash.replace(/^#\/?/,"");
-  let s=`<div class="nav-home${!h?" on":""}" data-go="home">⌂ Overview & infographic</div>`;
+  let s=`<div class="nav-home${!h?" on":""}" data-go="home">⌂ ${inInv()?"Investigation overview":"Overview"}</div>`;
   Object.entries(CATS).forEach(([k,c])=>{
     s+=`<div class="ncat" style="color:${c.color}"><i style="background:${c.color}"></i>${esc(c.name)}</div>`;
     TOOL_ORDER.filter(id=>TOOLS[id].cat===k).forEach(id=>{ const t=TOOLS[id], st=DB[id];
@@ -2188,7 +2310,7 @@ $("#bMenu").onclick=()=>$("#side").classList.toggle("open");
 $("#bPrint").onclick=()=>doPrint();
 /* print options: result only by default; questions/answers and guide on request */
 function doPrint(){
-  if(!curTool){ window.print(); return; }
+  if(!curTool){ if(document.querySelector("#view .rsec")){ openReportPrint(); return; } window.print(); return; }
   $("#pQA").checked=!!UI.pQA; $("#pGuide").checked=!!UI.pGuide; $("#pd").showModal();
 }
 let guideWasOpen=null;
