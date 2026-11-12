@@ -365,6 +365,8 @@ dialog#pdr .fhd{padding:10px 16px;border-bottom:1px solid var(--line)}
   .ponly{display:block;font-size:9pt;color:#555;margin:0 0 3mm}
   body.p-report .invbar .btn{display:none}
 }
+.rephbtn{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+@media print{.rephbtn{display:none!important}}
 /* framework report */
 .fwrep{display:grid;gap:10px}
 .fwp{border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -617,7 +619,7 @@ fwTool({id:"dmaic", icon:"Σ", name:"DMAIC", intro:"Let's work through DMAIC: De
     steps:["<b>Define:</b> problem statement, scope, the CTQ metric (Y), goal, team.","<b>Measure:</b> baseline Y with data; confirm the measurement system is reliable.","<b>Analyze:</b> list candidate causes (Xs) and prove which ones drive Y.","<b>Improve:</b> choose, pilot and implement solutions; confirm the improvement.","<b>Control:</b> control plan, monitoring, reaction plan and handover."],
     tips:["Don't skip the measurement-system check; bad data leads to wrong causes.","The control plan is what makes the gain last."]},
   related:["histogram","controlchart","scatter"],
-  sampleNote:"The 5 V rail undervoltage failure (#2 on the Pareto) as a DMAIC project.",
+  sampleNote:"The J3 cracked-joint case, the same sample as the other tools, run as a DMAIC project.",
   steps:[
     {id:"d_prob",phase:"D",label:"Problem statement",q:"What is the problem statement?",type:"textarea",tools:["pareto"]},
     {id:"d_scope",phase:"D",label:"Scope",q:"What is in and out of scope?",type:"text"},
@@ -634,19 +636,19 @@ fwTool({id:"dmaic", icon:"Σ", name:"DMAIC", intro:"Let's work through DMAIC: De
       cols:[{k:"w",l:"What is monitored",w:150},{k:"m",l:"Method / frequency",w:130},{k:"r",l:"Reaction plan",w:170},{k:"o",l:"Owner",w:80}]},
     {id:"c_hand",phase:"C",label:"Handover",q:"Who owns the process now, and what are the lessons learned?",type:"textarea",optional:1}
   ],
-  sample:{d_prob:"5 V rail undervoltage is the #2 final-test failure (9 per week). Rail mean sits close to the lower limit.",
-    d_scope:"Power-supply section of the logging-tool PCBA, line 2. Out: field units.",
-    d_ctq:"5 V rail voltage at final test (spec 4.90–5.10 V); Cpk",
-    d_goal:"Cpk ≥ 1.33 and 0 undervoltage failures by end of Q1",
-    d_team:["Soe (Engineering, lead)","Test engineer","Quality / Reliability","PCB technician"],
-    m_base:"80 boards: mean 4.955 V, sd 0.023 V, Cp 1.47 but Cpk 0.79: off-centre toward the lower limit.",
+  sample:{d_prob:"J3 connector open / cracked solder joint is the #1 final-test failure: 23 of 47 failures in week 44 (49%), with intermittent opens also reaching the field.",
+    d_scope:"J3 harness mating and final test on the logging-tool PCBA line, all shifts. Out of scope: connector supplier design.",
+    d_ctq:"J3 failure rate at final test (% of boards built), plus field returns for intermittent J3 opens",
+    d_goal:"J3 failure rate below 0.5% (from 5.1%) and no field returns for J3 by week 50",
+    d_team:["Soe (Engineering, lead)","Manufacturing Engineering","Quality / Reliability","PCB technician","Production supervisor (night shift)"],
+    m_base:"Week 44: 23 J3 failures on 453 boards = 5.1%. Weekly rate was 0.3–0.6% for weeks 38–43, then a step change in week 44 (control chart signal from Wednesday).",
     m_msa:"ok",
-    a_x:["Feedback resistor tolerance","Regulator lot","Load during test","Test fixture contact resistance","Trace IR drop"],
-    a_root:"Regression on 30 boards: feedback-resistor value explains 70% of rail variation (r = 0.84). Design uses 1% resistors with the nominal set point 0.6% low.",
-    i_sol:[{a:"Change feedback resistor to set rail at 5.00 V nominal (ECO)",o:"Design Eng",d:"Jan",s:"Done"},{a:"Tighten resistor tolerance to 0.5%",o:"Design Eng",d:"Jan",s:"Done"}],
-    i_pilot:"50 pilot boards: mean 5.002 V, sd 0.018 V, Cpk 1.81. No undervoltage failures.",
-    c_plan:[{w:"5 V rail at final test",m:"I-MR chart, every board",r:"Out-of-control point: hold lot, check resistor lot and fixture",o:"Test Eng"},{w:"Feedback resistor lot",m:"Incoming CoC check",r:"Reject lot outside 0.5%",o:"Quality"}],
-    c_hand:"Process owned by Test Engineering. Lesson: check nominal set point against spec centre at design review."}
+    a_x:["No back-support fixture at night-shift bench 2","Operator not trained on WI step 14 (transferred)","Fixture worn or slow to set up","Thin solder fillet","Board thickness at low limit","Final test misses intermittent opens"],
+    a_root:"Stratification: 21 of 23 failures from night-shift operator D (20% vs under 1% for others). Scatter: crack length vs board strain at mating, r = 0.97; strain 1,100 µε without fixture vs 250 µε with. Reproduced cracks on 3 of 3 boards mated without fixture after 200 thermal cycles, 0 of 3 with fixture. Root cause: line-transfer process has no WI training step, and fixture use relies on memory.",
+    i_sol:[{a:"Interlock fixture at all cable benches",o:"Mfg Eng",d:"Wk 48",s:"Done"},{a:"Training sign-off in line-transfer checklist",o:"Prod Supv",d:"Wk 47",s:"Done"},{a:"Add J3 wiggle continuity test at final test",o:"Test Eng",d:"Wk 49",s:"Done"}],
+    i_pilot:"Interlock fixture piloted on night-shift bench 2, weeks 46–47: 0 J3 failures on 210 boards (was 20% for this bench). Wiggle test caught 5 of 5 seeded cracked boards.",
+    c_plan:[{w:"J3 failure rate at final test",m:"Weekly p-chart from MES",r:"Point above UCL: stop cable benches, check fixtures and recent transfers",o:"Quality / Reliability"},{w:"Fixture presence interlock",m:"Shift-start check on shadow board",r:"Missing or faulty fixture: bench stopped until fixed",o:"Line supervisor"},{w:"Line-transfer training sign-off",m:"Monthly audit of transfer records",r:"Missing sign-off: train before the operator works on the line",o:"Prod Supv"}],
+    c_hand:"Process handed to Manufacturing Engineering and the line supervisors. J3 rate 0.2% in weeks 47–50. Lesson: a line transfer must include line-specific WI training, and critical fixtures need an interlock, not memory."}
 });
 
 /* ---------- 8D ---------- */
@@ -1923,7 +1925,8 @@ function reportSection(id){
 }
 function reportHTML(){
   const used=usedOrdered(), done=used.filter(id=>DB[id].done).length;
-  let h = inInv() ? invHome() : `<div class="panel rephead"><h2>My practice analyses</h2><p class="sub">Results of every tool you have worked on in Practice${used.length?`: ${done} done, ${used.length-done} in progress`:""}. Click <b>Open</b> to continue one.</p></div>`;
+  let h = inInv() ? invHome() : `<div class="panel rephead"><h2>My practice analyses</h2><p class="sub">Results of every tool you have worked on in Practice${used.length?`: ${done} done, ${used.length-done} in progress`:""}. Click <b>Open</b> to continue one.</p>
+    <div class="rephbtn"><button class="btn pri" data-wsnewinv>Start new investigation</button><button class="btn" onclick="document.getElementById('bImport').click()">Open file</button><button class="btn" onclick="document.getElementById('bExport').click()">Save all</button></div></div>`;
   h+=`<div class="ponly rpdate"></div>`;
   if(!used.length){
     return h+`<div class="panel"><h2>No analyses yet</h2><p class="sub">Open a tool from the menu and answer its questions, or load a sample. Your results will appear here as one report.</p>${Object.entries(CATS).map(([k,c])=>`<div class="ncat" style="color:${c.color};margin:10px 0 4px"><i style="background:${c.color}"></i>${esc(c.name)}</div><div class="chips" style="display:flex;flex-wrap:wrap;gap:5px">${TOOL_ORDER.filter(id=>TOOLS[id].cat===k).map(id=>chipOf(id)).join("")}</div>`).join("")}</div>`;
@@ -1958,7 +1961,8 @@ addEventListener("afterprint",()=>{ if(!rpState) return;
   [...document.querySelectorAll(".rqa")].forEach((d,i)=>{ if(rpState.open[i]!==undefined) d.open=rpState.open[i]; }); rpState=null; });
 
 document.addEventListener("click", e=>{
-  const el=e.target.closest("[data-htab],[data-rprint],[data-rqa],[data-jump],[data-rpgo],[data-rpcancel],[data-rpall]"); if(!el) return;
+  const el=e.target.closest("[data-wsnewinv],[data-htab],[data-rprint],[data-rqa],[data-jump],[data-rpgo],[data-rpcancel],[data-rpall]"); if(!el) return;
+  if(el.dataset.wsnewinv!==undefined){ renderWsDialog(); $("#wsd").showModal(); const t=$("#wsTitle"); t.scrollIntoView({block:"center"}); t.focus(); return; }
   if(el.dataset.htab){ UI.homeTab=el.dataset.htab; persist(); viewHome(); return; }
   if(el.dataset.rprint!==undefined){ openReportPrint(); return; }
   if(el.dataset.rqa!==undefined){ document.querySelectorAll(".rqa").forEach(d=>d.open=el.dataset.rqa==="1"); return; }
