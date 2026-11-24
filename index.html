@@ -1729,13 +1729,13 @@ tool({id:"pickchart", cat:"sol", notCourse:1, icon:"⊹", name:"PICK chart",
     const mx=L+pw/2, my=Tp+ph/2;
     let g="";
     [["I",L,Tp],["C",mx,Tp],["P",L,my],["K",mx,my]].forEach(([k,x,y])=>{ const q=PQ[k];
-      g+=`<rect x="${x}" y="${y}" width="${pw/2}" height="${ph/2}" fill="${q[3]}"/>`+T(x+12,y+26,q[0].toUpperCase(),`font-size="18" font-weight="800" fill="${q[2]}" opacity=".85"`); });
+      g+=`<rect x="${x}" y="${y}" width="${pw/2}" height="${ph/2}" fill="${q[3]}"/>`+T(x+pw/2-12,y+26,q[0].toUpperCase(),`text-anchor="end" font-size="18" font-weight="800" fill="${q[2]}" opacity=".6"`); });
     g+=`<line x1="${mx}" x2="${mx}" y1="${Tp}" y2="${Tp+ph}" stroke="#64748b" stroke-width="1.5" stroke-dasharray="6 4"/><line x1="${L}" x2="${L+pw}" y1="${my}" y2="${my}" stroke="#64748b" stroke-width="1.5" stroke-dasharray="6 4"/>`;
     g+=`<rect x="${L}" y="${Tp}" width="${pw}" height="${ph}" fill="none" stroke="#94a3b8"/>`;
     for(let v=1;v<=10;v++){ g+=T(sx(v),Tp+ph+16,v,'text-anchor="middle" class="tk"')+T(L-8,sy(v)+4,v,'text-anchor="end" class="tk"'); }
     g+=T(L+pw/2,H-8,"Effort  →  (1 easy · 10 very hard)",'text-anchor="middle" class="al"')+T(16,Tp+ph/2,"Payoff  →",`text-anchor="middle" class="al" transform="rotate(-90 16 ${Tp+ph/2})"`);
     const seen={};
-    d.forEach(r=>{ const k=Math.round(r.p)+"|"+Math.round(r.e), j=seen[k]=(seen[k]||0)+1, ang=(j-1)*2.1, rad=j>1?13:0;
+    d.forEach(r=>{ const k=Math.round(r.p)+"|"+Math.round(r.e), j=seen[k]=(seen[k]||0)+1, ang=(j-2)*1.25-0.6, rad=j>1?24:0;
       const x=sx(r.e)+Math.cos(ang)*rad, y=sy(r.p)+Math.sin(ang)*rad, c=PQ[r.q][2];
       g+=`<g><title>${esc(r.n+". "+r.idea+" (payoff "+r.p+", effort "+r.e+")")}</title><circle cx="${x}" cy="${y}" r="12" fill="${c}" stroke="#fff" stroke-width="2"/>`+T(x,y+4,r.n,'text-anchor="middle" font-size="11.5" font-weight="800" fill="#fff"')+`</g>`; });
     let h=`<div style="font-weight:700;margin-bottom:4px">${esc(a.topic||"")}</div><svg viewBox="0 0 ${W} ${H}" class="chart" xmlns="http://www.w3.org/2000/svg">${g}</svg>`;
