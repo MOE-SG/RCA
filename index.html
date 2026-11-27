@@ -367,6 +367,33 @@ dialog#pdr .fhd{padding:10px 16px;border-bottom:1px solid var(--line)}
 }
 .rephbtn{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 @media print{.rephbtn{display:none!important}}
+#bView{font-weight:600}
+body.av .ropen,body.av .rephbtn,body.av .invhome .nextt{display:none!important}
+.avnote{margin:16px 10px 0;padding-top:12px;border-top:1px solid var(--line);font-size:12px;color:var(--mute);display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+dialog#shd{border:0;border-radius:12px;padding:0;width:min(620px,94vw);max-height:92vh;box-shadow:0 20px 60px rgba(10,20,40,.35)}
+dialog#shd::backdrop{background:rgba(15,25,45,.55)}
+dialog#shd .fhd{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff}
+.shb{padding:12px 16px 16px;display:flex;flex-direction:column;gap:8px}
+.shb h4{margin:10px 0 0;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--mute)}
+.shl{font-size:12.5px;font-weight:600;color:var(--ink2);display:flex;flex-direction:column;gap:3px}
+.shl input{border:1px solid #c6cdd8;border-radius:6px;padding:7px 9px;font-weight:400}
+.shc{font-size:13px;display:flex;gap:8px;align-items:center}
+.shrow{display:flex;gap:8px;align-items:flex-start}
+.shrow textarea{flex:1;min-height:58px;border:1px solid #c6cdd8;border-radius:6px;padding:6px 8px;font:12px var(--mono);resize:vertical;word-break:break-all;background:#f8fafc}
+.shb .find{margin:0}
+@media print{#bView{display:none}}
+.cfb a.btn{text-decoration:none;display:inline-block}
+.cfb .cfbl{margin:10px 0 0 18px;display:flex;flex-direction:column;gap:12px}
+.cfbdrop{margin-top:14px;border:2px dashed #c6cdd8;border-radius:10px;padding:34px 12px;text-align:center;color:var(--mute)}
+.cfbdrop.on{border-color:#2563eb;background:#eff6ff;color:#1d4ed8}
+.spset{margin-top:8px;font-size:13px}.spset summary{cursor:pointer;color:var(--ink2);font-weight:600}.spset[open]{display:flex;flex-direction:column;gap:8px}
+.sidereset{margin:14px 10px 18px}.sidereset .btn{color:#b42318}
+dialog#rsd{border:0;border-radius:12px;padding:0;width:min(480px,94vw);box-shadow:0 20px 60px rgba(10,20,40,.35)}
+dialog#rsd::backdrop{background:rgba(15,25,45,.55)}
+dialog#rsd .fhd{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line)}
+.rsbtn{display:flex;gap:8px;align-items:center;margin-top:8px}.rsbtn .sp{flex:1}
+.btn.danger{background:#b42318;border-color:#b42318;color:#fff}
+@media print{.sidereset{display:none}}
 /* framework report */
 .fwrep{display:grid;gap:10px}
 .fwp{border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -402,6 +429,7 @@ dialog#full .svscroll svg{min-width:0}
   .cats,.pick,.fwpick{grid-template-columns:1fr} main{padding:14px 12px 30px}
   .inbox{margin-left:0}
 }
+@media (max-width:560px){ .brand>div:last-child{display:none} .wsb .wst{max-width:70px} .tb{padding:5px 7px} }
 @media print{
   @page{size:A4;margin:12mm}
   body{background:#fff;font-size:11pt}
@@ -423,6 +451,7 @@ dialog#full .svscroll svg{min-width:0}
   <button class="tb wsb" id="bWs"></button>
   <button class="tb" id="bExport" title="Save all your entries to a file">Save all</button>
   <button class="tb" id="bImport" title="Load entries from a file">Open</button>
+  <button class="tb" id="bView"></button>
   <button class="tb" id="bPrint" title="Print or save as PDF">Print / PDF</button>
 </header>
 <div class="app">
@@ -431,6 +460,27 @@ dialog#full .svscroll svg{min-width:0}
 </div>
 <input type="file" id="fileIn" accept=".json,application/json" hidden>
 <div id="toast"></div>
+<dialog id="shd"><div class="fhd"><b>Share link</b><button class="btn sm" data-shclose>Close</button></div><div class="shb">
+  <div class="wsmeta" id="shTitle"></div>
+  <label class="shl">Toolkit web address<input id="shBase" placeholder="e.g. https://moe-sg.github.io/RCA/RCA_Toolkit.html"></label>
+  <div class="find warn" id="shBaseNote" hidden>Enter the address where the toolkit is published. Links need it, because a copy opened from your computer can't be reached by others.</div>
+  <label class="shc"><input type="checkbox" id="shAV" checked> Open in analysis-only view</label>
+  <h4>Link with the analysis inside</h4>
+  <div class="wsmeta">No file to host. Anyone with the link sees this version; later edits are not included.</div>
+  <div class="shrow"><textarea id="shA" readonly></textarea><button class="btn pri sm" data-shcopy="shA">Copy</button></div>
+  <div class="wsmeta" id="shALen"></div>
+  <h4>Or link to the file in SharePoint</h4>
+  <div class="wsmeta">Save the investigation file (Save file) to SharePoint or Teams, use <b>Copy link</b> on it there, and paste the link below. Viewers sign in with their work account and see the latest saved file. Only people with access to the file can open it.</div>
+  <label class="shl">SharePoint link to the .json file<input id="shFile" placeholder="https://yourcompany.sharepoint.com/:u:/s/…"></label>
+  <div class="shrow"><textarea id="shB" readonly></textarea><button class="btn sm" data-shcopy="shB">Copy</button></div>
+  <div class="find warn" id="shSpNote" hidden></div>
+  <details class="spset"><summary>Microsoft sign-in settings</summary>
+    <div class="wsmeta">For SharePoint links to open by themselves, the toolkit needs an app registration in Microsoft Entra ID (single-page application, redirect address below, delegated permission Files.Read.All). Values typed here apply to this browser only; for your team, they must be built into the published file.</div>
+    <label class="shl">Redirect address to register<input id="spRedir" readonly></label>
+    <label class="shl">Application (client) ID<input id="spCid" placeholder="00000000-0000-0000-0000-000000000000"></label>
+    <label class="shl">Directory (tenant) ID<input id="spTen" placeholder="organizations"></label>
+  </details>
+</div></dialog>
 <dialog id="pdr"><div class="fhd"><b>Print / PDF report</b></div><div class="pdb">
   <label class="pdo" id="pdrSumRow"><input type="checkbox" id="pdrSum" checked> <span><b>Investigation summary</b><small>Problem, root cause, escape, chosen countermeasure</small></span></label>
   <label class="pdo"><input type="checkbox" id="pdrQA"> <span><b>Questions and answers</b><small>Add each analysis's questions and your answers</small></span></label>
@@ -444,6 +494,14 @@ dialog#full .svscroll svg{min-width:0}
   <label class="pdo"><input type="checkbox" id="pGuide"> <span><b>Guide</b><small>What it is, when to use it, how to do it, tips</small></span></label>
   <div class="pdbtn"><button class="btn" data-act="printcancel">Cancel</button><button class="btn pri" data-act="printnow">Print</button></div>
   <div class="wsmeta">Tip: choose “Save as PDF” as the printer to make a PDF.</div></div></dialog>
+<dialog id="rsd"><div class="fhd"><b>Reset all</b><button class="btn sm" data-rsclose>Close</button></div><div class="shb">
+  <div class="wsmeta">Clears what the toolkit remembers in this browser, so it opens fresh at the home page instead of the last tool or investigation. Files you saved are not touched.</div>
+  <label class="shc"><input type="checkbox" id="rsPr" checked> <span>Practice analyses <small id="rsPrN" class="wsmeta"></small></span></label>
+  <label class="shc"><input type="checkbox" id="rsInv" checked> <span>Investigations kept in this browser <small id="rsInvN" class="wsmeta"></small></span></label>
+  <label class="shc"><input type="checkbox" id="rsUi" checked disabled> <span>Last opened tool, investigation, view and settings <small class="wsmeta">(always)</small></span></label>
+  <div class="find warn" id="rsWarn" hidden>Anything not saved to a file will be lost. Use <b>Save first</b> if you want to keep it.</div>
+  <div class="rsbtn"><button class="btn" data-rssave>Save first</button><span class="sp"></span><button class="btn" data-rsclose>Cancel</button><button class="btn danger" data-rsgo>Reset</button></div>
+</div></dialog>
 <dialog id="wsd"><div class="fhd"><b>Workspace</b><button class="btn sm" data-wsclose>Close</button></div><div id="wsBody"></div></dialog>
 <dialog id="full"><div class="fhd"><b id="fullT"></b><button class="btn sm" data-act="closefull">Close</button></div><div id="fullB" class="out"></div></dialog>
 <script>
@@ -1903,7 +1961,7 @@ const CAT_ORDER=["qc","rc","sol","fw"];
 const reportOrder = () => CAT_ORDER.flatMap(c=>TOOL_ORDER.filter(id=>TOOLS[id].cat===c));
 function usedOrdered(){ const u=new Set(toolsUsed(DB)); return reportOrder().filter(id=>u.has(id)); }
 function homeTabs(tab){
-  if(inInv()) return "";
+  if(inInv()||isAV()) return "";
   const n=usedOrdered().length;
   return `<div class="htabs"><button class="htab${tab==="report"?" on":""}" data-htab="report">My analyses <span>${n}</span></button><button class="htab${tab==="guide"?" on":""}" data-htab="guide">Tools &amp; infographic</button></div>`;
 }
@@ -1919,7 +1977,7 @@ function reportSection(id){
     <div class="rhead"><span class="ic" style="background:${c.bg};color:${c.color}">${esc(t.icon)}</span>
       <div class="rt"><b>${esc(t.name)}</b><span>${esc(c.short)}</span></div>
       <span class="rst${st.done?" d":""}">${st.done?"✓ Done":`In progress · ${p.n} of ${p.of}`}</span>
-      <button class="btn sm" data-open="${id}">${st.done?"Open":"Continue"}</button></div>
+      <button class="btn sm ropen" data-open="${id}">${st.done?"Open":"Continue"}</button></div>
     <div class="rbody">${body}</div>
     <details class="rqa"><summary>Questions and answers</summary><div class="rqab">${qaHTML(t,st)}</div></details></section>`;
 }
@@ -1931,7 +1989,7 @@ function reportHTML(){
   if(!used.length){
     return h+`<div class="panel"><h2>No analyses yet</h2><p class="sub">Open a tool from the menu and answer its questions, or load a sample. Your results will appear here as one report.</p>${Object.entries(CATS).map(([k,c])=>`<div class="ncat" style="color:${c.color};margin:10px 0 4px"><i style="background:${c.color}"></i>${esc(c.name)}</div><div class="chips" style="display:flex;flex-wrap:wrap;gap:5px">${TOOL_ORDER.filter(id=>TOOLS[id].cat===k).map(id=>chipOf(id)).join("")}</div>`).join("")}</div>`;
   }
-  h+=`<div class="rtool"><button class="btn pri" data-rprint>Print / PDF report</button><button class="btn" data-rqa="1">Show all answers</button><button class="btn" data-rqa="0">Hide all answers</button>
+  h+=`<div class="rtool"><button class="btn pri" data-rprint>Print / PDF report</button>${inInv()?'<button class="btn" data-share>Share link…</button>':""}<button class="btn" data-rqa="1">Show all answers</button><button class="btn" data-rqa="0">Hide all answers</button>
     <span class="rtoc">${used.map(id=>`<a href="#" data-jump="${id}">${esc(TOOLS[id].name)}${DB[id].done?"":" …"}</a>`).join("")}</span></div>`;
   return h+used.map(reportSection).join("");
 }
@@ -1966,7 +2024,7 @@ document.addEventListener("click", e=>{
   if(el.dataset.htab){ UI.homeTab=el.dataset.htab; persist(); viewHome(); return; }
   if(el.dataset.rprint!==undefined){ openReportPrint(); return; }
   if(el.dataset.rqa!==undefined){ document.querySelectorAll(".rqa").forEach(d=>d.open=el.dataset.rqa==="1"); return; }
-  if(el.dataset.jump){ e.preventDefault(); const s=document.querySelector(`.rsec[data-rid="${el.dataset.jump}"]`); if(s) s.scrollIntoView({behavior:"smooth",block:"start"}); return; }
+  if(el.dataset.jump){ e.preventDefault(); $("#side").classList.remove("open"); const s=document.querySelector(`.rsec[data-rid="${el.dataset.jump}"]`); if(s) s.scrollIntoView({behavior:"smooth",block:"start"}); return; }
   if(el.dataset.rpall!==undefined){ const on=el.dataset.rpall==="1"; document.querySelectorAll("[data-rsel]").forEach(x=>x.checked=on); return; }
   if(el.dataset.rpcancel!==undefined){ $("#pdr").close(); return; }
   if(el.dataset.rpgo!==undefined){ printReport(); return; }
@@ -2275,7 +2333,7 @@ function viewHome(){
   const FWP=[["pdca","PDCA","Small, quick improvements and repeated test cycles."],["eas","EAS","Everyday shop-floor problems; easy for any team to follow."],["8d","8D","Customer complaints, field failures and escapes that need containment and a formal report."],["dmaic","DMAIC","Chronic, data-heavy process problems where the cause is unclear."],["bs62740","BS EN 62740","Serious incidents or audits that need a defensible investigation to a recognised standard; actions go to CAPA / 8D."]];
   const fwp=`<div class="fwpick">${FWP.map(([id,n,d])=>`<div data-open="${id}"><b>${n}</b>${esc(d)}</div>`).join("")}</div>`;
 
-  const tab = inInv() ? "report" : (UI.homeTab || (usedOrdered().length ? "report" : "guide"));
+  const tab = (inInv()||isAV()) ? "report" : (UI.homeTab || (usedOrdered().length ? "report" : "guide"));
   if(tab==="report"){ $("#view").innerHTML=invBanner()+homeTabs(tab)+reportHTML(); return; }
   $("#view").innerHTML=homeTabs(tab)+`
   <div class="hero"><h1>Root Cause Analysis Toolkit</h1><p>Every problem-solving framework follows the same four stages. The <b>framework</b> gives you the roadmap; the <b>7 QC tools</b> expose the problem with data; the <b>root-cause methods</b> find why; and the <b>change tools</b> make the fix stick. Each tool asks you one question at a time and comes with a worked sample case: cracked J3 connector joints on a logging-tool PCBA.</p><div class="hcred"><span>Developed by <b>Soe Moe</b> · <a href="mailto:soe.moe@halliburton.com">soe.moe@halliburton.com</a></span><span>Course conductor: <b>Chang Keen Weng</b> (ACT, QC Tools)</span></div></div>
@@ -2287,6 +2345,7 @@ function viewHome(){
 }
 
 function renderSide(){
+  if(isAV()){ $("#side").innerHTML=sideAV(); return; }
   const h=location.hash.replace(/^#\/?/,"");
   let s=`<div class="nav-home${!h?" on":""}" data-go="home">⌂ ${inInv()?"Investigation overview":"Overview"}</div>`;
   Object.entries(CATS).forEach(([k,c])=>{
@@ -2296,7 +2355,7 @@ function renderSide(){
       s+=`<div class="ni${h==="tool/"+id?" on":""}" data-open="${id}"><span class="ic" style="background:${c.bg};color:${c.color}">${esc(t.icon)}</span><span class="nn">${esc(t.name)}${t.notCourse?'<span class="nc" title="Not part of the QC Tools training course: added for reference">not in course</span>':""}</span>${stx}</div>`; });
   });
   s+=`<div class="sidefile"><button class="btn sm" data-wsmenu>Workspace</button><button class="btn sm" onclick="document.getElementById('bExport').click()">${inInv()?"Save file":"Save all"}</button><button class="btn sm" onclick="document.getElementById('bImport').click()">Open file</button></div>`;
-  s+=`<div class="ncnote"><span class="nc">not in course</span> = not part of the QC Tools training course; added for reference.</div>`;
+  s+=`<div class="ncnote"><span class="nc">not in course</span> = not part of the QC Tools training course; added for reference.</div><div class="sidereset"><button class="btn sm" data-reset>Reset all…</button></div>`;
   $("#side").innerHTML=s;
 }
 function go(h){ location.hash = h ? "#/"+h : "#/"; }
@@ -2304,6 +2363,8 @@ function route(){
   const fd=$("#full"); if(fd&&fd.open) fd.close();
   const h=location.hash.replace(/^#\/?/,"");
   const m=h.match(/^tool\/(.+)$/);
+  if(isAV()){ viewHome(); renderSide(); $("#side").classList.remove("open"); window.scrollTo({top:0});
+    if(m){ const sec=document.querySelector(`.rsec[data-rid="${m[1]}"]`); if(sec) setTimeout(()=>sec.scrollIntoView({block:"start"}),30); } return; }
   if(m && TOOLS[m[1]]) viewTool(m[1]); else viewHome();
   renderSide(); $("#side").classList.remove("open"); window.scrollTo({top:0});
 }
@@ -2411,7 +2472,252 @@ function sendTo(id, ans){ const t=TOOLS[id]; DB[id]={ans, seen:{}, cur:null, don
   persist(); go("tool/"+id); }
 
 renderWsBtn();
-route();
+
+/* ===================== Analysis-only view + share links ===================== */
+var AVOVR = null;   /* set by a share link for this visit only; null = follow the saved choice */
+function isAV(){ return (AVOVR === null || AVOVR === undefined) ? UI.view === "analysis" : AVOVR; }
+function applyAV(){
+  const on = isAV();
+  document.body.classList.toggle("av", on);
+  const b = $("#bView");
+  b.textContent = on ? "Full toolkit" : "Analysis view";
+  b.title = on ? "Show all the tools again, so you can edit or add analyses" : "Show only the analyses done, as one report";
+}
+function sideAV(){
+  const used = usedOrdered();
+  let s = `<div class="nav-home on" data-go="home">⌂ Report</div><div class="ncat" style="color:var(--ink2)">${inInv() ? "Analyses in this investigation" : "Analyses in Practice"}</div>`;
+  if(!used.length) s += `<div class="wsmeta" style="padding:4px 10px">No analyses yet.</div>`;
+  used.forEach(id => { const t = TOOLS[id], c = CATS[t.cat], st = DB[id];
+    s += `<div class="ni" data-jump="${id}"><span class="ic" style="background:${c.bg};color:${c.color}">${esc(t.icon)}</span><span class="nn">${esc(t.name)}</span>${st.done ? '<span class="st done">✓</span>' : '<span class="st">…</span>'}</div>`; });
+  s += `<div class="avnote">Showing the analyses only.<button class="btn sm" data-viewtoggle>Show full toolkit</button></div><div class="sidereset"><button class="btn sm" data-reset>Reset all…</button></div>`;
+  return s;
+}
+
+/* ---- encoding a whole investigation into a link ---- */
+function b64u(bytes){ let s = ""; for(let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
+function unb64u(s){ s = s.replace(/-/g, "+").replace(/_/g, "/"); while(s.length % 4) s += "="; const b = atob(s), u = new Uint8Array(b.length); for(let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
+async function pipeBytes(bytes, stream){ return new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(stream)).arrayBuffer()); }
+async function encodeShare(obj){
+  const raw = new TextEncoder().encode(JSON.stringify(obj));
+  if(typeof CompressionStream !== "undefined"){ try{ return "z" + b64u(await pipeBytes(raw, new CompressionStream("deflate-raw"))); }catch(e){} }
+  return "j" + b64u(raw);
+}
+async function decodeShare(s){
+  const kind = s[0], bytes = unb64u(s.slice(1));
+  if(kind === "z"){ if(typeof DecompressionStream === "undefined") throw new Error("this browser cannot open compressed links; please update it");
+    return JSON.parse(new TextDecoder().decode(await pipeBytes(bytes, new DecompressionStream("deflate-raw")))); }
+  if(kind === "j") return JSON.parse(new TextDecoder().decode(bytes));
+  throw new Error("the link is not a toolkit link");
+}
+function invPayload(){ const v = curInv(); persist(); return {app:"rca-toolkit", kind:"investigation", version:1, meta:v.meta, data:v.data}; }
+function loadSharedInv(o){
+  if(!o || o.app !== "rca-toolkit" || o.kind !== "investigation" || !o.meta || !o.meta.id || !o.data) throw new Error("the link does not hold an investigation");
+  const id = o.meta.id, have = INV[id];
+  if(have && JSON.stringify(have.data) !== JSON.stringify(o.data) &&
+     !confirm(`Your copy of ${id} on this computer is different from the shared one.\n\nReplace it with the shared version? (Cancel keeps your copy.)`)){
+    UI.ws = id; DB = INV[id].data; persist(); renderWsBtn(); return id;
+  }
+  INV[id] = {meta:o.meta, data:o.data}; UI.ws = id; DB = INV[id].data; persist(); renderWsBtn(); return id;
+}
+
+/* ---- share dialog ---- */
+let shareCode = "";
+function shareBase(){ const b = ($("#shBase") && $("#shBase").value.trim()) || UI.shareBase || (/^https?:/.test(location.protocol) ? location.origin + location.pathname : ""); return b; }
+function buildLinks(){
+  const base = shareBase(), full = !$("#shAV").checked, note = $("#shBaseNote");
+  note.hidden = !!base;
+  const tail = full ? "&view=full" : "";
+  const a = base ? `${base}${full ? "?view=full" : ""}#d=${shareCode}` : "";
+  $("#shA").value = a;
+  $("#shALen").textContent = a ? `${a.length.toLocaleString()} characters.${a.length > 8000 ? " Long links can be cut off by some email or chat apps; if that happens, use a hosted file instead." : ""}` : "";
+  const f = $("#shFile").value.trim(), sn = $("#shSpNote");
+  sn.hidden = !(f && isSP(f) && !spCfg().cid);
+  sn.textContent = "Microsoft sign-in isn't set up yet, so people opening this link will be asked to download the file and drop it in. See the sign-in settings below.";
+  $("#shB").value = base && f ? `${base}?case=${encodeURIComponent(f)}${tail}` : "";
+}
+async function openShare(){
+  if(!inInv()){ toast("Open an investigation to share it"); return; }
+  const v = curInv();
+  $("#shTitle").textContent = `${v.meta.id} · ${v.meta.title}`;
+  $("#shBase").value = UI.shareBase || (/^https?:/.test(location.protocol) ? location.origin + location.pathname : "");
+  $("#shFile").value = UI.shareFileHint ? UI.shareFileHint.replace("{id}", v.meta.id) : "";
+  $("#shA").value = "Preparing…"; $("#shB").value = "";
+  $("#spRedir").value = /^https?:/.test(location.protocol) ? spRedirect() : "(the toolkit's web address)"; $("#spCid").value = UI.spClientId||SP_CLIENT_ID; $("#spTen").value = UI.spTenant||SP_TENANT;
+  $("#shd").showModal();
+  shareCode = await encodeShare(invPayload());
+  buildLinks();
+}
+function copyField(id){ const el = $("#"+id); if(!el.value){ toast("Nothing to copy yet"); return; }
+  const done = () => toast("Link copied");
+  if(navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(el.value).then(done, () => { el.select(); document.execCommand("copy"); done(); });
+  else { el.select(); document.execCommand("copy"); done(); } }
+document.addEventListener("input", e => {
+  if(!e.target.closest || !e.target.closest("#shd")) return;
+  if(e.target.id === "shBase"){ UI.shareBase = e.target.value.trim(); persist(); }
+  if(e.target.id === "spCid"){ UI.spClientId = e.target.value.trim(); persist(); }
+  if(e.target.id === "spTen"){ UI.spTenant = e.target.value.trim(); persist(); }
+  buildLinks();
+});
+document.addEventListener("change", e => { if(e.target.id === "shAV") buildLinks(); });
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-viewtoggle],[data-share],[data-shcopy],[data-shclose],#bView"); if(!el) return;
+  if(el.id === "bView" || el.dataset.viewtoggle !== undefined){ const next = !isAV(); AVOVR = null; UI.view = next ? "analysis" : "full"; persist(); applyAV();
+    if(next && location.hash.replace(/^#\/?/, "")) location.hash = "#/"; else route(); return; }
+  if(el.dataset.share !== undefined){ openShare(); return; }
+  if(el.dataset.shcopy){ copyField(el.dataset.shcopy); return; }
+  if(el.dataset.shclose !== undefined){ $("#shd").close(); return; }
+});
+
+
+/* ---- SharePoint / OneDrive files through Microsoft Graph ----
+   A page on github.io cannot read SharePoint files directly (the browser blocks it), so the toolkit signs the
+   viewer in with their own Microsoft account and asks Microsoft Graph for the file. Each person only gets files
+   they already have access to. Set SP_CLIENT_ID once, after the app is registered in Microsoft Entra ID. */
+var SP_CLIENT_ID = "";                 /* Application (client) ID of the Entra app registration */
+var SP_TENANT    = "organizations";    /* or your Directory (tenant) ID */
+var SP_SCOPE     = "Files.Read.All Sites.Read.All";
+function spCfg(){ return {cid:(UI.spClientId||SP_CLIENT_ID||"").trim(), tenant:(UI.spTenant||SP_TENANT||"organizations").trim()}; }
+function isSP(u){ return /^https:\/\/[^\/]*(sharepoint\.com|sharepoint-df\.com|onedrive\.live\.com|1drv\.ms)\//i.test(u||""); }
+function spRedirect(){ return location.origin + location.pathname; }
+function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
+function lsSet(k,v){ try{ v==null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+function rnd(n){ const a=new Uint8Array(n); crypto.getRandomValues(a); return b64u(a); }
+async function spSignIn(back){
+  const c=spCfg(), verifier=rnd(48), state=rnd(16);
+  const chal=b64u(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier))));
+  lsSet("rcakit.sp.pending",{verifier,state,back,t:Date.now()});
+  const q=new URLSearchParams({client_id:c.cid,response_type:"code",redirect_uri:spRedirect(),response_mode:"query",
+    scope:SP_SCOPE+" openid offline_access",state,code_challenge:chal,code_challenge_method:"S256",prompt:"select_account"});
+  const tok=lsGet("rcakit.sp.tok"); if(tok&&tok.user){ q.set("login_hint",tok.user); q.delete("prompt"); }
+  location.assign(`https://login.microsoftonline.com/${encodeURIComponent(c.tenant)}/oauth2/v2.0/authorize?${q}`);
+}
+async function spTokenReq(body){
+  const c=spCfg(); body.client_id=c.cid; body.scope=SP_SCOPE+" openid offline_access";
+  const r=await fetch(`https://login.microsoftonline.com/${encodeURIComponent(c.tenant)}/oauth2/v2.0/token`,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams(body)});
+  const j=await r.json(); if(!r.ok) throw new Error(j.error_description ? j.error_description.split(/\r?\n/)[0] : "sign-in failed");
+  let user=""; try{ user=JSON.parse(new TextDecoder().decode(unb64u(j.id_token.split(".")[1]))).preferred_username||""; }catch(e){}
+  const old=lsGet("rcakit.sp.tok")||{};
+  const t={at:j.access_token, rt:j.refresh_token||old.rt, exp:Date.now()+(j.expires_in-120)*1000, user:user||old.user||""};
+  lsSet("rcakit.sp.tok",t); return t.at;
+}
+async function spToken(){
+  const t=lsGet("rcakit.sp.tok"); if(!t) return null;
+  if(t.at && t.exp>Date.now()) return t.at;
+  if(t.rt){ try{ return await spTokenReq({grant_type:"refresh_token",refresh_token:t.rt}); }catch(e){} }
+  return null;
+}
+async function spFinishSignIn(p){   /* returning from the Microsoft sign-in page */
+  const pend=lsGet("rcakit.sp.pending"); lsSet("rcakit.sp.pending",null);
+  if(!pend || pend.state!==p.get("state")) throw new Error("the sign-in reply did not match; please open the link again");
+  if(p.get("error")) throw Object.assign(new Error(p.get("error_description")||p.get("error")),{back:pend.back});
+  await spTokenReq({grant_type:"authorization_code",code:p.get("code"),redirect_uri:spRedirect(),code_verifier:pend.verifier});
+  return pend.back;
+}
+async function spFetchJSON(url){
+  const at=await spToken(); if(!at) return {needSignIn:true};
+  const id="u!"+b64u(new TextEncoder().encode(url)), H={Authorization:"Bearer "+at};
+  const r=await fetch(`https://graph.microsoft.com/v1.0/shares/${id}/driveItem`,{headers:H});
+  if(r.status===401){ lsSet("rcakit.sp.tok",Object.assign(lsGet("rcakit.sp.tok")||{},{at:"",exp:0})); return {needSignIn:true}; }
+  if(!r.ok){ let m=""; try{ m=(await r.json()).error.message; }catch(e){} throw new Error(r.status===403||r.status===404 ? "you don't have access to this file, or the link has changed" : (m||"SharePoint said "+r.status)); }
+  const it=await r.json(), dl=it["@microsoft.graph.downloadUrl"];
+  let f = dl ? await fetch(dl).catch(()=>null) : null;
+  if(!f || !f.ok) f=await fetch(`https://graph.microsoft.com/v1.0/shares/${id}/driveItem/content`,{headers:H});
+  if(!f.ok) throw new Error("the file could not be downloaded ("+f.status+")");
+  const txt=await f.text(); try{ return {obj:JSON.parse(txt), name:it.name}; }catch(e){ throw new Error(`"${it.name}" is not an investigation file`); }
+}
+function spDownloadUrl(u){ try{ const x=new URL(u); x.searchParams.set("download","1"); return x.toString(); }catch(e){ return u; } }
+
+/* shown when the file can't be read automatically: open it from SharePoint, then drop it here */
+function caseFallback(url, why, canSignIn){
+  const sp=isSP(url);
+  $("#view").innerHTML=`<div class="panel cfb"><h2>Open the shared analysis</h2>
+    <p class="sub">${esc(why)}</p>
+    ${canSignIn?`<p><button class="btn pri" data-spsignin>Sign in with Microsoft to open it</button></p><p class="wsmeta">Or open it by hand:</p>`:""}
+    <ol class="cfbl"><li><a class="btn${canSignIn?"":" pri"}" href="${esc(sp?spDownloadUrl(url):url)}" target="_blank" rel="noopener">Download the file${sp?" from SharePoint":""}</a></li>
+    <li>Drop the downloaded file here, or <button class="btn sm" data-cfbpick>choose it</button>.</li></ol>
+    <div class="cfbdrop" id="cfbDrop">Drop the .json file here</div></div>`;
+  $("#side").innerHTML=`<div class="nav-home" data-go="home">⌂ Home</div>`;
+}
+function openDroppedFile(f){
+  const r=new FileReader(); r.onload=()=>{ try{ const o=JSON.parse(r.result); loadSharedInv(o); history.replaceState(null,"",location.pathname+"?view="+(isAV()?"analysis":"full")+"#/"); applyAV(); route(); toast("Opened "+o.meta.id); }
+    catch(err){ toast("Cannot open: "+err.message); } }; r.readAsText(f);
+}
+document.addEventListener("dragover",e=>{ if(e.target.closest&&e.target.closest("#cfbDrop")){ e.preventDefault(); $("#cfbDrop").classList.add("on"); } });
+document.addEventListener("dragleave",e=>{ if(e.target.id==="cfbDrop") e.target.classList.remove("on"); });
+document.addEventListener("drop",e=>{ if(e.target.closest&&e.target.closest("#cfbDrop")){ e.preventDefault(); const f=e.dataTransfer.files[0]; if(f) openDroppedFile(f); } });
+document.addEventListener("click",e=>{
+  if(e.target.closest("[data-cfbpick]")){ const i=document.createElement("input"); i.type="file"; i.accept=".json,application/json"; i.onchange=()=>i.files[0]&&openDroppedFile(i.files[0]); i.click(); }
+  if(e.target.closest("[data-spsignin]")) spSignIn(location.search);
+});
+
+/* ---- reset all ---- */
+function openReset(){
+  const np=toolsUsed(PRACTICE).length, ni=Object.keys(INV).length;
+  $("#rsPrN").textContent=`(${np} in progress or done)`; $("#rsInvN").textContent=`(${ni})`;
+  $("#rsPr").checked=true; $("#rsInv").checked=true; rsWarn(); $("#side").classList.remove("open"); $("#rsd").showModal();
+}
+function rsWarn(){ $("#rsWarn").hidden=!(($("#rsPr").checked&&toolsUsed(PRACTICE).length)||($("#rsInv").checked&&Object.keys(INV).length)); }
+function doReset(){
+  const pr=$("#rsPr").checked, inv=$("#rsInv").checked;
+  try{
+    if(pr) localStorage.removeItem(KEY);
+    if(inv) localStorage.removeItem(KEY+".inv");
+    localStorage.removeItem(KEY+".ui");
+    Object.keys(localStorage).filter(k=>k.startsWith("rcakit.sp.")).forEach(k=>localStorage.removeItem(k));
+  }catch(e){}
+  /* keep the toolkit address for share links; it is a setting people type once */
+  if(UI.shareBase){ try{ localStorage.setItem(KEY+".ui", JSON.stringify({shareBase:UI.shareBase})); }catch(e){} }
+  window.onbeforeunload=null; persist=function(){};   /* nothing may write the old state back while leaving */
+  location.replace(location.pathname);
+}
+document.addEventListener("change",e=>{ if(e.target.id==="rsPr"||e.target.id==="rsInv") rsWarn(); });
+document.addEventListener("click",e=>{
+  if(e.target.closest("[data-reset]")){ openReset(); return; }
+  if(e.target.closest("[data-rsclose]")){ $("#rsd").close(); return; }
+  if(e.target.closest("[data-rssave]")){ $("#bExport").click(); return; }
+  if(e.target.closest("[data-rsgo]")){ doReset(); return; }
+});
+
+/* ---- start-up: a link can carry an investigation (?d=) or point to a file (?case=) ---- */
+async function bootView(){
+  let p = new URLSearchParams(location.search);
+  if(p.get("code") && p.get("state")){            /* back from Microsoft sign-in */
+    let back="";
+    try{ back = await spFinishSignIn(p); }
+    catch(err){ back = err.back || ""; toast("Microsoft sign-in did not finish: "+err.message); lsSet("rcakit.sp.signinfail", Date.now()); }
+    history.replaceState(null, "", location.pathname + (back||"") + "#/"); p = new URLSearchParams(back||"");
+  }
+  let d = p.get("d"), v = p.get("view");
+  const c = p.get("case"), hd = location.hash.match(/^#d=([A-Za-z0-9_-]+)/);
+  if(hd) d = hd[1];                                /* new links keep the analysis after # so it never reaches the web server */
+  if(d || c){
+    AVOVR = v !== "full";
+    try{
+      let o;
+      if(d) o = await decodeShare(d);
+      else if(isSP(c)){
+        if(!spCfg().cid){ applyAV(); caseFallback(c, "This analysis is saved in SharePoint. Microsoft sign-in isn't set up in this toolkit yet, so open the file by hand:", false); return; }
+        const r = await spFetchJSON(c);
+        if(r.needSignIn){
+          const failed = (lsGet("rcakit.sp.signinfail")||0) > Date.now()-60000;
+          if(!failed){ spSignIn(location.search); return; }
+          applyAV(); caseFallback(c, "This analysis is saved in SharePoint and needs you to sign in with your work account.", true); return;
+        }
+        o = r.obj;
+      } else { const r = await fetch(c, {cache:"no-store"}); if(!r.ok) throw new Error(`the file could not be loaded (${r.status})`); o = await r.json(); }
+      loadSharedInv(o);
+      /* drop the payload from the address so a reload doesn't import it again; keep the view choice */
+      history.replaceState(null, "", location.pathname + "?view=" + (AVOVR ? "analysis" : "full") + "#/");
+    }catch(err){
+      const msg = (err && err.message) || String(err);
+      if(c){ applyAV(); caseFallback(c, "The shared analysis couldn't be opened automatically: " + msg + ".", isSP(c) && !!spCfg().cid); return; }
+      toast("Could not open the shared analysis: " + msg);
+    }
+  } else if(v === "analysis" || v === "full") AVOVR = v === "analysis";
+  applyAV(); route();
+}
+bootView();
 
 </script>
 </body>
