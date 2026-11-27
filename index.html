@@ -387,13 +387,18 @@ dialog#shd .fhd{display:flex;justify-content:space-between;align-items:center;pa
 .cfbdrop{margin-top:14px;border:2px dashed #c6cdd8;border-radius:10px;padding:34px 12px;text-align:center;color:var(--mute)}
 .cfbdrop.on{border-color:#2563eb;background:#eff6ff;color:#1d4ed8}
 .spset{margin-top:8px;font-size:13px}.spset summary{cursor:pointer;color:var(--ink2);font-weight:600}.spset[open]{display:flex;flex-direction:column;gap:8px}
-.sidereset{margin:14px 10px 18px}.sidereset .btn{color:#b42318}
+.sidereset{margin:14px 10px 18px;display:none}
+.rsopt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer}
+.rsopt>span{display:flex;flex-direction:column;gap:3px;font-size:13.5px}.rsopt small{color:var(--mute);font-size:12.5px}
+.rsopt:has(input:checked){border-color:#2563eb;background:#f5f8ff}
+.rssub{display:flex;flex-direction:column;gap:4px;margin-top:4px}.rsopt:not(:has(input[value=all]:checked)) .rssub{opacity:.45;pointer-events:none}
+#bReset{border-color:rgba(255,170,160,.55)}.sidereset .btn{color:#b42318}
 dialog#rsd{border:0;border-radius:12px;padding:0;width:min(480px,94vw);box-shadow:0 20px 60px rgba(10,20,40,.35)}
 dialog#rsd::backdrop{background:rgba(15,25,45,.55)}
 dialog#rsd .fhd{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line)}
 .rsbtn{display:flex;gap:8px;align-items:center;margin-top:8px}.rsbtn .sp{flex:1}
 .btn.danger{background:#b42318;border-color:#b42318;color:#fff}
-@media print{.sidereset{display:none}}
+@media print{.sidereset,#bReset{display:none}}
 /* framework report */
 .fwrep{display:grid;gap:10px}
 .fwp{border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -423,7 +428,7 @@ dialog#full .svscroll svg{min-width:0}
   .side.open{transform:none} .menu{display:inline-block}
   .igwrap,.dsk{display:none} .igm,.mob{display:block}
   .tb{padding:5px 8px;font-size:12.5px} .brand small{display:none} .brand{font-size:13.5px;white-space:normal;line-height:1.15} .top{gap:6px;padding:8px 10px}
-  #bExport,#bImport{display:none} .wsb .wst{max-width:90px} .sidefile{display:flex}
+  #bExport,#bImport,#bReset{display:none} .wsb .wst{max-width:90px} .sidefile{display:flex} .sidereset{display:block}
   .panel{padding:14px 12px} .hero h1{font-size:21px}
   .thead .acts{margin-left:0;width:100%} .thead .acts .btn{flex:1 1 auto}
   .cats,.pick,.fwpick{grid-template-columns:1fr} main{padding:14px 12px 30px}
@@ -453,6 +458,7 @@ dialog#full .svscroll svg{min-width:0}
   <button class="tb" id="bImport" title="Load entries from a file">Open</button>
   <button class="tb" id="bView"></button>
   <button class="tb" id="bPrint" title="Print or save as PDF">Print / PDF</button>
+  <button class="tb" id="bReset" title="Start over all tools, or reset everything">Reset</button>
 </header>
 <div class="app">
   <aside class="side" id="side"></aside>
@@ -494,13 +500,15 @@ dialog#full .svscroll svg{min-width:0}
   <label class="pdo"><input type="checkbox" id="pGuide"> <span><b>Guide</b><small>What it is, when to use it, how to do it, tips</small></span></label>
   <div class="pdbtn"><button class="btn" data-act="printcancel">Cancel</button><button class="btn pri" data-act="printnow">Print</button></div>
   <div class="wsmeta">Tip: choose “Save as PDF” as the printer to make a PDF.</div></div></dialog>
-<dialog id="rsd"><div class="fhd"><b>Reset all</b><button class="btn sm" data-rsclose>Close</button></div><div class="shb">
-  <div class="wsmeta">Clears what the toolkit remembers in this browser, so it opens fresh at the home page instead of the last tool or investigation. Files you saved are not touched.</div>
-  <label class="shc"><input type="checkbox" id="rsPr" checked> <span>Practice analyses <small id="rsPrN" class="wsmeta"></small></span></label>
-  <label class="shc"><input type="checkbox" id="rsInv" checked> <span>Investigations kept in this browser <small id="rsInvN" class="wsmeta"></small></span></label>
-  <label class="shc"><input type="checkbox" id="rsUi" checked disabled> <span>Last opened tool, investigation, view and settings <small class="wsmeta">(always)</small></span></label>
+<dialog id="rsd"><div class="fhd"><b>Reset</b><button class="btn sm" data-rsclose>Close</button></div><div class="shb">
+  <label class="rsopt"><input type="radio" name="rsm" value="tools" checked><span><b>Start over all tools</b><small id="rsToolsN"></small></span></label>
+  <label class="rsopt"><input type="radio" name="rsm" value="all"><span><b>Reset everything in this browser</b><small>Opens fresh at the home page instead of the last tool or investigation. Choose what to clear:</small>
+    <span class="rssub"><label class="shc"><input type="checkbox" id="rsPr" checked> Practice analyses <small id="rsPrN" class="wsmeta"></small></label>
+    <label class="shc"><input type="checkbox" id="rsInv" checked> Investigations kept in this browser <small id="rsInvN" class="wsmeta"></small></label>
+    <label class="shc"><input type="checkbox" checked disabled> Last opened tool, investigation, view and settings <small class="wsmeta">(always)</small></label></span></span></label>
+  <div class="wsmeta">Files you saved to your computer or SharePoint are not touched.</div>
   <div class="find warn" id="rsWarn" hidden>Anything not saved to a file will be lost. Use <b>Save first</b> if you want to keep it.</div>
-  <div class="rsbtn"><button class="btn" data-rssave>Save first</button><span class="sp"></span><button class="btn" data-rsclose>Cancel</button><button class="btn danger" data-rsgo>Reset</button></div>
+  <div class="rsbtn"><button class="btn" data-rssave>Save first</button><span class="sp"></span><button class="btn" data-rsclose>Cancel</button><button class="btn danger" data-rsgo>Start over</button></div>
 </div></dialog>
 <dialog id="wsd"><div class="fhd"><b>Workspace</b><button class="btn sm" data-wsclose>Close</button></div><div id="wsBody"></div></dialog>
 <dialog id="full"><div class="fhd"><b id="fullT"></b><button class="btn sm" data-act="closefull">Close</button></div><div id="fullB" class="out"></div></dialog>
@@ -2355,7 +2363,7 @@ function renderSide(){
       s+=`<div class="ni${h==="tool/"+id?" on":""}" data-open="${id}"><span class="ic" style="background:${c.bg};color:${c.color}">${esc(t.icon)}</span><span class="nn">${esc(t.name)}${t.notCourse?'<span class="nc" title="Not part of the QC Tools training course: added for reference">not in course</span>':""}</span>${stx}</div>`; });
   });
   s+=`<div class="sidefile"><button class="btn sm" data-wsmenu>Workspace</button><button class="btn sm" onclick="document.getElementById('bExport').click()">${inInv()?"Save file":"Save all"}</button><button class="btn sm" onclick="document.getElementById('bImport').click()">Open file</button></div>`;
-  s+=`<div class="ncnote"><span class="nc">not in course</span> = not part of the QC Tools training course; added for reference.</div><div class="sidereset"><button class="btn sm" data-reset>Reset all…</button></div>`;
+  s+=`<div class="ncnote"><span class="nc">not in course</span> = not part of the QC Tools training course; added for reference.</div><div class="sidereset"><button class="btn sm" data-reset>Reset…</button></div>`;
   $("#side").innerHTML=s;
 }
 function go(h){ location.hash = h ? "#/"+h : "#/"; }
@@ -2489,7 +2497,7 @@ function sideAV(){
   if(!used.length) s += `<div class="wsmeta" style="padding:4px 10px">No analyses yet.</div>`;
   used.forEach(id => { const t = TOOLS[id], c = CATS[t.cat], st = DB[id];
     s += `<div class="ni" data-jump="${id}"><span class="ic" style="background:${c.bg};color:${c.color}">${esc(t.icon)}</span><span class="nn">${esc(t.name)}</span>${st.done ? '<span class="st done">✓</span>' : '<span class="st">…</span>'}</div>`; });
-  s += `<div class="avnote">Showing the analyses only.<button class="btn sm" data-viewtoggle>Show full toolkit</button></div><div class="sidereset"><button class="btn sm" data-reset>Reset all…</button></div>`;
+  s += `<div class="avnote">Showing the analyses only.<button class="btn sm" data-viewtoggle>Show full toolkit</button></div><div class="sidereset"><button class="btn sm" data-reset>Reset…</button></div>`;
   return s;
 }
 
@@ -2651,14 +2659,27 @@ document.addEventListener("click",e=>{
   if(e.target.closest("[data-spsignin]")) spSignIn(location.search);
 });
 
-/* ---- reset all ---- */
+/* ---- reset: start over all tools, or clear everything ---- */
+function rsMode(){ const r=document.querySelector('input[name="rsm"]:checked'); return r?r.value:"tools"; }
 function openReset(){
-  const np=toolsUsed(PRACTICE).length, ni=Object.keys(INV).length;
+  const np=toolsUsed(PRACTICE).length, ni=Object.keys(INV).length, nw=toolsUsed(DB).length;
+  $("#rsToolsN").textContent = (inInv() ? `Clears the answers in every tool of ${curInv().meta.id}, but keeps the investigation (title, owner, problem).` : "Clears the answers in every tool in Practice.") + ` ${nw} tool${nw===1?"":"s"} in use.`;
   $("#rsPrN").textContent=`(${np} in progress or done)`; $("#rsInvN").textContent=`(${ni})`;
-  $("#rsPr").checked=true; $("#rsInv").checked=true; rsWarn(); $("#side").classList.remove("open"); $("#rsd").showModal();
+  document.querySelector('input[name="rsm"][value="tools"]').checked=true; $("#rsPr").checked=true; $("#rsInv").checked=true;
+  rsWarn(); $("#side").classList.remove("open"); $("#rsd").showModal();
 }
-function rsWarn(){ $("#rsWarn").hidden=!(($("#rsPr").checked&&toolsUsed(PRACTICE).length)||($("#rsInv").checked&&Object.keys(INV).length)); }
+function rsWarn(){
+  const m=rsMode(), any = m==="tools" ? toolsUsed(DB).length : (($("#rsPr").checked&&toolsUsed(PRACTICE).length)||($("#rsInv").checked&&Object.keys(INV).length));
+  $("#rsWarn").hidden=!any; $("[data-rsgo]").textContent = m==="tools" ? "Start over" : "Reset everything";
+}
+function startOverTools(){
+  Object.keys(DB).forEach(k=>delete DB[k]);
+  persist(); $("#rsd").close();
+  if(location.hash.replace(/^#\/?/,"")) location.hash="#/"; else route();
+  toast(inInv() ? "All tools cleared in this investigation" : "All practice tools cleared");
+}
 function doReset(){
+  if(rsMode()==="tools"){ startOverTools(); return; }
   const pr=$("#rsPr").checked, inv=$("#rsInv").checked;
   try{
     if(pr) localStorage.removeItem(KEY);
@@ -2671,9 +2692,9 @@ function doReset(){
   window.onbeforeunload=null; persist=function(){};   /* nothing may write the old state back while leaving */
   location.replace(location.pathname);
 }
-document.addEventListener("change",e=>{ if(e.target.id==="rsPr"||e.target.id==="rsInv") rsWarn(); });
+document.addEventListener("change",e=>{ if(e.target.id==="rsPr"||e.target.id==="rsInv"||e.target.name==="rsm") rsWarn(); });
 document.addEventListener("click",e=>{
-  if(e.target.closest("[data-reset]")){ openReset(); return; }
+  if(e.target.closest("[data-reset],#bReset")){ openReset(); return; }
   if(e.target.closest("[data-rsclose]")){ $("#rsd").close(); return; }
   if(e.target.closest("[data-rssave]")){ $("#bExport").click(); return; }
   if(e.target.closest("[data-rsgo]")){ doReset(); return; }
